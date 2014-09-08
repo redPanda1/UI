@@ -1,0 +1,830 @@
+/*Apply lato font to the whole body*/
+body
+{
+	font-family: "LotoFont", sans-serif;
+  	font-weight: 400;
+  	font-size: 1.4em;
+  	background: #E9EBEC;
+}
+@font-face {
+    font-family: LotoFont;
+    src: url(../../Library/fonts/Lato-Regular.ttf);
+}
+@font-face {
+    font-family: LotoLightFont;
+    src: url(../../Library/fonts/Lato-Light.ttf);
+}
+/*ngGrid styles*/
+
+
+/*Style for the Header*/
+.header
+{
+	background: #A91E22;
+	min-height: 60px;
+	padding-top: 3px;
+	color: white;	
+	
+}
+.header span.number {
+	position: absolute;
+	font-size: 0.9em;
+	top: -2px;
+	color: white;
+}
+.header .caption
+{
+	color: white;
+	font-size: 1.6em;
+	height: 55px;
+	line-height: 54px;
+	padding-left: 5%;
+}
+.header .dropdown:hover,.header .contact-block:hover {
+	background: #A5585A;
+	border-radius: 3px;
+}
+.header .dropdown.open,.header .contact-block:visited{
+	background: #282b2e;	
+}
+.header .contact-notify, .header .message-notify, .header .calender-notify
+{
+	padding: 5px 5px;
+	display: block;
+}
+.navigation-toggle
+{
+	margin:9px 0px 0px -2px;
+	font-size: 16px;
+	cursor:pointer;
+}
+.xsnavigation-toggle
+{
+	font-size:22px;
+	margin:8px 0px 0px -2px;
+	color:white;
+	cursor:pointer;
+}
+.header .avatar
+{
+	margin:4px 0px 0px -14px;
+}
+
+/*Default style for the content area*/
+.content
+{
+	background:#F3F3F3;	
+	min-height:950px;
+	height:auto;
+	border-left: 1px solid #DBDEE0;
+}
+
+/*Default style for the navigation area*/
+.navigationblock
+{
+	background:#E9EBEC;	
+	height:auto;
+}
+
+/*Default style for the footer area*/
+.footer
+{
+	min-height:40px;
+	line-height:40px;
+	background: #34383c;
+	color:#FFFFFF;
+	font-size: 0.750em;
+	margin: 0px !important;
+}
+
+
+/** Style for making container expand to the whole screen
+ *	Since container will try to align to center by applying padding.
+ *	To avoid this padding 'width' is set to 100% in all devices widths using media query
+ */
+@media (min-width: 1200px)
+{
+	.container {
+		width: 100%;
+	}
+
+
+}
+@media (min-width: 992px)
+{
+	.container {
+		width: 100%;
+	}
+}
+@media (min-width: 768px)
+{
+	.container {
+		width: 100%;
+	}	
+
+	ul.alignNav>li>a, ul.alignNav>li>ul>li>a, ul.alignNav>li>ul>li>ul>li>a {
+               height: 40px;
+    }
+
+    ul.alignNav>li>a>i.fa, ul.alignNav>li>ul>li>a>i.fa, ul.alignNav>li>ul>li>ul>li>a>i.fa {
+            padding-top: 12px !important;
+            font-size:14px !important;
+    }
+}
+@media only screen and (max-width: 991px) and (min-width: 768px)
+{
+	ul.alignNav>li>a>i.fa
+	{
+		font-size:18px !important;
+	}
+	
+	/*For displaying menu items while hovering in small screens*/
+	.navigationblock.shift>ul.alignNav>li:hover>a>span.hidden-sm , 
+	.navigationblock.shift>ul.alignNav>li:hover>ul>li>a>span.hidden-sm ,
+	.navigationblock.shift>ul.alignNav>li:hover>ul>li>ul>li>a>span.hidden-sm {
+		display: inline-block!important;
+	}
+	.emp-icons-container button
+	{
+		padding: 3px;
+	}
+}
+@media(max-width:767px) {
+	.container {
+		width: 100%;
+	}	
+	.col-xs-12
+	{
+		width:100% !important;  
+		border-left:none !important;                                  
+	}
+	.employee-grid .colt9 label
+	{	
+		margin-left: 2px !important;
+		padding: 2px 0px !important;		
+	}
+	.emp-icons-container button
+	{
+		padding: 0px;
+	} 
+	.emp-icons-container
+	{
+		display: inline-flex;
+	}    
+ }
+ 
+.contwidthInc
+{
+	width: 100% !important;
+	border-left: 40px solid #e9ebec;
+}
+
+/*Style for navigation bar width*/
+.alignNav
+{
+	margin-left:-15px;
+	margin-right:-15px;	
+	font-size: 14px;
+}
+
+/*For navigation bar headings*/
+ul.alignNav>li>a
+{
+	background-color:#E9EBEC;	
+}
+
+/*For Navigation bar sub-headings*/
+ul.alignNav>li>ul>li>a,
+ul.alignNav>li>ul>li>a.subContent
+{	
+	background-color:#E4E5E7;
+}
+
+/*For sub-content accordion menus*/
+ul.alignNav>li>ul>li>ul>li>a
+{
+	background-color:#E1E3E5;
+}
+
+/*Style for navigation bar headings while hovering*/
+ul.alignNav>li>a.selected:hover,
+ul.alignNav>li>ul>li>a.selected:hover,
+ul.alignNav>li>ul>li>ul>li>a.selected:hover,
+.navigationblock>span>i.selected:hover
+
+{
+	background-color:#CED1D4;
+	color:#FFFFFF;
+}
+
+/*Style for navigation bar sub-headings while hovering*/
+ul.alignNav>li>ul>li>a:hover,
+ul.alignNav>li>ul>li>ul>li>a:hover,
+.navigationblock>span>i:hover,
+ul.alignNav>li>a:hover,
+ul.alignNav>li>ul>li>a.subContent:hover
+{
+	background-color:#CED1D4;	
+	cursor:pointer;	
+}
+
+/*Style for applying icon borders in navigation bar*/
+ul.alignNav>li>a>i.fa,
+ul.alignNav>li>ul>li>a>i.fa,
+ul.alignNav>li>ul>li>ul>li>a>i.fa
+{
+	width: 40px;
+	padding: 0px;
+	font-size: 14px;
+	text-align: center;
+}
+/*Style for applying anchor borders in navigation bar*/
+ul.alignNav>li>a,
+ul.alignNav>li>ul>li>a,
+ul.alignNav>li>ul>li>ul>li>a
+{		
+	height: 40px;
+	border-bottom: 1px solid #dbdee0;
+	color: #7c848d;
+	padding:0px;
+	margin: 0px;
+}
+
+/*Style for applying padding for the navigation menu text*/
+ul.alignNav>li>a>span,
+ul.alignNav>li>ul>li>a>span,
+ul.alignNav>li>ul>li>ul>li>a>span
+{	
+	padding: 10px 5px; /* fix for savitha system bug*/
+	display: inline-block;
+	border-left: 1px solid #DBDEE0;
+	height:40px;
+}
+
+/*Style for applying padding to the glyphicon in navigation menu*/
+ul.alignNav>li>a>i.glyphicon,
+ul.alignNav>li>ul>li>a>i.glyphicon
+{
+	top: 16px;
+	right: 10px;
+	font-size: 9px;
+	color: #B2B8BD; 
+}
+.alignNav .selected
+{
+	background-color:#CED1D4!important;
+}
+
+.shift ul.alignNav>li>ul>li>ul>li>a,
+.shift ul.alignNav>li>ul>li>a
+{
+border-left: 1px solid #dbdee0;
+border-right: 1px solid #dbdee0;
+}
+/*Style for arrow mark in navigation bar*/
+.navigationblock>span
+{
+	display: block;
+	border-bottom: 1px solid #dbdee0;
+	position: relative;
+	margin-top:30px;
+}
+	
+.navigationblock>span>i
+{	
+	position: absolute;
+	bottom: -10px;
+	left: 50%;
+	width: 20px;
+	height: 20px;
+	background: #dbdee0;
+	padding: 3px 6px;
+	color: #7c848d;
+}
+.dropdown,.contact-notify
+{
+	cursor:pointer;
+	text-align: center;
+	height: 58px;
+	margin-bottom: 2px;
+}
+
+
+
+/*=============Style for the Navigation bar when left arrow button is clicked==========*/
+
+
+/*Style for setting the width*/
+.navigationblock.shift {
+	width: 40px !important;
+	position: absolute;
+	margin-right: -39px;
+	clear: both;
+	z-index: 9;
+	border-right: 1px solid #DBDEE0;
+
+}
+
+/*Styles for arrow mark when nav bar shrinks*/
+.navigationblock.shift>span{
+		
+	margin-top:200%;
+	border:none;	
+}
+
+.navigationblock.shift>span i{
+	margin-left:-12px;
+color: #7C848D;
+}	
+
+
+/*Style for the glyphicons*/
+.navigationblock.shift>ul>li>a>i.glyphicon {
+	display: none;
+	position: absolute;
+	left: 178px;
+	z-index: 2;
+}
+
+/*Style for the text in the navigation menu*/
+.navigationblock.shift>ul>li>a>span {
+	position: absolute;
+	z-index: 2;
+	background: #e9ebec;
+	min-height: 40px;
+	width: 150px;
+	padding: 8px 15px;
+	border: 1px solid #dbdee0;
+	top: 0px;
+	left: 39px;
+	display: none !important;
+	height:40px;
+}
+
+/*Style for hiding the sub menus in the navigation bar*/
+.navigationblock.shift>ul>li>ul {
+	display: none !important;
+}
+
+/**Styles for the inner content during hover
+ * Need to show the menus while hovering
+ */
+ 
+ .navigationblock.shift>ul>li:hover>a {
+	position: relative;
+	cursor: pointer;
+}
+
+/*Style for glyphicon during hover*/
+.navigationblock.shift>ul>li:hover>a i.glyphicon {
+	display: inline-block;
+}
+
+/*Style for the text in the navigation during hover*/
+.navigationblock.shift>ul>li:hover>a span {
+	position: absolute;
+	z-index: 2;
+	background: #e9ebec;
+	min-height: 34px;
+	width: 178px;
+	padding: 8px 15px;
+	border: 1px solid #dbdee0;
+	top: 0px;
+	left: 40px;
+	display: block !important;
+}
+
+/*Style for the sub-menus in the navigation bar during hover*/
+.navigationblock.shift>ul>li:hover>ul {
+	display: block !important;
+	position: absolute;
+	top: 39px;
+	left: 39px;
+	z-index: 2;
+	width: 180px;
+	background: #e9ebec;
+	border: 1px solid #dbdee0;
+	border-bottom: none;
+}
+
+/*Style for the dropdown menus in the header*/
+.dropdown-menu>ul>li
+{
+	border-top: 1px solid #e9ebec;
+}
+.dropdown-menu>ul>li:hover
+{
+	 background-color: #428bca;
+	 color:#FFFFFF;
+}
+.dropdown-menu {
+	text-shadow: none;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	
+}
+.header .dropdown-menu {
+	top: 93% !important;
+	left: 0% !important;
+	text-align: left !important;
+	}
+.header .dropdown-menu li {
+	border-bottom: 1px solid #E9EBEC;
+}
+.dropdown-title {
+	background: #E9EBEC;
+	color: #34383C;
+	padding: 5px 10px;
+	display: block;
+}
+.dropdown-menu li a {
+	display: block;
+	padding: 5px 10px !important;
+	clear: both;
+	font-weight: normal;
+	line-height: 20px;
+	color: #888;
+	white-space: normal !important;
+}
+ul.calender-notification li,ul.message-notification li
+{
+	min-width: 260px;
+}
+ul.calender-notification li .icon,ul.message-notification li .icon {
+	margin: -5px 10px -5px -10px !important;
+	padding: 7px 10px 9px 10px;
+	color: white;
+	width: 60px;
+	display: inline-block;
+	text-align: center;
+}
+ul.calender-notification li .message,ul.message-notification li .message {
+	font-size: 0.750em;
+}
+ul.calender-notification li .time,ul.message-notification li .time{
+	font-size: 0.689em;
+	font-weight: bold;
+	font-style: italic;
+	position: absolute;
+	right: 5px;
+}
+ul.calender-notification li > a:hover,ul.message-notification li > a:hover,ul.profile-log-notification li > a:hover{
+	color: white;
+	text-decoration: none;
+	background: #62BCE8;
+}
+ul.message-notification li .avatar img {
+	float: left !important;
+ }
+.avatar img
+{
+ 	height: 60px;
+	width: 60px;
+	margin-right: 10px;
+}
+
+ul.message-notification li .message-heading {
+	display: block;
+}
+ul.message-notification li .message-heading .from {
+	font-size: 0.750em;
+	font-weight: bold;
+}
+.dropdown-footer {
+	text-align: center;
+	background: #E9EBEC;
+	cursor: pointer;
+}
+ul.calender-notification li .icon.green {
+	background: #BDEA74;
+}
+ul.calender-notification li .icon.blue {
+	background: #36A9E1;
+}
+
+.profile-log .profile-name
+{
+	min-height: 58px;
+	vertical-align: middle;
+	padding: 8% 0% !important;
+}
+.profile-log .profile-img
+{
+	padding: 0px !important
+}
+
+
+/*================ ////// START OF CONTENT AREA STYLES ////// ==========================  */
+ul
+{
+	padding:0px !important;
+	
+}
+/* box container layout common style starts */
+.page-header
+{
+	padding: 0px;
+	margin: 0px 0 15px;
+	border-bottom: 1px solid #DBDEE0;
+}
+.page-header h1
+{
+	font-family:"LotoLightFont", sans-serif !important;
+	font-size: 2em;
+	line-height: 32px;
+	font-weight: 300;
+}
+.page-header h1 small
+{
+	font-weight: bolder;
+	font-size: 20px;
+}
+.but-container {
+	text-align: right;
+	line-height: 5;
+}
+.box-container
+{
+	margin: 0px 15px 30px 15px;
+}
+.boxcontanier-header 
+{
+	color: inherit;
+	font-size: 1.1em;
+	overflow: hidden;
+	background: #F7F7F8;
+	border: 1px solid #DBDEE0;
+	height: 40px;
+}
+.boxcontanier-header .tableheadingicon 
+{
+	font-weight: bold;
+}
+.boxcontanier-header .tableheadingicon i {
+	border-right: 1px solid #DBDEE0;
+	color: #CED1D4;
+	height: 40px;
+	width: 40px;
+	padding: 10px 0px 0px 14px;
+	margin-right: 20px;
+	margin-left: -15px;
+}
+.box-container .boxcontanier-header .tableoptionicon
+{
+	margin-right: -12px;
+}
+.box-container .boxcontanier-header .tableoptionicon i {
+	border-left: 1px solid #DBDEE0;
+	color: #CED1D4;
+	height: 40px;
+	width: 36px;
+	padding: 10px 0px 0px 10px;
+	margin-right: -3px;
+	cursor: pointer;
+}
+.boxcontainer-body
+{
+	padding-top: 15px;
+	height: auto;
+	min-height: 60px;
+}
+.collapse-container
+{
+	border-left: 1px solid #DBDEE0;
+	border-right: 1px solid #DBDEE0;
+	border-bottom: 1px solid #DBDEE0;
+	background: white;
+}
+
+
+/*input controls style starts*/
+.form-control,.input-group-btn .btn
+{
+	border-radius: 0px;
+	height: 28px;
+	padding: 3px 12px;
+	font-size: 12px;
+	font-weight: bold;
+}
+.extramini-input
+{
+	width: 25% !important;
+	min-width: 60px;
+}
+.mini-input
+{
+	width: 45% !important;
+}
+.small-input
+{
+	width: 50% !important;
+}
+.medium-input
+{
+	width: 75% !important;
+}
+.inputAddon
+{
+	width: 80% !important;
+}
+/*input controls style ends*/
+
+select.form-control
+{
+   padding-right: 0px;
+}
+
+
+/* box container layout common style ends */
+
+/* ng grid common style starts */
+.gridStyle
+{
+	width:100% !important;
+	border: 1px solid #DBDEE0;
+	margin-bottom: 20px;
+}
+.gridStyle .ngCanvas
+{
+	margin-top: -1px;
+}
+.gridStyle .ngTopPanel,
+.gridStyle .ngHeaderContainer,
+.gridStyle .ngFooterPanel,
+.gridStyle .ngRow,
+.gridStyle .ngViewport,
+.gridStyle .ngCanvas
+{
+	width:100% !important;
+}
+.ngTopPanel
+{
+	background-color:white;
+}
+.ngHeaderContainer
+{
+	border-bottom: 1px solid #DBDEE0;
+}
+.ngRow
+{
+	border-top: 1px solid #DBDEE0;
+	border-bottom:none !important;
+}
+.ngRow.even 
+{
+	background-color: #F9F9F9;
+}
+.ngCellText,.ngHeaderText {
+	display: table-cell;
+	vertical-align: middle;
+	white-space: normal;
+}
+.gridStyle .ngCanvas label.label
+{
+	line-height: 53px;
+	margin-left: 5px;
+}
+.gridStyle .ngCanvas label.btn
+{
+	margin-left: 5px;
+	margin-top:10px;
+}
+
+.tableoptionicon i:hover
+{
+	background: #444;
+}
+/* ng grid common style ends */
+/*================ ////// END OF CONTENT AREA STYLES  ////// ==========================  */
+
+.avatar_span
+{
+	float:right;	
+	width: 100%;
+	display: inline-block;
+}
+
+/*Header padding. By default padding is applied in bootstrap css*/
+.profile-log.list-inline>li
+{
+	padding-left:0px;
+	padding-right:0px;
+}
+.depaertment-select
+{
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+/** For fixing Message icon - The name of the contact should appear a little above. **/
+.message-notification .message-avatar
+{
+	margin: 0 !important;
+}
+.message-notification .message-avatar img
+{
+	margin-top: 5px !important;
+}
+.alert
+{
+	text-align:center;
+}
+
+/* Style for sticky footer */
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -40px;
+}
+#push,
+#footer {
+  height: 40px;
+  width: 100%;
+}
+
+/*ng-cloak*/
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+.modal-header
+{
+	display: inline-flex;
+	width: 100%;
+}
+.modal-title
+{
+	width:98%;
+	display: inline-block;
+}
+.modal-close
+{
+	display: inline-block;
+	width: 1%;
+	height: 20px;
+	text-align: right;
+	cursor: pointer;
+}
+.content-align .form-group label
+{
+	font-family: "LotoFont", sans-serif;
+	font-weight: normal !important;
+	width:45%;
+	font-size:14px;
+	float:left;
+	height: 25px;
+	line-height: 25px;
+}
+.form-group span.unit-position
+{
+	font-family: "LotoFont", sans-serif;
+	font-weight: normal;
+	font-size:12px;
+}
+.content-align .form-group label:first-child
+{
+	text-indent: 15px;	
+}
+.box-layout
+{
+	background-color: white;
+	border: 1px solid #DBDEE0;
+}
+.comments-container
+{
+	height: 80px;
+}
+.attachementContainer
+{
+	padding-bottom: 10px;
+}
+@media (max-width: 767px)
+{
+	.page-header .but-container {
+		text-align: left;
+		}
+}
+.addContactBtn
+{
+	margin-right:29px!important;
+}
+.modal {
+ overflow-y: auto;
+}
+
+.modal-open {
+ overflow: auto;
+}
+.labelcaption
+{
+	text-align: right;
+	line-height: 25px;
+}

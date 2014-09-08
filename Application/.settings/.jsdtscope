@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="Components/ngGridTable/|Components/downloadXls/|Components/googleMap/" kind="src" path="Common"/>
+	<classpathentry kind="src" path="Common/Components/downloadXls"/>
+	<classpathentry kind="src" path="Common/Components/googleMap"/>
+	<classpathentry kind="src" path="Common/Components/ngGridTable"/>
+	<classpathentry kind="src" path="Home"/>
+	<classpathentry kind="src" path="Manage/Contract"/>
+	<classpathentry kind="src" path="Manage/ContractDetail"/>
+	<classpathentry kind="src" path="Manage/Customer"/>
+	<classpathentry kind="src" path="Manage/CustomerDetail"/>
+	<classpathentry kind="src" path="Manage/Employee"/>
+	<classpathentry kind="src" path="Manage/EmployeeDetail"/>
+	<classpathentry excluding="jasmine-standalone-1.3.0/spec/|jasmine-standalone-1.3.0/lib/jasmine-1.3.0/" kind="src" path="tests"/>
+	<classpathentry kind="src" path="tests/jasmine-standalone-1.3.0/lib/jasmine-1.3.0"/>
+	<classpathentry kind="src" path="tests/jasmine-standalone-1.3.0/spec"/>
+	<classpathentry kind="src" path="Time/TimePage"/>
+	<classpathentry kind="src" path="Time/TimeSheet"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

@@ -1,0 +1,111 @@
+/* Customer ng grid table style starts */
+.gridStyle
+{
+	height:250px;
+	
+}
+.customer .gridStyle
+{
+	height: auto ;
+}
+.customer .gridStyle .ngCanvas button.btn
+{
+	margin-top: 9px;
+	margin-left: 7px;
+	margin-right: 10px;
+}
+
+.gridStyle .ngViewport {
+    height: auto !important;
+    overflow-y: hidden;
+}
+.ngRow:hover,.ngRow.even:hover,.ngRow.odd:hover
+{
+	background: #E8F3FD;
+}
+.selected
+{
+	background-color:#CED1D4!important;
+}
+
+.ngTopPanel.ng-scope, .ngHeaderContainer {
+    width: auto !important;
+}
+.customer .gridStyle .ngCanvas img
+{
+	width: 40px;
+	height: 40px;
+	margin-left: 30%;
+	margin-top: 10px;
+	cursor: default !important;
+}
+
+/**Grid row selection background**/
+.ngRow.selected
+{
+	background-color:#CED1D4 !important;	
+}
+
+/**For hiding the vertical line in the grid**/
+.ngVerticalBarVisible 
+{
+	width:0px;
+}
+
+/*==========Customer ng grid table style ends ============= */
+
+
+.searchbox
+{
+	margin-bottom:10px;
+}
+
+/*===========Styles for the labels in customers list======= */
+
+.label
+{
+	font-weight: 300;
+	font-size: 10px;
+	padding: 4px 6px;
+	border: none;
+	text-shadow: none;
+}
+.label-important{
+	background: #ff5454;
+}
+.label-grey
+{
+	border: none;
+	text-shadow: none;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;	
+	background: #e9ebec;
+	color: #7c848d;	
+}
+.label-mid
+{
+	font-size:15px;
+}
+
+/*===============Style for the buttons "New" and "Download" ================*/
+
+.customer .searchbox select
+{
+	width: 70px;
+}
+
+@media (max-width: 767px)
+{
+	.customer .gridStyle .ngCanvas button.btn{
+		margin-right: 0px;
+	}
+	.emp-icons-container{
+		margin-left: 0px;
+	}
+	.but-container
+	{
+		text-align:left;
+	}
+	
+}

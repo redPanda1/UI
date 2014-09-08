@@ -1,0 +1,334 @@
+.content-align .form-group label,
+.content-align .form-group span
+
+{
+	font-family: "LotoFont", sans-serif;
+	font-weight: normal !important;
+	width:40%;
+	font-size:14px;
+	float:left;
+	height: 25px;
+	line-height: 25px;
+}
+
+.form-group span.unit-position
+{
+	font-family: "LotoFont", sans-serif;
+	font-weight: normal;
+	font-size:12px;
+}
+
+.imgContain
+{
+	background-size:contain;	
+}
+.dp
+{
+	width:30%;
+}
+.contact-map
+{
+	height: 250px;
+}
+.comments-container .comments .time
+{
+	color: gray;
+}
+
+/*Style for setting the google map's height*/
+.angular-google-map-container
+{
+	min-height:248px;	
+	border: 1px solid #6A6B6B;
+}
+
+/*Style for the model pop up*/
+.DeletePopContent
+{
+	margin:10%;	
+}
+.unit-position
+{
+	margin-left: 6px;
+	display: inline-table;
+	margin-top: 4px;
+}
+.contect-address
+{
+	height: 255px;
+}
+/* Removing border for contact type table map */
+.contect-address input,.contect-address .state-name
+{
+	margin-bottom: 15px;
+
+}
+.content-align .form-group label:first-child,
+.content-align .form-group span:first-child
+{
+	text-indent: 15px;	
+}
+/*for overtime cost row bottom position*/
+.financial .Overtime label, .financial .Overtime .input-group
+{
+	margin-top: 45px;
+}
+.contact-info-type
+{
+	padding-left: 25px; 
+	padding-top: 10px;
+}
+.contact-info-type .boxcontainer-body
+{
+	border: 1px solid #DBDEE0;
+	height: auto !important;
+	margin-bottom: 10px;
+	margin-right: 0px;
+}
+/* attachments container style */
+.emp-attachments-container
+{
+	min-height: 175px;
+	width: 100%;
+	border: 1px solid rgb(223, 214, 214);
+}
+.upload-placeholder
+{
+	min-height: 100px;
+	text-align: center;
+	vertical-align: middle;
+}
+.attachments-title
+{
+	background: rgb(245, 209, 23);
+	padding: 5px;
+}
+.attachments-buttons
+{
+	margin-left: 0px !important;
+}
+
+/* to make elastic padding for all device in bootstrap table (overriding bootstrap css)*/
+.contact-info-type .table>thead>tr>th, 
+.contact-info-type .table>tbody>tr>th, 
+.contact-info-type .table>tfoot>tr>th, 
+.contact-info-type .table>thead>tr>td, 
+.contact-info-type .table>tbody>tr>td, 
+.contact-info-type .table>tfoot>tr>td {
+	padding: 1%;
+	vertical-align: middle !important;
+}
+.contact-info-type .contact-type-table-body .table>tbody>tr>td.contact-second-column
+{
+	text-transform: capitalize;
+}
+
+/* for timeoff table height*/
+.timeoff .ngViewport
+{
+	min-height: 63px !important;
+	height: auto !important;
+}
+
+/* Style for override vertical bar in nggrid */
+.timeoff .ngVerticalBarVisible 
+{
+	width: 0px;
+}
+/* style for time off table back ground color to white*/
+.timeoff-grid .ngTopPanel, .timeoff-grid .ngRow
+{
+	background-color: #fff !important;
+}
+.timeoff-grid, .timeoff-grid .ngRow
+{
+	border: 0 !important;
+}
+.timeoff-grid .ngCell a
+{
+	text-decoration: underline;
+}
+.timeoff-grid .ngViewport .colt0 span, .timeoff-grid .ngHeaderText
+{
+	text-transform: capitalize !important;
+}
+/* Style for custom selection box*/
+.department button
+{
+	height: 28px;
+	line-height: 14px;
+}
+.department
+{
+	width:100%;	
+}
+
+.contect-address .editable-input .editable-clear-x
+{
+	margin-top: -12px !important;
+}
+.popOver
+{
+	margin-left:4%;	
+}
+
+.customer .contact-first-column
+{
+	width: 85%;
+	float: left;
+	line-height: 2.4 !important;
+}
+.contact-second-column
+{
+	width: 15%;
+	float: left;
+	line-height: 2.4 !important;
+}
+.contact-third-column
+{
+	width: 60%;
+	float: left;
+	line-height: 2.4 !important;
+}
+.contact-type-table-body
+{
+	height: auto;
+	margin-bottom: 10px;
+	overflow-y: auto;
+	width: 100%;
+}
+.contact-type-table-body table
+{
+	margin-bottom: 0;
+}
+.contact-type-table-header 
+{
+	font-weight: bold;
+	width: 100%;
+	display: inline-flex;
+	float: left;
+	line-height: 26px;
+	border: 1px solid #ddd;
+	border-bottom-width: 0;
+}
+
+@media(max-width:767px) {
+	.financial .Overtime label, .financial .Overtime .input-group {
+		margin-top: 0;
+	}
+}
+/** style for aligning text to right side **/
+.right-justify
+{
+	text-align: right !important;
+}
+/** style for enabling scroll bar in auto complete **/
+.contect-address ul.dropdown-menu
+{
+	max-height: 150px !important;
+	overflow-y: auto !important;
+	overflow-x: vissible !important; 
+}
+/* set width for all type head drop down */
+ul[id^="typeahead"] {
+    width: inherit !important;
+}
+.imageUploader
+{
+	height: 100%;
+	position: absolute;
+	width: 68%;
+	top: 0px;
+	opacity:0;
+}
+
+.ngVerticalBarVisible 
+{
+	width:0px;
+}
+.contact-type-table-body .ngViewport{
+	height: auto !important;
+	overflow: hidden;
+}
+.contractInfoColumn .ngViewport{
+	height: auto !important;
+	overflow: hidden;
+}
+.cust-contact-delete{
+	margin-left: 24px;
+}
+#colorBox{
+	width: 14%;
+}
+
+.simplecolorpicker span.color{
+	height: 16px;
+}
+.customer-info .color-picker .simplecolorpicker.icon{
+	outline: none;
+	width: 17px;
+	height: 17px;
+}
+.color-picker
+{
+	display: inline-block;
+	padding-top: 5px;
+}
+.simplecolorpicker.picker{
+	min-width: 104px !important;
+    max-width: 104px !important;
+}
+.company .ngHeaderCell,
+.contact-type-table-body .ngHeaderCell
+{
+	line-height: 30px;
+}
+.contact-first-column
+{
+	width: 20%;
+	float: left;
+}
+.contact-second-column
+{
+	width: 20%;
+	float: left;
+	line-height: 2.4 !important;
+}
+.contact-third-column
+{
+	width: 60%;
+	float: left;
+	line-height: 2.4 !important;
+}
+.contact-type-table-header .contact-first-column,
+.contact-type-table-header .contact-second-column, 
+.contact-type-table-header .contact-third-column
+{
+	padding: 1px 10px;	
+}
+.contact-type-table-body table tbody td
+{
+	border: 0px;
+	text-align: center;
+	height: 44px;
+}
+.deleteButton
+{
+	margin-top: 10px;
+	margin-left: 8px;
+}
+.commentsButton
+{
+	width: 100%;
+	display: inline-block;
+	text-align: center;
+}
+.plusButton
+{
+	text-align: center;
+}
+.contactDelete
+{
+	margin-top: 10px;
+	margin-left: 16px;
+}

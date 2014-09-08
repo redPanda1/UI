@@ -1,0 +1,128 @@
+/* attachments container style */
+.emp-attachments-container
+{
+	min-height: 175px;
+	width: 100%;
+	border: 1px solid rgb(223, 214, 214);
+}
+.upload-placeholder
+{
+	min-height: 100px;
+	text-align: center;
+	vertical-align: middle;
+}
+.attachments-title
+{
+	background: rgb(245, 209, 23);
+	padding: 5px;
+}
+.attachments-buttons
+{
+	margin-left: 0px !important;
+}
+.text-gap
+{
+	display: inline;
+	padding: 4px 4px;
+}
+.activity-table .gridStyle,
+.people .gridStyle
+{
+	height: 241px !important;
+}
+.activity-table .ngViewport,
+.people .ngViewport
+
+{
+	min-height: 199px !important;
+	height: auto !important;
+}
+.activity-table .ngCanvas,
+.people .ngCanvas
+{
+	min-height: 188px !important;
+	height: auto !important;
+}
+.ngRow.selected {
+	background-color: transparent;
+}
+.ngRow.even, .ngRow.selected.even {
+background-color: #f3f3f3 !important;
+}
+.people .gridStyle .ngVerticalBar,
+.activity-table .gridStyle .ngVerticalBar
+{
+	display: none;
+}
+.contract-description
+{
+	margin-top: 45px;
+}
+.content-align .contract-description  .form-group label:first-child
+{
+	width: 30%;
+}
+.contract-description .form-group .duration
+{
+	width: 65%;
+}
+.calender-flex
+{
+	display: -webkit-inline-flex;
+	display: -ms-inline-flexbox;
+	display: inline-flex;	
+}	
+
+.right_justify
+{
+	text-align:right;
+}
+::-webkit-input-placeholder {
+   text-align:left ;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   text-align:left;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   text-align:left;  
+}
+
+:-ms-input-placeholder {  
+   text-align:left; 
+}
+.multi-select-model ul.dropdown-menu
+{
+	top: 50%;
+	height: 160px;
+	width: 180px;
+	overflow-y: scroll;
+	text-align: left;
+}
+.modal-body
+{
+	height: 250px;
+}
+.multi-select-model .multiselect-btn
+{
+	width: 155px;
+}
+.modal-body .dropdown
+{
+	width:330px;
+}
+
+
+.modal-body ul.manager-selection li.multi-select
+{
+	float:left;
+	list-style:none;
+	width:40%;
+}
+.activity-table .ngHeaderCell,
+.people .ngHeaderCell
+{
+	line-height: 25px;
+}
+
