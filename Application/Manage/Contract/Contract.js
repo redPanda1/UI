@@ -146,7 +146,7 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
             field: '',
             displayName: '',
             sortable: false,
-            width: "10%",
+            width: "13%",
             cellTemplate: '<div class="ngCellText emp-icons-container"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
         }]
     }
@@ -182,7 +182,7 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
                 $scope.convertDatetoUSFormat();
                 activeContractList = FilterDeleted.filter($scope.ContractList);
                 angular.forEach(activeContractList, function(data, key) {
-                    if (data.value != 0 && data.value != null) {
+                    if (data.value != null) {
                         data.value = data.value.toFixed(2);
                     }
                 });

@@ -139,14 +139,15 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
         }
 
     }
-
     /**
-     * ========================================================================================================
-     * Function Used to map the country code to the country name during GET and POST.
-     * ========================================================================================================
+     * =====================================================================================================
+     * Map Object
+     * =====================================================================================================
      */
-    $scope.formatInputData = function() {
-        if ($scope.EmployeeDetail != null) {
+    
+    $scope.formatMapData = function()
+    {
+    	if ($scope.EmployeeDetail != null) {
             if ($scope.EmployeeDetail.data.addressCountryISO != null) {
                 if ($scope.countries != null) {
                     angular.forEach($scope.countries, function(data, key) {
@@ -167,18 +168,26 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             }
 
         }
+        if ($scope.EmployeeDetail != null) {
+	        if ($scope.EmployeeDetail.data.hireDate != null) {
+	            $scope.isHireDateSetinServer = true;
+	            $scope.EmployeeDetail.data.hireDate = USDateFormat.convert($scope.EmployeeDetail.data.hireDate);
+	        }
+	
+	        if ($scope.EmployeeDetail.data.termDate != null) {
+	            $scope.isTermDateSetinServer = true;
+	            $scope.EmployeeDetail.data.termDate = USDateFormat.convert($scope.EmployeeDetail.data.termDate);
+	        }
+        }
+    }
+    /**
+     * ========================================================================================================
+     * Function Used to map the country code to the country name during GET and POST.
+     * ========================================================================================================
+     */
+    $scope.formatInputData = function() {
 
         if ($scope.EmployeeDetail != null) {
-            if ($scope.EmployeeDetail.data.hireDate != null) {
-                $scope.isHireDateSetinServer = true;
-                $scope.EmployeeDetail.data.hireDate = USDateFormat.convert($scope.EmployeeDetail.data.hireDate);
-            }
-
-            if ($scope.EmployeeDetail.data.termDate != null) {
-                $scope.isTermDateSetinServer = true;
-                $scope.EmployeeDetail.data.termDate = USDateFormat.convert($scope.EmployeeDetail.data.termDate);
-            }
-
             var length = $scope.EmployeeDetail.data.contactNumbers.length;
             for (var i = 0; i < $scope.EmployeeDetail.data.contactNumbers.length; i++) {
                 $scope.contactTypeDetails[i] = $scope.EmployeeDetail.data.contactNumbers[i].details;
@@ -302,7 +311,11 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.formatCostamt();
                 $scope.formatStdamt();
                 $scope.formatInputData();
+                //Clone the object before pre-processing the input data.
                 angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
+                $scope.formatMapData();
+                console.log($scope.ClonedEmployeeDetail);
+                console.log($scope.EmployeeDetail);
                 $scope.isError = false;
             }).error(function(data, status) {
 
@@ -426,6 +439,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             $scope.states = data.data;
             $rootScope.localCache.states = $scope.states;
             $scope.formatInputData();
+            $scope.formatMapData();
         }).error(function(data, status) {
             /**
              * ===========================================================================
@@ -440,6 +454,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
     } else {
         $scope.states = $rootScope.localCache.states;
         $scope.formatInputData();
+        $scope.formatMapData();
     }
 
     /**
@@ -452,6 +467,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             $scope.countries = data.data;
             $rootScope.localCache.countries = $scope.countries;
             $scope.formatInputData();
+            $scope.formatMapData();
         }).error(function(data, status) {
         	 /**
               * ===========================================================================
@@ -470,6 +486,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
     } else {
         $scope.countries = $rootScope.localCache.countries;
         $scope.formatInputData();
+        $scope.formatMapData();
     }
 
 
@@ -865,7 +882,12 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
      * ==================================================================================
      *
      */
-
+    $scope.isChangeinContactNumbers = false;
+    $scope.$watch('EmployeeDetail.data.contactNumbers',function(newVal,OldVal){
+    	if(newVal == null || (newVal == OldVal))
+    		return;
+    	$scope.isChangeinContactNumbers = true;
+    });
     $scope.saveEmpdata = function() {
         $scope.inSave = true;
         var email_result;
@@ -876,7 +898,17 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             }
         }
         $scope.checkDateisChanged();
-        if (!angular.equals($scope.ClonedEmployeeDetail, $scope.EmployeeDetail)) {
+        if($scope.ClonedEmployeeDetail.data.contactNumbers != null)
+        {
+        	$scope.contactNumbersClonedArray = $scope.ClonedEmployeeDetail.data.contactNumbers;
+        	delete $scope.ClonedEmployeeDetail.data.contactNumbers;
+        }
+        if($scope.EmployeeDetail.data.contactNumbers != null)
+        {
+        	$scope.contactNumbersArray = $scope.EmployeeDetail.data.contactNumbers;
+        	delete $scope.ClonedEmployeeDetail.data.contactNumbers;
+        }
+        if ((!angular.equals($scope.ClonedEmployeeDetail, $scope.EmployeeDetail)) || isChangeinContactNumbers) {
             //For Alerting the mandatory field Nickname
             if ($scope.EmployeeDetail.data.nickname == "") {
                 $scope.addAlert("Enter Employee Name.", "danger");
@@ -893,7 +925,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 return;
             }
             $scope.closeAlert(); //Used to close the alert message before proceeding.
-
+            $scope.EmployeeDetail.data.contactNumbers = $scope.contactNumbersArray;
             //For Mapping the departmentName based on the selected departmentID
             angular.forEach($scope.departments, function(data, key) {
                 if (data.id == $scope.EmployeeDetail.data.departmentId)
@@ -936,6 +968,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.formatCostamt();
                 $scope.formatStdamt();
                 $scope.formatInputData();
+                $scope.formatMapData();
                 $scope.isImageuploaded = false;
                 $scope.inSave = false;
                 $rootScope.localCache.isEmpAPINeeded = true;

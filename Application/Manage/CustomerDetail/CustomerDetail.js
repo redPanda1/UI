@@ -113,11 +113,11 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
             field: '',
             displayName: 'Dates',
             width: "20%",
-            cellTemplate: '<div class = "ngCellText" style ="height:40px;"><span ng-bind = "row.entity.startDate"></span>-<span ng-bind = "row.entity.endDate"></span></div>'
+            cellTemplate: '<div class = "ngCellText" style ="height:44px;"><span ng-bind = "row.entity.startDate"></span>-<span ng-bind = "row.entity.endDate"></span></div>'
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style ="height:40px; line-height:30px; text-align:right;width:100%;display:inline-block; padding-right: 69px;text-overflow:clip !important;"><span ng-if="(row.entity.currency == \'USD\' || row.entity.currency == null)" ng-bind="\'$\'"></span><span  ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style ="height:44px; line-height:33px; text-align:right;width:100%;display:inline-block; padding-right: 69px;text-overflow:clip !important;"><span ng-if="(row.entity.currency == \'USD\' || row.entity.currency == null)" ng-bind="\'$\'"></span><span  ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -316,21 +316,16 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                 $http.get('/api/customerDetail/' + $cookieStore.get("detailId")).success(function(data) {
 
                     $scope.CustomerDetail = data;
+                    
                     $scope.mapOptions = $scope.CustomerDetail;
                     $scope.needMapCall.callMap = true;
                     $scope.customerHeading = data.data.customerName;
                     $scope.isError = false;
-                    $scope.formatInputData();
-                    angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
-                    $scope.newCustomer = false;
-                    $rootScope.customerName = $scope.CustomerDetail.data.customerName;
-                    $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
-                    activeContactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
-                    $scope.contactTableData = activeContactList;
                     activeContractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+                    $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
                     angular.forEach(activeContractList, function(data, key) {
 
-                        if (data.value != 0 && data.value != null) {
+                        if (data.value != null) {
                             data.value = Number(data.value).toFixed(2);
                         }
                         if (data.endDate != null)
@@ -340,7 +335,16 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                             data.startDate = USDateFormat.convert(data.startDate, true);
 
                     });
+                    activeContactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
+                    $scope.contactTableData = activeContactList;
+                    
                     $scope.contractTableData = activeContractList;
+                    $scope.formatInputData();
+                   //Clone the object before pre formatting of data.
+                    angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);                    
+                    console.log($scope.CustomerDetail);console.log($scope.ClonedCustomerDetail);
+                    $scope.newCustomer = false;
+                    $rootScope.customerName = $scope.CustomerDetail.data.customerName;                  
                     $rootScope.fromCustomer = false;
 
 
@@ -550,7 +554,9 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
 
         $scope.disabledSave = true;
         $scope.inSave = true;
-
+        console.log(angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail));
+        console.log("Customer cloned data",$scope.ClonedCustomerDetail);
+        console.log("Customer data",$scope.CustomerDetail);
         if (!angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail)) {
             $scope.closeAlert();
             $rootScope.localCache.isCustomerAPINeeded = true;

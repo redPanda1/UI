@@ -308,6 +308,12 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 $scope.isError = false;
 				 $scope.disableDelete = false;
 				 $scope.disabledSave = false;
+				 //Cloning the object before pre processing.
+				 if($scope.contractDetail.data.value != null)
+					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);	
+				 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
+				 console.log($scope.contractDetail);
+				 console.log($scope.ClonedcontractDetail)
 				 $scope.convertToUSDateFormat();
 				 if($scope.contractDetail.data.managerName != null)
 				 {
@@ -317,10 +323,8 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 if($scope.contractDetail.data.type == null)
 					 $scope.contractDetail.data.type = $scope.invoicemethods[0].value;
 				 
-				 if($scope.contractDetail.data.value != null)
-					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);
-				 
-				 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);		
+			 
+				 		
 				// if (contractDetailCookId != "create" && $rootScope.customerName)
 				 if($rootScope.fromCustomer)
 		  				$scope.contractDetail.data.customerName = $rootScope.customerName;	
@@ -523,8 +527,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 	  
 		 //To Skip saving during create
 		 if(!($cookieStore.get("detailId") == 'create'))
-		 {
-			 $scope.checkDateisChanged();
+		 {			 
 			 if(!angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))		 
 			 {
 			 	 if($scope.contractDetail.data.title == "")
@@ -533,6 +536,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 					 return;
 				 }
 				 $rootScope.closeAlert();
+				 $scope.checkDateisChanged();
 				 $scope.savecontractData();
 			 }
 			 else
@@ -605,7 +609,9 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 $scope.inSave = true;
 		 
 		 $scope.checkDateisChanged();
-		 
+		 console.log(angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))
+		 console.log("cloned",$scope.ClonedcontractDetail)
+		 console.log("contractDetail",$scope.contractDetail)
 		 if(!angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))		 
 		 {			
 			 $rootScope.closeAlert();
