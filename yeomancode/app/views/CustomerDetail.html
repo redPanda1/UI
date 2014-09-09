@@ -1,0 +1,238 @@
+<!-- CUSTOMER DETAIL CONTENT STARTS -->
+<div ng-controller="customerDetailController" class="customer">
+    <div id="alertBox"></div>
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert()">
+        <span ng-bind="alert.message"></span>
+    </alert>
+    <!-- CUSTOMER DETAIL PAGE HEADER STARTS -->
+    <div class="page-header">
+        <div class="row ">
+            <div class="col-sm-7 col-md-7 col-lg-7">
+                <h1>Customer >
+                    <span ng-show="newCustomer">New</span>
+                    <span ng-show="!newCustomer">
+                        <span ng-bind="ClonedCustomerDetail.data.customerName"></span>
+                    </span>
+                </h1>
+            </div>
+            <div class="col-sm-5 col-md-5 col-lg-5">
+                <div class="but-container">
+                    <button class="btn btn-default btn-sm" ng-click="backtoCustomer()" title="Cancel">Cancel</button>
+
+                    <button class="btn btn-default btn-sm" ng-click="confirmDelete()" ng-disabled="disableDelete || isError" title="Delete">Delete</button>
+
+                    <button class="btn btn-default btn-sm" ng-click="saveCustomerData()" title="Done" ng-disabled="disabledSave">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--CUSTOMER DETAIL PAGE HEADER ENDS -->
+    <div class="box-container">
+        <div class="row box-layout customer-info">
+            <div class="boxcontainer-body">
+                <div class="col-sm-5 col-md-5 col-lg-4 content-align">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label>Customer ID</label>
+                            <span>
+                                <input type="text" ng-model="CustomerDetail.data.customerId" placeholder="ID" class="form-control" />
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-4 col-md-4 col-lg-5 content-align">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <span>
+                                <input type="text" ng-model="CustomerDetail.data.customerName" placeholder="Name" class="form-control" />
+                            </span>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="col-sm-3 col-md-3 col-lg-3 content-align">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="colorLabel">Color</label>
+                            <span class="color-picker">
+                                <!-- <input colorpicker class ="form-control" id ="colorBox" type="text" ng-model ="pickedColor" ng-change= "changeColor()" /> -->
+                                <select name="colorpicker" class="form-control color-pallete" ng-model="CustomerDetail.data.color">
+                                    <option value="#009999">Teal</option>
+                                    <option value="#7bd148">Light Green</option>
+                                    <option value="#00ff99">Medium Green</option>
+                                    <option value="#339933">Green</option>
+                                    <option value="#40e0d0">Turquoise</option>
+                                    <option value="#99ccff">Light Blue</option>
+                                    <option value="#3399ff">Blue</option>
+                                    <option value="#0000ff">Bright Blue</option>
+                                    <option value="#ff0066">Magenta</option>
+                                    <option value="#cc99ff">Light Purple</option>
+                                    <option value="#cd74e6">Medium Purple</option>
+                                    <option value="#a47ae2">Bright Purple</option>
+                                    <option value="#cc3300">Burnt Sienna</option>
+                                    <option value="#ff9999">Light Red</option>
+                                    <option value="#ff5050">Medium Red</option>
+                                    <option value="#ff0000">Bold Red</option>
+                                    <option value="#ac725e">Expresso</option>
+                                    <option value="#fdebad">Biege</option>
+                                    <option value="#fbd75b">Yellow</option>
+                                    <option value="#ffa500">Orange</option>
+                                </select>
+                            </span>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- CONTACT TABLE STARTS -->
+    <div class="box-container">
+        <!-- TABLE HEADING STARTS -->
+        <div class="row boxcontanier-header">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <span class="tableheadingicon"><i class="fa fa-building-o"></i>Company Info</span>
+                <div class="tableoptionicon pull-right">
+                    <i ng-click="contactcollapseTable = !contactcollapseTable" class="btn-minimize" ng-class="{'fa fa-chevron-down':contactcollapseTable,'fa fa-chevron-up':!contactcollapseTable}"></i>
+                </div>
+            </div>
+        </div>
+        <!-- TABLE HEADING ENDS -->
+        <!-- TABLE CONTAINER BODY STARS -->
+        <div class="row collapse-container" collapse="contactcollapseTable">
+            <div class="boxcontainer-body">
+                <div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">
+
+                    <div class="row boxcontainer-body" collapse="contactcollapseTable">
+                        <div class="col-sm-5 col-md-5 col-lg-5 contect-address">
+                            <input type="text" ng-model="CustomerDetail.data.addressStreet" placeholder="street" class="form-control">
+                            <input type="text" ng-model="CustomerDetail.data.addressCity" placeholder="city/town" class="form-control">
+
+                            <input type="text" ng-model="CustomerDetail.data.addressStateCode" placeholder="state/province" class="form-control" typeahead="state as state.name for state in states | filter:$viewValue">
+
+                            <input type="text" ng-model="CustomerDetail.data.addressPostZip" placeholder="zip" class="form-control small-input">
+
+                            <input type="text" ng-model="CustomerDetail.data.addressISOCountry" placeholder="US" class="form-control" typeahead="country as country.name for country in countries | filter:$viewValue">
+
+                            <button class="btn btn-sm btn-default" ng-click="needMapCall.callMap = true" ng-disabled="(CustomerDetail.data.addressStreet == '' || CustomerDetail.data.addressStreet == null)&&(CustomerDetail.data.addressCity == '' || CustomerDetail.data.addressCity == null)&&(CustomerDetail.data.addressStateCode == '' || CustomerDetail.data.addressStateCode == null)&&(CustomerDetail.data.addressPostZip == '' || CustomerDetail.data.addressPostZip == null)&&(CustomerDetail.data.addressISOCountry == '' || CustomerDetail.data.addressISOCountry == null)">Update Map</button>
+                        </div>
+
+                        <div class="col-sm-7 col-md-7 col-lg-7 contact-map">
+                            <div data-ng-include="'views/map.html'"></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">
+                    <div class="contact-type-table-body">
+                        <div class="gridStyle" ng-grid="contactTableoptions"></div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- TABLE CONTAINER BODY ENDS -->
+        </div>
+
+    </div>
+    <!--CONTACT TABLE ENDS -->
+    <!-- COMPANY TABLE STARTS -->
+    <div class="box-container company">
+        <!-- TABLE HEADING STARTS -->
+        <div class="row boxcontanier-header">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <span class="tableheadingicon"><i class="fa fa-list-alt"></i>Contracts</span>
+                <div class="tableoptionicon pull-right">
+                    <i ng-click="ContractcollapseTable = !ContractcollapseTable" class="btn-minimize" ng-class="{'fa fa-chevron-down':ContractcollapseTable,'fa fa-chevron-up':!ContractcollapseTable}"></i>
+                </div>
+            </div>
+        </div>
+        <!-- TABLE HEADING ENDS -->
+        <div class="row collapse-container" collapse="ContractcollapseTable" style="height:auto">
+            <div class="boxcontainer-body">
+                <div class="col-sm-12 col-md-12 col-lg-12 contractInfoColumn">
+                    <div class="gridStyle" ng-grid="contractTableoptions"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- COMPANY TABLE ENDS  -->
+
+    <!-- ATTACHMENTS TABLE STARTS  -->
+    <div class="box-container">
+        <!-- TABLE HEADING STARTS -->
+        <div class="row boxcontanier-header">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <span class="tableheadingicon"><i class="fa fa-paperclip"></i>Attachments</span>
+                <div class="tableoptionicon pull-right">
+                    <i ng-click="AttachmentscollapseTable = !AttachmentscollapseTable" class="btn-minimize" ng-class="{'fa fa-chevron-down':AttachmentscollapseTable,'fa fa-chevron-up':!AttachmentscollapseTable}"></i>
+                </div>
+            </div>
+        </div>
+        <!-- TABLE HEADING ENDS -->
+        <!-- TABLE CONTAINER BODY STARS -->
+        <div class="row collapse-container" collapse="AttachmentscollapseTable">
+            <div class="boxcontainer-body">
+                <div class="col-sm-12 col-md-12 col-lg-12 attachementContainer">
+                    <span ng-show="displayUpload">
+                        <button class="btn btn-sm btn-default" ng-click="showUploadContainer()" ng-show="UploadDocumentsOptionVisible">Upload Documents</button>
+                    </span>
+                    <div class="emp-attachments-container" ng-show="attachmentsContainerVisible">
+                        <div class="attachments-title">Upload Documents
+                            <span class="pull-right"><i class="fa fa-times" ng-click="hideUploadContainer()"></i>
+                            </span>
+                        </div>
+                        <div class="upload-placeholder">drag files here</div>
+                        <div class="btn-toolbar attachments-buttons">
+                            <button class="btn btn-success">Add Files</button>
+                            <button class="btn btn-primary">Start Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- TABLE CONTAINER BODY ENDS -->
+        </div>
+    </div>
+    <!-- ATTACHMENTS TABLE ENDS -->
+
+    <!-- COMMENTS TABLE STARTS -->
+    <!-- <div class="row">	 -->
+    <div class="box-container">
+        <!-- TABLE HEADING STARTS -->
+
+        <div class="row boxcontanier-header">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <span class="tableheadingicon"><i class="fa fa-comments-o"></i>Comments</span>
+                <div class="tableoptionicon pull-right">
+                    <i ng-click="CommentscollapseTable = !CommentscollapseTable" class="btn-minimize" ng-class="{'fa fa-chevron-down':CommentscollapseTable,'fa fa-chevron-up':!CommentscollapseTable}"></i>
+                </div>
+            </div>
+        </div>
+        <!-- TABLE HEADING ENDS -->
+        <!-- TABLE CONTAINER BODY STARS -->
+        <div class="row collapse-container" collapse="CommentscollapseTable">
+            <div class="boxcontainer-body comments-container">
+                <div class="col-xs-3 col-sm-2 col-md-1 col-lg-1">
+                    <span class="avatar">
+                        <img src="images/sh_photo50.png" class="img-rounded" alt="contact">
+                    </span>
+                </div>
+
+                <div class="col-xs-9 col-sm-10 col-md-11 col-lg-11">
+                    <span class="comments">
+                        <span class="message">
+                            Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore.Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore. Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore.Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore.
+                        </span>
+                        <span class="time pull-right">
+                            6 min
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <!-- TABLE CONTAINER BODY ENDS -->
+        </div>
+    </div>
+    <!-- </div> -->
+    <!-- COMMENTS TABLE ENDS -->
+</div>

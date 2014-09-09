@@ -1,0 +1,42 @@
+.contactPopUp .gridStyle {
+	height: 163px !important;
+}
+.contactPopUp .ngViewport,
+.contactPopUp .ngCanvas {
+	height: auto !important;	
+	min-height: 120px !important;	
+}
+
+.contact-img{
+   	padding-left: 20px;
+    padding-bottom: 10px;
+}
+.contact-img img
+{
+	width: 80px;
+	height: 80px;
+}
+.department {
+	margin-top: 40px;
+}
+
+@media (max-width: 768px)
+{
+	.department {
+		margin-top: 0px;	
+	}
+	.customerInfo{
+		padding-left: 15px;
+	}
+}
+.modal-close{
+	font-size: 1.4em;
+}
+.contactTableContents tr:nth-child(even)
+{
+	background-color:#F3F3F3;
+}
+
+.red {
+    border:1px solid Red;
+}
