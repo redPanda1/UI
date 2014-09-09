@@ -25,24 +25,26 @@
 	display: inline;
 	padding: 4px 4px;
 }
+
 .activity-table .gridStyle,
 .people .gridStyle
 {
-	height: 241px !important;
+	height: auto !important;
 }
 .activity-table .ngViewport,
 .people .ngViewport
 
 {
 	min-height: 199px !important;
+	overflow: hidden;
 	height: auto !important;
 }
-.activity-table .ngCanvas,
+/*.activity-table .ngCanvas,
 .people .ngCanvas
 {
 	min-height: 188px !important;
 	height: auto !important;
-}
+}*/
 .ngRow.selected {
 	background-color: transparent;
 }

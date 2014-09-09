@@ -156,7 +156,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	}*/
 
 	var plusHeaderCellTemplate = '<div class="ngHeaderSortColumn {{col.headerClass}}" ng-style="{\'cursor\': col.cursor}" ng-class="{ \'ngSorted\': !noSortVisible }">' +
-    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(peopleMangers);"><i class="fa fa-plus"></i></button></div>' +
+    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(peopleMangers,\'people\');"><i class="fa fa-plus"></i></button></div>' +
     '<div class="ngSortButtonDown" ng-show="col.showSortButtonDown()"></div>' +
     '<div class="ngSortButtonUp" ng-show="col.showSortButtonUp()"></div>' +
     '<div class="ngSortPriority">{{col.sortPriority}}</div>' +
@@ -165,7 +165,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
     '<div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>';
 	
 	var plusHeaderCellTemplates = '<div class="ngHeaderSortColumn {{col.headerClass}}" ng-style="{\'cursor\': col.cursor}" ng-class="{ \'ngSorted\': !noSortVisible }">' +
-    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(activitiesTableData)"><i class="fa fa-plus"></i></button></div>' +
+    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(activitiesTableData,\'activity\')"><i class="fa fa-plus"></i></button></div>' +
     '<div class="ngSortButtonDown" ng-show="col.showSortButtonDown()"></div>' +
     '<div class="ngSortButtonUp" ng-show="col.showSortButtonUp()"></div>' +
     '<div class="ngSortPriority">{{col.sortPriority}}</div>' +
@@ -225,17 +225,34 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 {
 		 Array.splice(index,1);
 	 }
-	 
-	 /**
-	  * ===================================================================
-	  * Function used to add row to the table
-	  * @param contents
-	  * ====================================================================
-	  */
-	 $scope.addRow = function(contents)
-	 {
-		 contents.push({});
-	 }
+    
+    /**
+	 * Rebuilding the people and activity based on the new rows added
+	 **/
+    $scope.tableRebuild = function(ngtable){
+        ngtable.$gridServices.DomUtilityService.RebuildGrid(
+                                                            ngtable.$gridScope,
+                                                            ngtable.ngGrid
+                                                            );
+    }
+    /**
+     * ===================================================================
+     * Function used to add row to the table
+     * @param contents
+     * ====================================================================
+     */
+    $scope.addRow = function(contents, type)
+    {
+        contents.push({});
+        var tableObj; 
+		if (type == "people")
+			tableObj =  $scope.peopleTableOptions;
+		else
+			tableObj = $scope.activitiesTableOptions;
+        
+		$scope.tableRebuild(tableObj)
+    }
+
 	
 	 /**
 	  * ================================================================

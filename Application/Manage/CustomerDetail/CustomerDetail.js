@@ -729,6 +729,15 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                 $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
                 $scope.contactTableData = $scope.CustomerDetail.data.contactList;
             }
+                                         /**
+                                          * Rebuilding the people and activity based on the new rows added
+                                          **/
+                                         /*$scope.customerContactTableOption.$gridServices.DomUtilityService.RebuildGrid(
+                                                                                            $scope.customerContactTableOption.$gridScope,
+                                                                                            $scope.customerContactTableOption.ngGrid
+                                                                                             );*/
+                                         
+
             $scope.modalInstance = null;
 
         }, function() {
