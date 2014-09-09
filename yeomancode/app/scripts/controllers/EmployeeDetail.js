@@ -15,7 +15,7 @@
  * @param $timeout
  */
 
-angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat','IsoDateFormat', function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat,IsoDateFormat){
+angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat', function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat){
     //Rootscope variables used to select the Accordion menus.
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Employee';
