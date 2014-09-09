@@ -1,19 +1,19 @@
-.ngRow:hover,.ngRow.even:hover,.ngRow.odd:hover
+.employee .ngRow:hover,.ngRow.even:hover,.ngRow.odd:hover
 {
 	background: #E8F3FD;
 }
-.selected
+.employee .selected
 {
 	background-color:#CED1D4!important;
 }
-.searchbox
+.employee .searchbox
 {
 	margin-bottom:10px;
 }
 
 /*===========Styles for the labels in employee list======= */
 
-.label
+.employee .label
 {
 	font-weight: 300;
 	font-size: 10px;
@@ -21,10 +21,10 @@
 	border: none;
 	text-shadow: none;
 }
-.label-important{
+.employee .label-important{
 	background: #ff5454;
 }
-.label-grey
+/*.label-grey
 {
 	border: none;
 	text-shadow: none;
@@ -33,8 +33,8 @@
 	border-radius: 2px;	
 	background: #e9ebec;
 	color: #7c848d;	
-}
-.label-mid
+}*/
+.employee .label-mid
 {
 	font-size:15px;
 }

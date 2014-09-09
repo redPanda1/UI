@@ -10,11 +10,11 @@
 {
 	margin-bottom:10px;
 }
-.employee .gridStyle .ngCanvas button.btn
+/*.employee .gridStyle .ngCanvas button.btn
 {
 	margin-right: 10px;
 	margin-top: 0px !important;
-}
+} */
 /*===========Styles for the labels in employee list======= */
 
 .label
@@ -28,7 +28,7 @@
 .label-important{
 	background: #ff5454;
 }
-.label-grey
+/*.label-grey
 {
 	border: none;
 	text-shadow: none;
@@ -37,7 +37,7 @@
 	border-radius: 2px;	
 	background: #e9ebec;
 	color: #7c848d;	
-}
+}*/
 .label-mid
 {
 	font-size:15px;
@@ -49,7 +49,7 @@
 {
 	width: 70px;
 }
-.emp-icons-container button
+/*.emp-icons-container button
 {
 	margin-top: 0px !important;
-}
+}*/

@@ -828,3 +828,10 @@ body {
 	text-align: right;
 	line-height: 25px;
 }
+/*unit position style.*/
+.unit-position
+{
+	margin-left: 6px;
+	display: inline-table;
+	margin-top: 5px;
+}

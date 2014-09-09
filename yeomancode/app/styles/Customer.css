@@ -8,12 +8,12 @@
 {
 	height: auto ;
 }
-.customer .gridStyle .ngCanvas button.btn
+/*.customer .gridStyle .ngCanvas button.btn
 {
 	margin-top: 9px;
 	margin-left: 7px;
 	margin-right: 10px;
-}
+}*/
 
 .gridStyle .ngViewport {
     height: auto !important;
@@ -73,7 +73,7 @@
 .label-important{
 	background: #ff5454;
 }
-.label-grey
+/*.label-grey
 {
 	border: none;
 	text-shadow: none;
@@ -82,7 +82,7 @@
 	border-radius: 2px;	
 	background: #e9ebec;
 	color: #7c848d;	
-}
+}*/
 .label-mid
 {
 	font-size:15px;

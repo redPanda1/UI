@@ -1,5 +1,5 @@
-.content-align .form-group label,
-.content-align .form-group span
+/*.content-align .form-group label,
+.customer .content-align .form-group span
 
 {
 	font-family: "LotoFont", sans-serif;
@@ -9,7 +9,7 @@
 	float:left;
 	height: 25px;
 	line-height: 25px;
-}
+}*/
 
 .form-group span.unit-position
 {
@@ -47,12 +47,7 @@
 {
 	margin:10%;	
 }
-.unit-position
-{
-	margin-left: 6px;
-	display: inline-table;
-	margin-top: 4px;
-}
+
 .contect-address
 {
 	height: 255px;
@@ -63,8 +58,8 @@
 	margin-bottom: 15px;
 
 }
-.content-align .form-group label:first-child,
-.content-align .form-group span:first-child
+.customer .content-align .form-group label:first-child,
+.customer .content-align .form-group span:first-child
 {
 	text-indent: 15px;	
 }
