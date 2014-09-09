@@ -73,6 +73,8 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 
         }
     });
+    
+   
     /**
      * ==================================================================================================
      * Get the Managers List from the Rootscope if present otherwise
@@ -188,16 +190,16 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
     $scope.formatInputData = function() {
 
         if ($scope.EmployeeDetail != null) {
-            var length = $scope.EmployeeDetail.data.contactNumbers.length;
-            for (var i = 0; i < $scope.EmployeeDetail.data.contactNumbers.length; i++) {
-                $scope.contactTypeDetails[i] = $scope.EmployeeDetail.data.contactNumbers[i].details;
-                $scope.contactTypeValue[i] = $scope.EmployeeDetail.data.contactNumbers[i].type;
-            }
-
-
+        	if($scope.EmployeeDetail.data.contactNumbers != null)
+        	{
+        		var length = $scope.EmployeeDetail.data.contactNumbers.length;
+                for (var i = 0; i < $scope.EmployeeDetail.data.contactNumbers.length; i++) {
+                    $scope.contactTypeDetails[i] = $scope.EmployeeDetail.data.contactNumbers[i].details;
+                    $scope.contactTypeValue[i] = $scope.EmployeeDetail.data.contactNumbers[i].type;
+                }
+        	}
+            
         }
-
-
 
     }
 
@@ -311,6 +313,10 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.formatCostamt();
                 $scope.formatStdamt();
                 $scope.formatInputData();
+                if($scope.EmployeeDetail.data.stdCostCur == null)
+					 $scope.EmployeeDetail.data.stdCostCur = 'USD';
+                if($scope.EmployeeDetail.data.otCostCur == null)
+					 $scope.EmployeeDetail.data.otCostCur = 'USD';
                 //Clone the object before pre-processing the input data.
                 angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
                 $scope.formatMapData();
@@ -320,7 +326,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             }).error(function(data, status) {
 
                 $scope.addAlert("Employee Detail not available.", "danger");
-                $scope.isError = true;
+               // $scope.isError = true;
 
                 /**
                  * ===========================================================
@@ -328,7 +334,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                  * ============================================================
                  */
 
-                /* $scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
+                 $scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
 				 $scope.truncateurl();
                  $scope.mapOptions = $scope.EmployeeDetail;
                  $scope.needMapCall.callMap = true;
@@ -349,7 +355,15 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 				$scope.formatCostamt();
 				$scope.formatStdamt();
 				$scope.formatInputData();
-				angular.copy($scope.EmployeeDetail,$scope.ClonedEmployeeDetail,true);*/
+				if($scope.EmployeeDetail.data.stdCostCur == null)
+					 $scope.EmployeeDetail.data.stdCostCur = 'USD';
+               if($scope.EmployeeDetail.data.otCostCur == null)
+					 $scope.EmployeeDetail.data.otCostCur = 'USD';
+				angular.copy($scope.EmployeeDetail,$scope.ClonedEmployeeDetail,true);
+				console.log($scope.ClonedEmployeeDetail);
+		        console.log($scope.EmployeeDetail);
+				$scope.formatMapData();
+	           
             });
         }
     }
@@ -371,7 +385,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
              * Code Used for Local Testing. It should be removed finally.
              * =============================================================
              */
-            /*$scope.departmentJson = {
+            $scope.departmentJson = {
 						    "success": true,
 						    "total": 4,
 						    "dataType": "department",
@@ -395,7 +409,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 						    ]
 						}
 				 $scope.departments = $scope.departmentJson.data;
-				 $rootScope.localCache.department = $scope.departments;*/
+				 $rootScope.localCache.department = $scope.departments;
         });
     } else {
         //For eliminating the API Calls when the data is available in local cache
@@ -419,9 +433,9 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
              * Code used for Local Testing. It should be removed finally.
              * ==================================================================
              */
-            /* $scope.jobsJson = {"success":true,"total":1,"data":["Manager","Consultant","Tea Boy"]};
+             $scope.jobsJson = {"success":true,"total":1,"data":["Manager","Consultant","Tea Boy"]};
 			 $scope.jobs = $scope.jobsJson.data;	
-			 $rootScope.localCache.jobs = $scope.jobs;*/
+			 $rootScope.localCache.jobs = $scope.jobs;
         });
     } else {
         //For eliminating the API Calls when the data is available in local cache
@@ -446,10 +460,10 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
              * Codes used for local testing and it should be removed finally.
              * ============================================================================
              */
-            /*$scope.state_namesJson = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
+            $scope.state_namesJson = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
 				$scope.states = $scope.state_namesJson.data;
 				$rootScope.localCache.states = $scope.states;
-				$scope.formatInputData();*/
+				$scope.formatInputData();
         });
     } else {
         $scope.states = $rootScope.localCache.states;
@@ -474,14 +488,14 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
               * Codes used for local testing and it should be removed finally.
               * ============================================================================
               */
-           /*$scope.countriesJson = {
+           $scope.countriesJson = {
                 "success": true,
                 "total": 1,
                 "data": [{"name":"Ascension Island","code":"AC"},{"name":"Andorra","code":"AD"},{"name":"United Arab Emirates","code":"AE"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Bonaire, Saint Eustatius And Saba","code":"BQ"},{"name":"Brazil","code":"BR"},{"name":"Bahamas","code":"BS"},{"name":"Bhutan","code":"BT"},{"name":"Bouvet Island","code":"BV"},{"name":"Botswana","code":"BW"},{"name":"Belarus","code":"BY"},{"name":"Belize","code":"BZ"},{"name":"Canada","code":"CA"},{"name":"Cocos (Keeling) Islands","code":"CC"},{"name":"Democratic Republic Of Congo","code":"CD"},{"name":"Central African Republic","code":"CF"},{"name":"Republic Of Congo","code":"CG"},{"name":"Switzerland","code":"CH"},{"name":"Cote d'Ivoire","code":"CI"},{"name":"Cook Islands","code":"CK"},{"name":"Chile","code":"CL"},{"name":"Cameroon","code":"CM"},{"name":"China","code":"CN"},{"name":"Colombia","code":"CO"},{"name":"Clipperton Island","code":"CP"},{"name":"Costa Rica","code":"CR"},{"name":"Cuba","code":"CU"},{"name":"Cape Verde","code":"CV"},{"name":"Curacao","code":"CW"},{"name":"Christmas Island","code":"CX"},{"name":"Cyprus","code":"CY"},{"name":"Czech Republic","code":"CZ"},{"name":"Germany","code":"DE"},{"name":"Diego Garcia","code":"DG"},{"name":"Djibouti","code":"DJ"},{"name":"Denmark","code":"DK"},{"name":"Dominica","code":"DM"},{"name":"Dominican Republic","code":"DO"},{"name":"Algeria","code":"DZ"},{"name":"Ceuta, Mulilla","code":"EA"},{"name":"Ecuador","code":"EC"},{"name":"Estonia","code":"EE"},{"name":"Egypt","code":"EG"},{"name":"Western Sahara","code":"EH"},{"name":"Eritrea","code":"ER"},{"name":"Spain","code":"ES"},{"name":"Ethiopia","code":"ET"},{"name":"European Union","code":"EU"},{"name":"Finland","code":"FI"},{"name":"Fiji","code":"FJ"},{"name":"Falkland Islands","code":"FK"},{"name":"Micronesia, Federated States Of","code":"FM"},{"name":"Faroe Islands","code":"FO"},{"name":"France","code":"FR"},{"name":"France, Metropolitan","code":"FX"},{"name":"Gabon","code":"GA"},{"name":"United Kingdom","code":"GB"},{"name":"Grenada","code":"GD"},{"name":"Georgia","code":"GE"},{"name":"French Guiana","code":"GF"},{"name":"Guernsey","code":"GG"},{"name":"Ghana","code":"GH"},{"name":"Gibraltar","code":"GI"},{"name":"Greenland","code":"GL"},{"name":"Gambia","code":"GM"},{"name":"Great Britain","code":"GB"},{"name":"Guinea","code":"GN"},{"name":"Guadeloupe","code":"GP"},{"name":"Equatorial Guinea","code":"GQ"},{"name":"Greece","code":"GR"},{"name":"South Georgia And The South Sandwich Islands","code":"GS"},{"name":"Guatemala","code":"GT"},{"name":"Guam","code":"GU"},{"name":"Guinea-bissau","code":"GW"},{"name":"Guyana","code":"GY"},{"name":"Hong Kong","code":"HK"},{"name":"Heard Island And McDonald Islands","code":"HM"},{"name":"Honduras","code":"HN"},{"name":"Croatia","code":"HR"},{"name":"Haiti","code":"HT"},{"name":"Hungary","code":"HU"},{"name":"Canary Islands","code":"IC"},{"name":"Indonesia","code":"ID"},{"name":"Ireland","code":"IE"},{"name":"Israel","code":"IL"},{"name":"Isle Of Man","code":"IM"},{"name":"India","code":"IN"},{"name":"British Indian Ocean Territory","code":"IO"},{"name":"Iraq","code":"IQ"},{"name":"Iran, Islamic Republic Of","code":"IR"},{"name":"Iceland","code":"IS"},{"name":"Italy","code":"IT"},{"name":"Jersey","code":"JE"},{"name":"Jamaica","code":"JM"},{"name":"Jordan","code":"JO"},{"name":"Japan","code":"JP"},{"name":"Kenya","code":"KE"},{"name":"Kyrgyzstan","code":"KG"},{"name":"Cambodia","code":"KH"},{"name":"Kiribati","code":"KI"},{"name":"Comoros","code":"KM"},{"name":"Saint Kitts And Nevis","code":"KN"},{"name":"Korea, Democratic People's Republic Of","code":"KP"},{"name":"Korea, Republic Of","code":"KR"},{"name":"Kuwait","code":"KW"},{"name":"Cayman Islands","code":"KY"},{"name":"Kazakhstan","code":"KZ"},{"name":"Lao People's Democratic Republic","code":"LA"},{"name":"Lebanon","code":"LB"},{"name":"Saint Lucia","code":"LC"},{"name":"Liechtenstein","code":"LI"},{"name":"Sri Lanka","code":"LK"},{"name":"Liberia","code":"LR"},{"name":"Lesotho","code":"LS"},{"name":"Lithuania","code":"LT"},{"name":"Luxembourg","code":"LU"},{"name":"Latvia","code":"LV"},{"name":"Libya","code":"LY"},{"name":"Morocco","code":"MA"},{"name":"Monaco","code":"MC"},{"name":"Moldova","code":"MD"},{"name":"Montenegro","code":"ME"},{"name":"Saint Martin","code":"MF"},{"name":"Madagascar","code":"MG"},{"name":"Marshall Islands","code":"MH"},{"name":"Macedonia, The Former Yugoslav Republic Of","code":"MK"},{"name":"Mali","code":"ML"},{"name":"Myanmar","code":"MM"},{"name":"Mongolia","code":"MN"},{"name":"Macao","code":"MO"},{"name":"Northern Mariana Islands","code":"MP"},{"name":"Martinique","code":"MQ"},{"name":"Mauritania","code":"MR"},{"name":"Montserrat","code":"MS"},{"name":"Malta","code":"MT"},{"name":"Mauritius","code":"MU"},{"name":"Maldives","code":"MV"},{"name":"Malawi","code":"MW"},{"name":"Mexico","code":"MX"},{"name":"Malaysia","code":"MY"},{"name":"Mozambique","code":"MZ"},{"name":"Namibia","code":"NA"},{"name":"New Caledonia","code":"NC"},{"name":"Niger","code":"NE"},{"name":"Norfolk Island","code":"NF"},{"name":"Nigeria","code":"NG"},{"name":"Nicaragua","code":"NI"},{"name":"Netherlands","code":"NL"},{"name":"Norway","code":"NO"},{"name":"Nepal","code":"NP"},{"name":"Nauru","code":"NR"},{"name":"Niue","code":"NU"},{"name":"New Zealand","code":"NZ"},{"name":"Oman","code":"OM"},{"name":"Panama","code":"PA"},{"name":"Peru","code":"PE"},{"name":"French Polynesia","code":"PF"},{"name":"Papua New Guinea","code":"PG"},{"name":"Philippines","code":"PH"},{"name":"Pakistan","code":"PK"},{"name":"Poland","code":"PL"},{"name":"Saint Pierre And Miquelon","code":"PM"},{"name":"Pitcairn","code":"PN"},{"name":"Puerto Rico","code":"PR"},{"name":"Palestinian Territory, Occupied","code":"PS"},{"name":"Portugal","code":"PT"},{"name":"Palau","code":"PW"},{"name":"Paraguay","code":"PY"},{"name":"Qatar","code":"QA"},{"name":"Reunion","code":"RE"},{"name":"Romania","code":"RO"},{"name":"Serbia","code":"RS"},{"name":"Russian Federation","code":"RU"},{"name":"Rwanda","code":"RW"},{"name":"Saudi Arabia","code":"SA"},{"name":"Solomon Islands","code":"SB"},{"name":"Seychelles","code":"SC"},{"name":"Sudan","code":"SD"},{"name":"Sweden","code":"SE"},{"name":"Singapore","code":"SG"},{"name":"Saint Helena, Ascension And Tristan Da Cunha","code":"SH"},{"name":"Slovenia","code":"SI"},{"name":"Svalbard And Jan Mayen","code":"SJ"},{"name":"Slovakia","code":"SK"},{"name":"Sierra Leone","code":"SL"},{"name":"San Marino","code":"SM"},{"name":"Senegal","code":"SN"},{"name":"Somalia","code":"SO"},{"name":"Suriname","code":"SR"},{"name":"South Sudan","code":"SS"},{"name":"SÃŒÂ£o TomÃŒÂ© and PrÃŒ_ncipe","code":"ST"},{"name":"USSR","code":"SU"},{"name":"El Salvador","code":"SV"},{"name":"Sint Maarten","code":"SX"},{"name":"Syrian Arab Republic","code":"SY"},{"name":"Swaziland","code":"SZ"},{"name":"Tristan de Cunha","code":"TA"},{"name":"Turks And Caicos Islands","code":"TC"},{"name":"Chad","code":"TD"},{"name":"French Southern Territories","code":"TF"},{"name":"Togo","code":"TG"},{"name":"Thailand","code":"TH"},{"name":"Tajikistan","code":"TJ"},{"name":"Tokelau","code":"TK"},{"name":"East Timor","code":"TL"},{"name":"Turkmenistan","code":"TM"},{"name":"Tunisia","code":"TN"},{"name":"Tonga","code":"TO"},{"name":"Turkey","code":"TR"},{"name":"Trinidad And Tobago","code":"TT"},{"name":"Tuvalu","code":"TV"},{"name":"Taiwan, Province Of China","code":"TW"},{"name":"Tanzania, United Republic Of","code":"TZ"},{"name":"Ukraine","code":"UA"},{"name":"Uganda","code":"UG"},{"name":"United Kingdom","code":"GB"},{"name":"United States Minor Outlying Islands","code":"UM"},{"name":"United States","code":"US"},{"name":"Uruguay","code":"UY"},{"name":"Uzbekistan","code":"UZ"},{"name":"Vatican City State","code":"VA"},{"name":"Saint Vincent And The Grenadines","code":"VC"},{"name":"Venezuela, Bolivarian Republic Of","code":"VE"},{"name":"Virgin Islands (British)","code":"VG"},{"name":"Virgin Islands (US)","code":"VI"},{"name":"Viet Nam","code":"VN"},{"name":"Vanuatu","code":"VU"},{"name":"Wallis And Futuna","code":"WF"},{"name":"Samoa","code":"WS"},{"name":"Yemen","code":"YE"},{"name":"Mayotte","code":"YT"},{"name":"South Africa","code":"ZA"},{"name":"Zambia","code":"ZM"},{"name":"Zimbabwe","code":"ZW"}]
             };
             $scope.countries = $scope.countriesJson.data;
             $rootScope.localCache.countries = $scope.countries;
-            $scope.formatInputData();*/
+            $scope.formatInputData();
         });
     } else {
         $scope.countries = $rootScope.localCache.countries;
@@ -505,13 +519,13 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
               * Codes used for local testing and it should be removed finally.
               * ============================================================================
               */
-            /*$scope.contactNumberTypesJson = {
+            $scope.contactNumberTypesJson = {
                 "success": true,
                 "total": 1,
                 "data": ["Phone", "email", "Skype", "LinkedIn"]
             };
             $scope.contactNumberTypes = $scope.contactNumberTypesJson.data;
-            $rootScope.localCache.contactNumTypes = $scope.contactNumberTypes;*/
+            $rootScope.localCache.contactNumTypes = $scope.contactNumberTypes;
         });
     } else {
         $scope.contactNumberTypes = $rootScope.localCache.contactNumTypes;
@@ -793,9 +807,19 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
         //For Converting String to Integer
         if ($scope.EmployeeDetail.data.otCostAmt != null)
             $scope.EmployeeDetail.data.otCostAmt = parseFloat($scope.EmployeeDetail.data.otCostAmt);
+        else
+        {
+        	if($scope.EmployeeDetail.data.otCostCur != null)
+        		delete $scope.EmployeeDetail.data.otCostCur;
+        }
 
         if ($scope.EmployeeDetail.data.stdCostAmt != null)
             $scope.EmployeeDetail.data.stdCostAmt = parseFloat($scope.EmployeeDetail.data.stdCostAmt);
+        else
+        {
+        	if($scope.EmployeeDetail.data.stdCostCur != null)
+        		delete $scope.EmployeeDetail.data.stdCostCur;
+        }
 
         $scope.EmployeeDetail.data.fullName = $scope.EmployeeDetail.data.nickname;
 
@@ -808,6 +832,11 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             delete $scope.EmployeeDetail.data.hireDate;
         if ($scope.EmployeeDetail.data.termDate == "" && !$scope.isTermDateSetinServer)
             delete $scope.EmployeeDetail.data.termDate;
+        
+        angular.forEach($scope.ManagerList,function(data,key){
+        	if(data.id == $scope.EmployeeDetail.data.managerId)
+        		$scope.EmployeeDetail.data.managerName = data.name;
+        });
 
     }
 
@@ -882,13 +911,9 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
      * ==================================================================================
      *
      */
-    $scope.isChangeinContactNumbers = false;
-    $scope.$watch('EmployeeDetail.data.contactNumbers',function(newVal,OldVal){
-    	if(newVal == null || (newVal == OldVal))
-    		return;
-    	$scope.isChangeinContactNumbers = true;
-    });
+   
     $scope.saveEmpdata = function() {
+    	console.log($scope.EmployeeDetail);
         $scope.inSave = true;
         var email_result;
         //Call Image Upload Function
@@ -897,18 +922,14 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.imageUpload();
             }
         }
+       
+       
+        $scope.tempEmployeeDetail = {};
+        angular.copy($scope.EmployeeDetail,$scope.tempEmployeeDetail,true);
+        console.log($scope.ClonedEmployeeDetail);console.log($scope.tempEmployeeDetail);
+        console.log(angular.equals($scope.ClonedEmployeeDetail, $scope.tempEmployeeDetail));
         $scope.checkDateisChanged();
-        if($scope.ClonedEmployeeDetail.data.contactNumbers != null)
-        {
-        	$scope.contactNumbersClonedArray = $scope.ClonedEmployeeDetail.data.contactNumbers;
-        	delete $scope.ClonedEmployeeDetail.data.contactNumbers;
-        }
-        if($scope.EmployeeDetail.data.contactNumbers != null)
-        {
-        	$scope.contactNumbersArray = $scope.EmployeeDetail.data.contactNumbers;
-        	delete $scope.ClonedEmployeeDetail.data.contactNumbers;
-        }
-        if ((!angular.equals($scope.ClonedEmployeeDetail, $scope.EmployeeDetail)) || isChangeinContactNumbers) {
+        if ((!angular.equals($scope.ClonedEmployeeDetail, $scope.tempEmployeeDetail))) {
             //For Alerting the mandatory field Nickname
             if ($scope.EmployeeDetail.data.nickname == "") {
                 $scope.addAlert("Enter Employee Name.", "danger");
@@ -925,7 +946,6 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 return;
             }
             $scope.closeAlert(); //Used to close the alert message before proceeding.
-            $scope.EmployeeDetail.data.contactNumbers = $scope.contactNumbersArray;
             //For Mapping the departmentName based on the selected departmentID
             angular.forEach($scope.departments, function(data, key) {
                 if (data.id == $scope.EmployeeDetail.data.departmentId)

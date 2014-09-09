@@ -68,9 +68,11 @@ function mapController($scope, $cookieStore) {
         * Posting the address details of the user entered value to the Google map API
         * =============================================================================
         */
-
+//$scope.street + "," + $scope.city + "," + $scope.state + "," + $scope.zip + "," + $scope.country,
+        var mapAddress = $scope.country+","+$scope.state+","+ $scope.zip +","+ $scope.city +","+$scope.street 
         geocoder.geocode({
-            'address': $scope.street + "," + $scope.city + "," + $scope.state + "," + $scope.zip + "," + $scope.country
+            'address': mapAddress,
+            'region' : $scope.country
         }, function(results, status) {
 
             var latLong = [];

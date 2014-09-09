@@ -267,11 +267,11 @@ function employeeController($scope,$rootScope,$location,$http,$filter,$cookieSto
 				  * ==========================================================================
 				  */
 				 
-				  /* $scope.employeeList =  $rootScope.employeeData.data;
+				   $scope.employeeList =  $rootScope.employeeData.data;
 			 	   $rootScope.localCache.empList =  $scope.employeeList;
 			 	   $scope.truncateurl();
 			 	   $scope.storeManagerNames();	 	  	
-			 	   $scope.tableOptions.listData = $scope.employeeList;*/
+			 	   $scope.tableOptions.listData = $scope.employeeList;
 				   if(status == 304)
 				   {
 					   //.

@@ -45,12 +45,12 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="Contract in formattedContractList | orderBy:orderByField:reverseSort" >
-					<td ng-bind=""></td>
+					<td ng-bind="Contract.customerName"></td>
 					<td ng-bind="Contract.poNumber"></td>					
 					<td ng-bind="Contract.title"></td>
-					<td ng-bind=""></td>
+					<td><span ng-bind = "Contract.startDate"></span>-<span ng-bind = "Contract.endDate"></span></td>
 					<td ng-bind="Contract.value"></td>					
-					<td ng-bind=""></td>		
+					<td ng-bind="Contract.managerName"></td>		
 					<td><span>Comments: </span><span ng-bind="Contract.commentsExist"></span>, <span>Attachments: </span><span ng-bind="Contract.attachmentsExist"></span></td>
 				</tr>
 			</tbody>

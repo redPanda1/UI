@@ -828,3 +828,26 @@ body {
 	text-align: right;
 	line-height: 25px;
 }
+.currency-select .dropdown a
+{
+	height: 28px;
+	border-radius: 0px;
+	padding: 3px 10px 3px 10px;
+}
+.currency-select .dropdown
+{
+	height: 27px;
+}
+.currency-select 
+{
+	padding: 0px !important; 
+	color: transparent !important; 
+	background-color: transparent !important; 
+	border: none !important;
+	border-radius:0px !important;
+}
+.currency-select .dropdown-menu
+{
+	min-width: 41px;
+	margin: 0px;
+}

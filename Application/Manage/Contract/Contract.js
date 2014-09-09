@@ -135,7 +135,7 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style="text-align:right;height:50px;"><span ng-if="(row.entity.currency == \'USD\' || row.entity.currency == null)" ng-bind="\'$\'"></span><span ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style="text-align:right;height:50px;"> <span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -189,7 +189,7 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
                 $scope.tableOptions.listData = activeContractList;
             }).error(function(data, status) {
                 //Stub data used for local testing
-                /*
+                
 			   $scope.ContractList  = $rootScope.ContractData.data;
 			   $scope.convertDatetoUSFormat();
    			   activeContractList = FilterDeleted.filter($scope.ContractList);
@@ -199,7 +199,7 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
 				 }
 			 });
 		 	   $scope.tableOptions.listData     = activeContractList;
-		 	   $rootScope.localCache.ContractList =  $scope.ContractList;*/
+		 	   $rootScope.localCache.ContractList =  $scope.ContractList;
                 if (status == 304) {}
             });
         } else {

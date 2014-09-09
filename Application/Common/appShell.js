@@ -79,6 +79,7 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
      * order to hide and display it again
      */
     angular.element($window).bind('resize', function() {
+       
         var field = $(document.activeElement);
         if (field.is('.hasDatepicker')) {
             field.datepicker('hide').datepicker('show');
@@ -86,6 +87,10 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
         if (field.is('span.simplecolorpicker')) {
             $('span.picker').hide();
         }
+        /*if (field[0].id="daterange") {
+            console.log("****");
+            $('#daterange').daterangepicker();
+        }*/
     });
 
     /**

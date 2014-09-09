@@ -140,9 +140,9 @@ function customerController($scope, $rootScope, $location, $http, $filter, $moda
 
             }).error(function(data, status) {
             	//Local stub data for local testing
-                /*$scope.customerList = $rootScope.customerData.data;
+                $scope.customerList = $rootScope.customerData.data;
                 $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid
-                $rootScope.localCache.customerList = $scope.customerList;*/
+                $rootScope.localCache.customerList = $scope.customerList;
                 if (status == 304) {}
             });
         } else {

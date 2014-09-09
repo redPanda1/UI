@@ -15,7 +15,7 @@
  */
 function contractDetailController($scope,$rootScope,$modal,$http,$location,$cookieStore,$timeout,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$interval)
 {	
-	
+
 	$window.scrollTo(0,0);
 	$rootScope.manage             = true;
 	$rootScope.selectedMenu       = 'Contract';//Rootscope variables used to select the Accordion menus.
@@ -45,6 +45,16 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	$scope.customerID = $cookieStore.get("detailId");
 	var timeInterval ="";
 	var contractDetailCookId;
+	
+	 $('#dateRange').daterangepicker({
+         format: 'MM/DD/YYYY'
+       }, function(start, end, label) {
+    	   var dateValue = $('#dateRange').val();
+    	   var startDate = dateValue.split('-')[0];
+    	   var endDate = dateValue.split('-')[1];
+    	   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
+    	   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
+       });
 	
 	//Create mode from customer
 	if ($cookieStore.get("contractId") == "create"){
@@ -79,7 +89,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 * Duration Date validation for start and end date, start date should not be greater than end date
 	 * =================================================================================================
 	 */
-    $('#startDate').datepicker({
+    /*$('#startDate').datepicker({
     		dateFormat: 'mm-dd-yy',
             onSelect: function(dateStr) {      
                   var date = $(this).datepicker('getDate');
@@ -88,14 +98,14 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
                   }
                   $('#endDate').datepicker('option', 'minDate', date);
             }
-      });
+      });*/
     
 	  /**
 	   * ================================================================================================
 	   * Duration Date validation for start and end date, end date should not be lesser than start date
 	   * =================================================================================================
 	   */
-      $('#endDate').datepicker({     
+      /*$('#endDate').datepicker({     
       		dateFormat: 'mm-dd-yy',      
             onSelect: function (selectedDate) {
                   var date = $(this).datepicker('getDate');
@@ -104,7 +114,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
                   }
                   $('#startDate').datepicker('option', 'maxDate', date || 0);
             }
-      });
+      });*/
 
 
     /**
@@ -113,7 +123,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
      * @param index
      * ===================================================================================================
      */
-	$scope.getCurrentStartDate = function(index){
+	/*$scope.getCurrentStartDate = function(index){
 		var id = $(document.activeElement).attr('id');	
 		$scope.activityStartDate = "#"+id;				
 		$scope.activityEndDate   = "#end_"+index;
@@ -125,14 +135,14 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	        
 	    });
 		 $($scope.activityStartDate).datepicker('show');
-	}
+	}*/
 
     /**
      * =====================================================================================================
      * Activity date validation for start and end date, end date should not be lesser than start date
      * =====================================================================================================
      */
-	$scope.getCurrentEndDate = function(index){
+/*	$scope.getCurrentEndDate = function(index){
 		var id = $(document.activeElement).attr('id');	
 		$scope.activityEndDate   = "#"+id;		
 		$scope.activityStartDate = "#start_"+index;	
@@ -143,7 +153,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	        }	        
 	    });
 	    $($scope.activityEndDate).datepicker('show');
-	}
+	}*/
 
 	var plusHeaderCellTemplate = '<div class="ngHeaderSortColumn {{col.headerClass}}" ng-style="{\'cursor\': col.cursor}" ng-class="{ \'ngSorted\': !noSortVisible }">' +
     '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(peopleMangers);"><i class="fa fa-plus"></i></button></div>' +
@@ -173,6 +183,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
  	        headerRowHeight: 40,
  	        columnDefs: [ {field:'activity', displayName:'Activity', width:'20%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><input type="text" class="form-control"/></div>'},
  	        			  {field:'duration', displayName:'Duration', width:'35%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" ng-model="ActivitiesStartDate[row.rowIndex]" id ="start_{{row.rowIndex}}" ng-click="getCurrentStartDate(row.rowIndex)" /></p> <span class="text-gap">to</span> <p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" format="mm-dd-yy" id ="end_{{row.rowIndex}}" ng-click ="getCurrentEndDate(row.rowIndex)" ng-model="ActivitiesEndDate[row.rowIndex]" ng-change="checkDate(ActivitiesStartDate[row.rowIndex],ActivitiesEndDate[row.rowIndex])" class="form-control"/></p></div>'},
+ 	                      //{field:'duration', displayName:'Duration', width:'35%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control"  id ="start_{{row.rowIndex}}" ng-click="getCurrentStartDate(row.rowIndex)" /></p> <span class="text-gap">to</span> <p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" format="mm-dd-yy" id ="end_{{row.rowIndex}}" ng-click ="getCurrentEndDate(row.rowIndex)" ng-model="ActivitiesEndDate[row.rowIndex]" ng-change="checkDate(ActivitiesStartDate[row.rowIndex],ActivitiesEndDate[row.rowIndex])" class="form-control"/></p></div>'},
  	        			  {field:'billable', displayName:'Billable', width:'10%',cellTemplate:'<div class="ngCellText" style="padding: 12px 0px 0px 20px !important;"><input type="checkbox"/></div>'},
  	        			  {field:'hourlyRate', displayName:'Hourly Rate', width:'14%', cellTemplate:'<div class="ngCellText"><input type="text" hourly-Rate  placeholder="Rate"  class="form-control medium-input right_justify" ng-model="activeHourlyRate[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[0].value"/></div>'},
  	        			  {field:'milestone', displayName:'Fixed Fee', width:'13%', cellTemplate:'<div class="ngCellText"><input type="text" hourly-Rate placeholder="Fixed Fee" class="form-control medium-input right_justify" ng-model="mileStone[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[2].value"/></div>'},
@@ -271,10 +282,12 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	  */
 	 $scope.convertToUSDateFormat = function()
 	 {
+		 var DateString = "";
 		 if($scope.contractDetail.data.endDate != null)
-			 $scope.contractDetail.data.endDate = USDateFormat.convert($scope.contractDetail.data.endDate);
+			 DateString += USDateFormat.convert($scope.contractDetail.data.endDate,true);
 		 if($scope.contractDetail.data.startDate != null)
-			 $scope.contractDetail.data.startDate = USDateFormat.convert($scope.contractDetail.data.startDate);
+			 DateString += "-"+USDateFormat.convert($scope.contractDetail.data.startDate,true);
+		 $('#dateRange').val(DateString);
 	 }
 	 
 	 /**
@@ -298,6 +311,8 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				    }
 				}
             $scope.isNew = true;
+		 if($scope.contractDetail.data.currency == null)
+			 $scope.contractDetail.data.currency = 'USD';
 	 }
 	 else
 	 {
@@ -312,8 +327,6 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 if($scope.contractDetail.data.value != null)
 					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);	
 				 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
-				 console.log($scope.contractDetail);
-				 console.log($scope.ClonedcontractDetail)
 				 $scope.convertToUSDateFormat();
 				 if($scope.contractDetail.data.managerName != null)
 				 {
@@ -322,7 +335,8 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 }	
 				 if($scope.contractDetail.data.type == null)
 					 $scope.contractDetail.data.type = $scope.invoicemethods[0].value;
-				 
+				 if($scope.contractDetail.data.currency == null)
+					 $scope.contractDetail.data.currency = 'USD';
 			 
 				 		
 				// if (contractDetailCookId != "create" && $rootScope.customerName)
@@ -330,15 +344,16 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		  				$scope.contractDetail.data.customerName = $rootScope.customerName;	
 				 
 			 }).error(function(data, status){
-			 	$scope.isError = true;				
-			 	 $scope.disabledSave = true;
+			 	//$scope.isError = true;				
+			 	// $scope.disabledSave = true;
 			 	  if($location.path() == '/ContractDetail')
 			 		  $rootScope.addAlert("No contract details available.","danger");
 			 	  
 			 	//Code used for local testing and it should be removed finally
 			 	  
-				/*$scope.contractDetail=$rootScope.ContractDetailData;
+				$scope.contractDetail=$rootScope.ContractDetailData;
 				$scope.convertToUSDateFormat();
+				
 				 if($scope.contractDetail.data.type == null)
 				 {
 					 $scope.contractDetail.data.type = $scope.invoicemethods[0].value;
@@ -347,7 +362,11 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 {
 					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);
 				 }
-				angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);*/
+				 if($scope.contractDetail.data.currency == null)
+					 $scope.contractDetail.data.currency = 'USD';
+				angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
+				console.log($scope.contractDetail);
+				console.log($scope.contractDetail.data.currency);
 			 });
 		 }
 				 
@@ -359,7 +378,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			 $rootScope.localCache.customers = $scope.customerList;
 			 $rootScope.localCache.isFindCustomerAPINeeded = false;
 		 }).error(function(data, status){
-		   /* $rootScope.addAlert("Customer List is not available","danger");
+		    /*$rootScope.addAlert("Customer List is not available","danger");
 			$scope.customerList =$rootScope.customerlist.data; 
 		    $rootScope.localCache.customers = $scope.customerList;*/
 		 });
@@ -400,7 +419,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			
 			//Code used for local testing and it should be removed finally
 			
-			/*$scope.employeeList =  $rootScope.employeeData.data;
+			$scope.employeeList =  $rootScope.employeeData.data;
 			  $scope.managers = [];
 			  angular.forEach($scope.employeeList,function(data,key){
 				  if(!data.deleted && !data.isInactive)
@@ -420,7 +439,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			  $scope.managerList  = $scope.managers;
 				 $rootScope.localCache.managers = $scope.managerList;
 				 $rootScope.peopleTableData = $scope.managerList; 
-				 $scope.nickNames = $scope.managers;*/
+				 $scope.nickNames = $scope.managers;
 		 });
 	 }
 	 else
@@ -438,7 +457,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 $scope.checkDateisChanged = function()
 	 {
 		 //For mapping the start Date and end Date
-		 if($('#startDate').val() != "")
+		 /*if($('#startDate').val() != "")
 			 $scope.contractDetail.data.startDate = IsoDateFormat.convert($('#startDate').val());
 		 else
 			 $scope.contractDetail.data.startDate = "";
@@ -446,7 +465,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 if($('#endDate').val() != "")
 			 $scope.contractDetail.data.endDate = IsoDateFormat.convert($('#endDate').val());
 		 else
-			 $scope.contractDetail.data.endDate = "";
+			 $scope.contractDetail.data.endDate = "";*/
 	 }
 	 
 	 /**
@@ -505,8 +524,11 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			    	$scope.contractDetail.data.managerId = data.id;
 		 });
 		 
-		 if($scope.contractDetail.data.value != null)
-			 $scope.contractDetail.data.currency = "USD"; 
+		 if($scope.contractDetail.data.value == null)
+		 {
+			 if($scope.contractDetail.data.currency != null)
+				 delete $scope.contractDetail.data.currency;
+		 }
 	
 	 } 
 	 /**
@@ -571,7 +593,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 $scope.customerContractObj.title    = contrObj.title;
 		 $scope.customerContractObj.poNumber = contrObj.poNumber;
 		 
-		 if (contrObj.value != 0 && contrObj.value != null){
+		 if (contrObj.value != null){
 			 contrObj.value =  Number(contrObj.value).toFixed(2);
 			}
 		 
@@ -587,8 +609,8 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 $scope.customerContractObj.commentsExist    = false;
 		 $scope.customerContractObj.attachmentsExist = false;
 		 $scope.customerContractObj.deleted          = false;
-		 $scope.customerContractObj.currency         = "USD";
-		 $scope.customerContractObj.managerName      = contrObj.managerName
+		 $scope.customerContractObj.currency         = contrObj.currency;
+		 $scope.customerContractObj.managerName      = contrObj.managerName;
 		 return $scope.customerContractObj;
 	 }
 	 /**
@@ -601,6 +623,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	  */
 	 $scope.savecontractData = function()
 	 {
+		 
 		 if($scope.contractDetail.data.title == "")
 		 {
 			 $rootScope.addAlert("You must enter a description for the contract to be saved.","danger");
@@ -614,6 +637,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 console.log("contractDetail",$scope.contractDetail)
 		 if(!angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))		 
 		 {			
+			 console.log($scope.contractDetail.data.currency);
 			 $rootScope.closeAlert();
 			 $scope.formatPostData();
 			 var postData = $scope.contractDetail.data;			 

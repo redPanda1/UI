@@ -194,8 +194,21 @@
 								<label>Standard Cost</label>
 
 								<div class="input-group">
-								  <span class="input-group-addon">$</span>
-								  <input type="text" class="form-control mini-input right-justify" ng-model="EmployeeDetail.data.stdCostAmt" is-stdtime-twodp>
+								  
+									<span class="input-group-addon currency-select">
+										<div class="dropdown">
+										  <a class="btn btn-default" data-toggle="dropdown"> <span ng-if="EmployeeDetail.data.stdCostCur=='USD'">{{'&#36;'}}</span><span ng-if="EmployeeDetail.data.stdCostCur=='GBP'">{{'&#xa3;'}}</span><span ng-if="EmployeeDetail.data.stdCostCur=='EUR'">{{'&#x80;'}}</span><span ng-if="EmployeeDetail.data.stdCostCur=='JPY'">{{'&#xa5;'}}</span> <b class="caret"></b></a>
+										  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownCountry">
+										    <li>
+										       <a ng-click="EmployeeDetail.data.stdCostCur='USD'">{{'&#36;'}}</a>
+										       <a ng-click="EmployeeDetail.data.stdCostCur='GBP'">{{'&#xa3;'}}</a>
+										       <a ng-click="EmployeeDetail.data.stdCostCur='EUR'">{{'&#x80;'}}</a>
+										       <a ng-click="EmployeeDetail.data.stdCostCur='JPY'">{{'&#xa5;'}}</a>
+										    </li>
+										  </ul>
+										</div>
+									</span>	
+								  <input type="text" class="form-control mini-input right-justify" ng-model="EmployeeDetail.data.stdCostAmt" is-stdtime-twodp>				
 								  <span class="unit-position"> Per hour </span> 
 								</div>															
 							</div>	
@@ -207,7 +220,20 @@
 							<div class="form-group Overtime">
 								<label>Overtime Cost</label>  
 								<div class="input-group">
-								  <span class="input-group-addon">$</span>
+								  <span class="input-group-addon currency-select">
+										<div class="dropdown">
+										  <a class="btn btn-default" data-toggle="dropdown"> <span ng-if="EmployeeDetail.data.otCostCur=='USD'">{{'&#36;'}}</span><span ng-if="EmployeeDetail.data.otCostCur=='GBP'">{{'&#xa3;'}}</span><span ng-if="EmployeeDetail.data.otCostCur=='EUR'">{{'&#x80;'}}</span><span ng-if="EmployeeDetail.data.otCostCur=='JPY'">{{'&#xa5;'}}</span> <b class="caret"></b></a>
+										  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownCountry">
+										    <li>
+										       <a ng-click="EmployeeDetail.data.otCostCur='USD'">{{'&#36;'}}</a>
+										       <a ng-click="EmployeeDetail.data.otCostCur='GBP'">{{'&#xa3;'}}</a>
+										       <a ng-click="EmployeeDetail.data.otCostCur='EUR'">{{'&#x80;'}}</a>
+										       <a ng-click="EmployeeDetail.data.otCostCur='JPY'">{{'&#xa5;'}}</a>
+										    </li>
+										  </ul>
+										</div>
+									</span>	
+									
 								  <input type="text" class="form-control mini-input right-justify" ng-model="EmployeeDetail.data.otCostAmt" is-overtime-twodp>
 								  <span class="unit-position"> Per hour </span> 
 								</div>
