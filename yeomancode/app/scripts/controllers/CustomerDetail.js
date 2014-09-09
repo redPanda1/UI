@@ -15,7 +15,7 @@
  * @param $timeout
  * @param FilterDeleted
  */
-angular.module('redPandaApp').controller('customerDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter','$anchorScroll', 'CurrentTimeStamp','$timeout','FilterDeleted', function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter,$anchorScroll,  CurrentTimeStamp,$timeout,FilterDeleted){ 
+angular.module('redPandaApp').controller('customerDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter','$anchorScroll', 'CurrentTimeStamp','$timeout','FilterDeleted','USDateFormat', function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter,$anchorScroll,  CurrentTimeStamp,$timeout,FilterDeleted,USDateFormat){ 
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Customer'; //Rootscope variables used to select the Accordion menus.	
     $scope.companycollapseTable = false;
