@@ -79,29 +79,6 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
         }
     });
 
-    /**
-     * Controller for the Pop-up. Used for handling the user action in the pop up.
-     * @param $scope
-     * @param $modalInstance
-     */
-    var modalcontroller = function($scope, $modalInstance) {
-
-        /**
-         * Function used to perform the specified action when ok
-         * button is clicked.
-         */
-        $scope.ok = function() {
-            $modalInstance.close();
-        }
-
-        /**
-         * Function used to perform the specified action when cancel
-         * button is clicked.
-         */
-        $scope.cancel = function() {
-            $modalInstance.dismiss('dismiss');
-        }
-    }
 
     /**
      * Function used to open the Modal pop up
@@ -112,12 +89,19 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
      * @param {{String}} confirmBtn
      */
     $rootScope.showModal = function(postAPI, modalHeader, modalContent, cancelBtn, confirmbtn) {
-        var modelInstance = $modal.open({
-            template: '<div><div class="modal-header"><h3 class="modal-title">' + modalHeader + '</h3><span class="modal-close" ng-click="cancel()">x</span></div> <div class="modal-body">' + modalContent + '</div><div class="modal-footer"><button class="btn btn-important" ng-click="cancel()">' + cancelBtn + '</button><button class="btn btn-primary" ng-click="ok();">' + confirmbtn + '</button></div></div>',
-            controller: modalcontroller
+    
+    	$rootScope.dialogHeader  = modalHeader;
+    	$rootScope.dialogContent = modalContent;
+    	console.log($rootScope.dialogContent)
+    	$rootScope.cancelBtn     = cancelBtn;
+    	$rootScope.confirmbtn    = confirmbtn;
+    	
+        $rootScope.dialogModal = $modal.open({
+            templateUrl: 'views/ConfirmDialog.html'
+
         });
 
-        modelInstance.result.then(function() {
+        $rootScope.dialogModal.result.then(function() {
             $http.post(postAPI).success(function(data) {
                 $rootScope.isPostSuccess = true;
             }).error(function(data, status) {
@@ -140,7 +124,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
      * @param {String} type
      * @param {String} header
      */
-    controller: modalcontroller
+
 
     $rootScope.addAlert = function(message, type, header) {
         $rootScope.alerts = [];

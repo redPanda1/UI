@@ -482,6 +482,7 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
 
         $scope.ok = function() {
 
+			
             if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
                 $scope.UploadImage();
             }
@@ -525,13 +526,16 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
                         $scope.UploadImage($scope.custContactList.id);
                     }
                     if ($cookieStore.get("contactID") == "create") {
-                        $modalInstance.close(formatContactData($scope.custContactList));
+                       $rootScope.modalInstance.close(formatContactData($scope.custContactList));
                     } else {
-                        $modalInstance.close(formatContactData($scope.custContactList));
+                        $rootScope.modalInstance.close(formatContactData($scope.custContactList));
                     }
 
                 }).error(function(data, status) {
                     console.log("Failed");
+                    //$scope.custContactList = {"success":true,"total":1,"data":{"id":"540fcd55e4b0edb4867bef27","nickname":"Jack","contactNumbers":[{"seq":0,"type":"email","details":"email@email.com"}],"jobTitle":"IT"}}
+                    //$scope.custContactList = $scope.custContactList.data;
+                    //$rootScope.modalInstance.close(formatContactData($scope.custContactList));
                 });
             }
         };
@@ -541,7 +545,7 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
          * ==================================================================================
          */
         $scope.cancel = function() {
-            $modalInstance.dismiss('cancel');
+        $rootScope.modalInstance.dismiss();
         };
 
     

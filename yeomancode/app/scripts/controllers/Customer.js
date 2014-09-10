@@ -173,7 +173,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
             var customerId = $scope.selectedData[0].customerId
             var id = $scope.selectedData[0].id
             var customerName = $scope.selectedData[0].customerName;
-            $rootScope.showModal('/api/delete/customer/' + id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + '<span></span> ? This action can not be undone.', 'Cancel', 'Confirm');
+            $rootScope.showModal('/api/delete/customer/' + id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + ' ? This action can not be undone.', 'Cancel', 'Confirm');
             $scope.$watch('isPostSuccess', function(nValue, oValue) {
                 if (nValue == null || (nValue == oValue))
                     return;

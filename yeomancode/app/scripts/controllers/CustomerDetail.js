@@ -702,11 +702,11 @@ angular.module('redPandaApp').controller('customerDetailController', ['$scope','
         else
             $cookieStore.put('contactID', 'create');
 
-        $scope.modalInstance = $modal.open({
+        $rootScope.modalInstance = $modal.open({
             templateUrl: 'views/ContactPopUp.html'
         });
 
-        $scope.modalInstance.result.then(function(listItem) {
+        $rootScope.modalInstance.result.then(function(listItem) {
 
             if ($cookieStore.get("contactID") == "create") {
                 if ($scope.CustomerDetail.data.contactIds == null) {
@@ -723,10 +723,11 @@ angular.module('redPandaApp').controller('customerDetailController', ['$scope','
                 $scope.CustomerDetail.data.contactIds[$rootScope.contactRowIndex] = listItem.id;
                 $scope.contactTableData = $scope.CustomerDetail.data.contactList;
             }
-            $scope.modalInstance = null;
+            $rootScope.modalInstance = null;
 
         }, function() {
-            $scope.modalInstance = null;
+            $rootScope.modalInstance = null;
+            
         });
     };
 
@@ -737,8 +738,8 @@ angular.module('redPandaApp').controller('customerDetailController', ['$scope','
      * ========================================================================================================
      */
     $scope.$on("$destroy", function() {
-        if ($scope.modalInstance != null) {
-            $scope.modalInstance.close();
+        if ($rootScope.modalInstance != null) {
+            $rootScope.modalInstance.close();
         }
         $timeout.cancel(timeInterval);
 

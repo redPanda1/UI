@@ -115,7 +115,7 @@ angular.module('redPandaApp').controller('EmployeeController', ['$scope','$rootS
 		 if($scope.tableOptions.selectedItems.length > 0)
 		 {
 			 $rootScope.closeAlert();
-			 $rootScope.showModal('/api/delete/contact/'+$scope.tableOptions.selectedItems[0].id,'Confirm Delete','Are you sure you would like to delete '+$scope.tableOptions.selectedItems[0].firstName+' '+$scope.tableOptions.selectedItems[0].lastName+'<span></span> ? This action can not be undone.','Cancel', 'Confirm');
+			 $rootScope.showModal('/api/delete/contact/'+$scope.tableOptions.selectedItems[0].id,'Confirm Delete','Are you sure you would like to delete '+$scope.tableOptions.selectedItems[0].firstName+' '+$scope.tableOptions.selectedItems[0].lastName+'? This action can not be undone.','Cancel', 'Confirm');
 			 $scope.$watch('isPostSuccess',function(nValue,oValue){
 				if(nValue == null || (nValue == oValue))
 					return;

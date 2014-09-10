@@ -232,7 +232,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     $scope.confirmDelete = function(size) {
         if ($scope.selectedData.length > 0) {
             $scope.closeAlert();
-            $rootScope.showModal('/api/delete/contract/' + $scope.selectedData[0].id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.selectedData[0].title + '<span></span> ? This action can not be undone.', 'Cancel', 'Confirm');
+            $rootScope.showModal('/api/delete/contract/' + $scope.selectedData[0].id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.selectedData[0].title + ' ? This action can not be undone.', 'Cancel', 'Confirm');
             $scope.$watch('isPostSuccess', function(nValue, oValue) {
                 if (nValue == null || (nValue == oValue))
                     return;
