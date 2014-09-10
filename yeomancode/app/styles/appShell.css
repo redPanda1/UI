@@ -12,8 +12,7 @@ body
 }
 @font-face {
     font-family: LotoLightFont;
-    src: url(/fonts/Lato-Light.ttf);
-}
+    src: url(/fonts/Lato-Light.ttf);}
 /*ngGrid styles*/
 
 
@@ -828,10 +827,26 @@ body {
 	text-align: right;
 	line-height: 25px;
 }
-/*unit position style.*/
-.unit-position
+.currency-select .dropdown a
 {
-	margin-left: 6px;
-	display: inline-table;
-	margin-top: 5px;
+	height: 28px;
+	border-radius: 0px;
+	padding: 3px 10px 3px 10px;
+}
+.currency-select .dropdown
+{
+	height: 27px;
+}
+.currency-select 
+{
+	padding: 0px !important; 
+	color: transparent !important; 
+	background-color: transparent !important; 
+	border: none !important;
+	border-radius:0px !important;
+}
+.currency-select .dropdown-menu
+{
+	min-width: 41px;
+	margin: 0px;
 }

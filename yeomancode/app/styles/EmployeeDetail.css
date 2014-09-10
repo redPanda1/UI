@@ -42,7 +42,12 @@
 {
 	margin:10%;	
 }
-
+.unit-position
+{
+	margin-left: 6px;
+	display: inline-table;
+	margin-top: 5px;
+}
 .contect-address
 {
 	height: 255px;

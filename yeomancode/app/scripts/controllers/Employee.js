@@ -10,7 +10,9 @@
  * @param $window
  */
 
-angular.module('redPandaApp').controller('EmployeeController', ['$scope','$rootScope','$location','$http','$filter','$cookieStore','$timeout','$window', function($scope,$rootScope,$location,$http,$filter,$cookieStore,$timeout,$window){
+
+angular.module('redPandaApp').controller('employeeController', ['$scope','$rootScope','$location','$http','$filter','$cookieStore','$timeout','$window', 
+	function($scope,$rootScope,$location,$http,$filter,$cookieStore,$timeout,$window){
 	 //Rootscope variables used to select the Accordion menus.
 	 $rootScope.manage = true;
 	 $rootScope.selectedMenu = 'Employee';
@@ -39,7 +41,7 @@ angular.module('redPandaApp').controller('EmployeeController', ['$scope','$rootS
 	  * Sort Info Options for the ng-grid Table
 	  * =============================================================================================================
 	  */
-	 $scope.sortInfo = {fields: ['', '', '', '', '' ,'', '',''], directions: ['asc']};
+	 $scope.sortInfo = {fields: ['', '', '', '', '' ,'', '',''], directions: ['']};
 	 
 	 
 	 /**
@@ -77,8 +79,9 @@ angular.module('redPandaApp').controller('EmployeeController', ['$scope','$rootS
 	  */
 	 $scope.tableOptions={
 			 			  "listData":null,
+			 			   rowHeight: 55,
 			 			  "rowTemplate":'<div ng-dblclick="navigateToDetail(row)" ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}"><div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div><div ng-cell></div></div>',
-			 			  "columnDefs":	[{field:'employeeId', displayName:'ID'}, {field:'', displayName:'',sortable:false,cellTemplate:'<span ng-if="row.entity.thumbUrl == null"><img ng-src="img/redPanda50.jpg" class="img-circle"/></span><span ng-if="row.entity.thumbUrl !=null"><img ng-src="{{row.entity.thumbUrl}}" class="img-circle"/></span>'},{field:'firstName', displayName:'First'},{field:'lastName', displayName:'Last'},{field:'job', displayName:'Job'},{field:'departmentName', displayName:'Department'},{field:'managerName', displayName:'Manager', width:'150px'},{field:'isContractor', displayName:'Type',cellTemplate:'<label class="label label-success" ng-show="!row.entity.isContractor">Employee</label><label ng-show="row.entity.isContractor" class="label label-info">Contractor</label>'},{field:'isInactive', displayName:'Status',cellTemplate:'<label ng-show="row.entity[col.field]" class="label label-important">Terminated</label><label ng-show="!row.entity[col.field]" class="label label-success">Active</label>'},{field:'', displayName:'',sortable:false,cellTemplate:'<div class="emp-icons-container"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'}],
+			 			  "columnDefs":	[{field:'employeeId', displayName:'ID'}, {field:'', displayName:'',sortable:false,cellTemplate:'<span ng-if="row.entity.thumbUrl == null"><img ng-src="images/redPanda50.jpg" class="img-circle"/></span><span ng-if="row.entity.thumbUrl !=null"><img ng-src="{{row.entity.thumbUrl}}" class="img-circle"/></span>'},{field:'firstName', displayName:'First'},{field:'lastName', displayName:'Last'},{field:'job', displayName:'Job'},{field:'departmentName', displayName:'Department'},{field:'managerName', displayName:'Manager', width:'150px'},{field:'isContractor', displayName:'Type',cellTemplate:'<label class="label label-success" ng-show="!row.entity.isContractor">Employee</label><label ng-show="row.entity.isContractor" class="label label-info">Contractor</label>'},{field:'isInactive', displayName:'Status',cellTemplate:'<label ng-show="row.entity[col.field]" class="label label-important">Terminated</label><label ng-show="!row.entity[col.field]" class="label label-success">Active</label>'},{field:'', displayName:'',sortable:false,cellTemplate:'<div class="ngCellText employee-Button-container"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'}],
 			 			  "useExternalSorting":true,
 			 			  "filterOptions":$scope.filterOptions,
 			 			  "pageOptions":$scope.pagingOptions,
@@ -115,7 +118,7 @@ angular.module('redPandaApp').controller('EmployeeController', ['$scope','$rootS
 		 if($scope.tableOptions.selectedItems.length > 0)
 		 {
 			 $rootScope.closeAlert();
-			 $rootScope.showModal('/api/delete/contact/'+$scope.tableOptions.selectedItems[0].id,'Confirm Delete','Are you sure you would like to delete '+$scope.tableOptions.selectedItems[0].firstName+' '+$scope.tableOptions.selectedItems[0].lastName+'? This action can not be undone.','Cancel', 'Confirm');
+			 $rootScope.showModal('/api/delete/contact/'+$scope.tableOptions.selectedItems[0].id,'Confirm Delete','Are you sure you would like to delete '+$scope.tableOptions.selectedItems[0].firstName+' '+$scope.tableOptions.selectedItems[0].lastName+'<span></span> ? This action can not be undone.','Cancel', 'Confirm');
 			 $scope.$watch('isPostSuccess',function(nValue,oValue){
 				if(nValue == null || (nValue == oValue))
 					return;
@@ -285,6 +288,5 @@ angular.module('redPandaApp').controller('EmployeeController', ['$scope','$rootS
 		 }
 
 	 }
-	 callEmployeeListAPI();
-	 
+	 callEmployeeListAPI(); 
 }]);

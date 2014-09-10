@@ -25,24 +25,26 @@
 	display: inline;
 	padding: 4px 4px;
 }
+
 .activity-table .gridStyle,
 .people .gridStyle
 {
-	height: 241px !important;
+	height: auto !important;
 }
 .activity-table .ngViewport,
 .people .ngViewport
 
 {
 	min-height: 199px !important;
+	overflow: hidden;
 	height: auto !important;
 }
-.activity-table .ngCanvas,
+/*.activity-table .ngCanvas,
 .people .ngCanvas
 {
 	min-height: 188px !important;
 	height: auto !important;
-}
+}*/
 .ngRow.selected {
 	background-color: transparent;
 }
@@ -58,7 +60,7 @@ background-color: #f3f3f3 !important;
 {
 	margin-top: 45px;
 }
-.content-align .contract-description  .form-group label:first-child
+/*.content-align .contract-description  .form-group label:first-child
 {
 	width: 30%;
 }
@@ -66,7 +68,7 @@ background-color: #f3f3f3 !important;
 {
 	width: 65%;
 }
-.calender-flex
+*/.calender-flex
 {
 	display: -webkit-inline-flex;
 	display: -ms-inline-flexbox;

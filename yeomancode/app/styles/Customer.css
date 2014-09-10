@@ -51,7 +51,10 @@
 {
 	width:0px;
 }
-
+.customer-icons-container
+{
+height:50px;
+}
 /*==========Customer ng grid table style ends ============= */
 
 
@@ -94,7 +97,7 @@
 {
 	width: 70px;
 }
-
+/*
 @media (max-width: 767px)
 {
 	.customer .gridStyle .ngCanvas button.btn{
@@ -108,4 +111,4 @@
 		text-align:left;
 	}
 	
-}
+}*/

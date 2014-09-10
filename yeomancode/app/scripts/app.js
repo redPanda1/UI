@@ -33,6 +33,7 @@ angular
   });
 
 
+
 /**
  * Main Controller.
  * Common AngularJs code related to shell can be placed here.
@@ -44,8 +45,9 @@ angular
  * @param $modal
  * @param $http
  */
-angular.module('redPandaApp').controller('maincontroller', ['$scope','$location','$rootScope', '$cookieStore', '$window','$modal','$http', function($scope,$location,$rootScope, $cookieStore, $window,$modal,$http)
+angular.module('redPandaApp').controller('maincontroller', ['$scope','$location','$rootScope', '$cookieStore', '$window','$modal','$http', function($scope,$location,$rootScope, $cookieStore, $window,$modal,$http) 
 {
+
     $rootScope.selectedMenu = 'home'; //Selecting the Home Accordion by default
     $rootScope.localCache = {};
     $rootScope.fromCustomer = false;
@@ -70,6 +72,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
      * order to hide and display it again
      */
     angular.element($window).bind('resize', function() {
+       
         var field = $(document.activeElement);
         if (field.is('.hasDatepicker')) {
             field.datepicker('hide').datepicker('show');
@@ -77,8 +80,35 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
         if (field.is('span.simplecolorpicker')) {
             $('span.picker').hide();
         }
+        /*if (field[0].id="daterange") {
+            console.log("****");
+            $('#daterange').daterangepicker();
+        }*/
     });
 
+    /**
+     * Controller for the Pop-up. Used for handling the user action in the pop up.
+     * @param $scope
+     * @param $modalInstance
+     */
+    var modalcontroller = function($scope, $modalInstance) {
+
+        /**
+         * Function used to perform the specified action when ok
+         * button is clicked.
+         */
+        $scope.ok = function() {
+            $modalInstance.close();
+        }
+
+        /**
+         * Function used to perform the specified action when cancel
+         * button is clicked.
+         */
+        $scope.cancel = function() {
+            $modalInstance.dismiss('dismiss');
+        }
+    }
 
     /**
      * Function used to open the Modal pop up
@@ -90,9 +120,8 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
      */
     $rootScope.showModal = function(postAPI, modalHeader, modalContent, cancelBtn, confirmbtn) {
     
-    	$rootScope.dialogHeader  = modalHeader;
+        $rootScope.dialogHeader  = modalHeader;
     	$rootScope.dialogContent = modalContent;
-    	console.log($rootScope.dialogContent)
     	$rootScope.cancelBtn     = cancelBtn;
     	$rootScope.confirmbtn    = confirmbtn;
     	
@@ -124,7 +153,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
      * @param {String} type
      * @param {String} header
      */
-
+    controller: modalcontroller
 
     $rootScope.addAlert = function(message, type, header) {
         $rootScope.alerts = [];

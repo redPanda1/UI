@@ -3,7 +3,9 @@
  * @param $scope
  * @param $cookieStore 
  */
-angular.module('redPandaApp').controller('mapController', ['$scope','$cookieStore', function($scope,$cookieStore){
+angular.module('redPandaApp').controller('mapController', ['$scope','$cookieStore', 
+	function($scope,$cookieStore){
+
     /**
      * =============================================================================
      * Watcher function whether the map API needs to called.
@@ -67,9 +69,11 @@ angular.module('redPandaApp').controller('mapController', ['$scope','$cookieStor
         * Posting the address details of the user entered value to the Google map API
         * =============================================================================
         */
-
+//$scope.street + "," + $scope.city + "," + $scope.state + "," + $scope.zip + "," + $scope.country,
+        var mapAddress = $scope.country+","+$scope.state+","+ $scope.zip +","+ $scope.city +","+$scope.street 
         geocoder.geocode({
-            'address': $scope.street + "," + $scope.city + "," + $scope.state + "," + $scope.zip + "," + $scope.country
+            'address': mapAddress,
+            'region' : $scope.country
         }, function(results, status) {
 
             var latLong = [];

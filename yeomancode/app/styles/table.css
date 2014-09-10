@@ -9,9 +9,14 @@
 }
 .gridStyle .ngCanvas button.btn
 {
-	margin: 9px 10px 0px 7px;
+	margin:0px 7px 0px 10px !important
 }
-
+.commentsButton
+{
+	width: 100%;
+	display: inline-block;
+	text-align: center;
+}
 .gridStyle .ngViewport {
     height: auto !important;
     overflow-y: hidden;
@@ -60,7 +65,8 @@
 		margin-bottom: 10px;
 	}
 }
-.label-grey {
+.label-grey
+{
 	border: none;
 	text-shadow: none;
 	-webkit-border-radius: 2px;

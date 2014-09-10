@@ -10,7 +10,6 @@
  * @param CurrentTimeStamp
  * @param USDateFormat
  * @param FilterDeleted
- * @param USDateFormat
  */
 angular.module('redPandaApp').controller('ContractController', ['$scope','$rootScope','$location','$http','$filter','$modal','$cookieStore','$timeout','CurrentTimeStamp','FilterDeleted','USDateFormat', function($scope,$rootScope,$location,$http,$filter,$modal,$cookieStore,$timeout,CurrentTimeStamp,FilterDeleted,USDateFormat)
 {
@@ -42,9 +41,10 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
      * Sort Info Options for the ng-grid Table
      * =============================================================================================================
      */
+   
     $scope.sortInfo = {
         fields: ['', '', '', '', ''],
-        directions: ['asc']
+        directions: ['']
     };
 
     /**
@@ -136,7 +136,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style="text-align:right;height:50px;"><span ng-if="(row.entity.currency == \'USD\' || row.entity.currency == null)" ng-bind="\'$\'"></span><span ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style="text-align:right;height:50px;"> <span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -188,6 +188,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
                     }
                 });
                 $scope.tableOptions.listData = activeContractList;
+               
             }).error(function(data, status) {
                 //Stub data used for local testing
                 
@@ -199,7 +200,8 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
 					 data.value =  data.value.toFixed(2); 
 				 }
 			 });
-		 	   $scope.tableOptions.listData     = activeContractList;
+              $scope.tableOptions.listData     = activeContractList;
+		 	 
 		 	   $rootScope.localCache.ContractList =  $scope.ContractList;
                 if (status == 304) {}
             });
@@ -207,7 +209,13 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
             $scope.ContractList = $rootScope.localCache.ContractList;
             $scope.convertDatetoUSFormat();
             activeContractList = FilterDeleted.filter($scope.ContractList);
-            $scope.tableOptions.listData = activeContractList; //$scope.ContractList;
+            angular.forEach(activeContractList, function(data, key) {
+                if (data.value != null) {
+                    data.value = Number(data.value).toFixed(2);
+                }
+            });
+            $scope.tableOptions.listData = activeContractList;
+           
         }
     }
 
@@ -232,7 +240,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     $scope.confirmDelete = function(size) {
         if ($scope.selectedData.length > 0) {
             $scope.closeAlert();
-            $rootScope.showModal('/api/delete/contract/' + $scope.selectedData[0].id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.selectedData[0].title + ' ? This action can not be undone.', 'Cancel', 'Confirm');
+            $rootScope.showModal('/api/delete/contract/' + $scope.selectedData[0].id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.selectedData[0].title + '<span></span> ? This action can not be undone.', 'Cancel', 'Confirm');
             $scope.$watch('isPostSuccess', function(nValue, oValue) {
                 if (nValue == null || (nValue == oValue))
                     return;
@@ -251,3 +259,4 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         }
     }
 }]);
+

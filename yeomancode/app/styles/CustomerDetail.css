@@ -1,5 +1,5 @@
 /*.content-align .form-group label,
-.customer .content-align .form-group span
+.content-align .form-group span
 
 {
 	font-family: "LotoFont", sans-serif;
@@ -47,7 +47,12 @@
 {
 	margin:10%;	
 }
-
+.unit-position
+{
+	margin-left: 6px;
+	display: inline-table;
+	margin-top: 4px;
+}
 .contect-address
 {
 	height: 255px;
@@ -58,11 +63,11 @@
 	margin-bottom: 15px;
 
 }
-.customer .content-align .form-group label:first-child,
-.customer .content-align .form-group span:first-child
+/*.content-align .form-group label:first-child,
+.content-align .form-group span:first-child
 {
 	text-indent: 15px;	
-}
+}*/
 /*for overtime cost row bottom position*/
 .financial .Overtime label, .financial .Overtime .input-group
 {
@@ -312,12 +317,16 @@ ul[id^="typeahead"] {
 	margin-top: 10px;
 	margin-left: 8px;
 }
-.commentsButton
+.custDetail-contract-ButContaniner
+{
+	height:45px;
+}
+/*.commentsButton
 {
 	width: 100%;
 	display: inline-block;
 	text-align: center;
-}
+}*/
 .plusButton
 {
 	text-align: center;

@@ -5,7 +5,9 @@
  * @param $window
  * @param $rootScope
  */
-angular.module('redPandaApp').controller('tableController', ['$scope','$timeout','$window','$rootScope', function($scope,$timeout,$window,$rootScope){
+angular.module('redPandaApp').controller('tableController', ['$scope','$timeout','$window','$rootScope',
+ function($scope,$timeout,$window,$rootScope){
+
     $scope.empData = [];
     $scope.ngGridTableOptions = $scope.tableOptions;
 
@@ -157,60 +159,85 @@ angular.module('redPandaApp').controller('tableController', ['$scope','$timeout'
      * ==============================================================================================================
      */
     var sortData = function(field, direction) {
-        if ($scope.ngGridTableOptions.listData == null)
-            return;
-        $scope.ngGridTableOptions.listData.sort(function(a, b) {
-            var first, second;
-            //Special case for the Employee table
-            if (field == 'isContractor') {
-                if (a[field] == null)
-                    a[field] = false;
-            }
-            if (typeof a[field] != 'boolean') {
-                if (a[field] != null) {
-                    if (typeof a[field] != "number")
-                        first = a[field].toLowerCase();
-                    else
-                        first = a[field];
-                } else if (a[field] == null || (typeof a[field] == 'undefined')) {
-                    first = "";
-                }
-                if (b[field] != null) {
-                    if (typeof a[field] != "number")
-                        second = b[field].toLowerCase();
-                    else
-                        second = b[field];
-                } else if (b[field] == null || (typeof b[field] == 'undefined')) {
-                    second = "";
-                }
-            }
-            if (direction == "asc") {
-                if (typeof a[field] == 'boolean') {
-                    if (a[field])
-                        return -1;
-                    else
-                        return 1;
-                } else {
-                    if (first > second)
-                        return 1;
-                    if (first < second)
-                        return -1;
-                }
-            } else {
-                if (typeof a[field] == 'boolean') {
-                    if (a[field])
-                        return 1;
-                    else
-                        return -1;
-                } else {
-                    if (first > second)
-                        return -1;
-                    if (first < second)
-                        return 1;
-                }
-            }
-        });
-    }
+		$scope.inValue = false;
+		if ($scope.ngGridTableOptions.listData == null) 
+			return;
+		if(field == 'value')
+			$scope.inValue = true;
+		$scope.ngGridTableOptions.listData.sort(function (a, b) {
+			var first, second;
+			//Special case for the Employee table
+			if(field == 'isContractor')
+			{
+				if(a[field] == null)
+				a[field] = false;
+			}
+			if (typeof a[field] != 'boolean') 
+			{
+				if (a[field] != null) {
+					if(typeof a[field] != "number")
+					{  
+						if(!$scope.inValue)
+							first = a[field].toLowerCase();
+						else
+							first = parseFloat(a[field]);
+					}
+					else
+						first = a[field];
+						
+				}
+				else if(a[field] == null || (typeof a[field] == 'undefined')){
+					first = "";
+				}
+				if (b[field] != null) {
+					if(typeof a[field] != "number")
+					{
+						if(!$scope.inValue)
+							second = b[field].toLowerCase();
+						else
+							second = parseFloat(b[field]);
+					}
+					else
+						second = b[field];
+				}
+				else if(b[field] == null || (typeof b[field] == 'undefined')){
+					second = "";
+				}
+			}
+			if (direction == "asc") 
+			{
+				if (typeof a[field] == 'boolean')
+				{
+					if (a[field]) 
+						return -1;
+					else 
+						return 1;
+				} 
+				else  {
+					if (first > second)
+						return 1;
+					if (first < second) 
+						return -1;	
+				}
+			} 
+			else 
+			{
+				if (typeof a[field] == 'boolean')
+				{
+					if (a[field]) 
+						return 1;
+					else 
+						return -1;
+				} 
+				else {	
+					if (first > second)
+						return -1;
+					if (first < second)
+						return 1;							
+				}			
+			}
+		});			
+	}
 
     /**
      * ================================================================================================================

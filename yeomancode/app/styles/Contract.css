@@ -14,7 +14,7 @@
 {
 	margin-right: 10px;
 	margin-top: 0px !important;
-} */
+}*/
 /*===========Styles for the labels in employee list======= */
 
 .label
@@ -28,16 +28,7 @@
 .label-important{
 	background: #ff5454;
 }
-/*.label-grey
-{
-	border: none;
-	text-shadow: none;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;	
-	background: #e9ebec;
-	color: #7c848d;	
-}*/
+
 .label-mid
 {
 	font-size:15px;

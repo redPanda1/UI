@@ -9,7 +9,9 @@
  * @param $timeout
  * @param CurrentTimeStamp
  */
-angular.module('redPandaApp').controller('customerController', ['$scope','$rootScope','$location','$http','$filter','$modal','$cookieStore','$timeout','CurrentTimeStamp', function($scope,$rootScope,$location,$http,$filter,$modal,$cookieStore,$timeout,CurrentTimeStamp){
+angular.module('redPandaApp').controller('customerController', ['$scope','$rootScope','$location','$http','$filter','$modal','$cookieStore','$timeout','CurrentTimeStamp', 
+	function($scope,$rootScope,$location,$http,$filter,$modal,$cookieStore,$timeout,CurrentTimeStamp){
+
     //Rootscope variables used to select the Accordion menus.
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Customer';
@@ -24,7 +26,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
     $scope.previousSortIndex = '';
     $scope.sortInfo = {
         fields: ['', '', '', '', '', '', ''],
-        directions: ['asc']
+        directions: ['']
     };
     $scope.formattedCustomerList = [];
     $scope.isJsonFormattingNeeded = true;
@@ -107,7 +109,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
         "columnDefs": [{
             field: 'customerId',
             displayName: 'ID',
-            width: '19%'
+            width: '20%'
         }, {
             field: 'customerName',
             displayName: 'Name',
@@ -115,13 +117,13 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
         }, {
             field: 'customerAddress',
             displayName: 'Address',
-            width: '47%'
+            width: '40%'
         }, {
             field: '',
             displayName: '',
-            width: '14%',
+            width: '20%',
             sortable: false,
-            cellTemplate: '<div class="emp-icons-container"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
+            cellTemplate: '<div class="customer-icons-container ngCellText"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
         }]
     }
     /**
@@ -135,18 +137,21 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
             $http.get('/api/customerList').success(function(data) {
                 $scope.customerList = data.data;
                 $rootScope.localCache.customerList = $scope.customerList; //customer List is stored in local cache.For avoiding unwanted API calls		 
-                $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid		  
+                $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid	
+                //$scope.tableOptions.sortBy('customerId');
 
             }).error(function(data, status) {
             	//Local stub data for local testing
                 $scope.customerList = $rootScope.customerData.data;
                 $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid
                 $rootScope.localCache.customerList = $scope.customerList;
+                //$scope.tableOptions.sortBy('customerId');
                 if (status == 304) {}
             });
         } else {
             $scope.customerList = $rootScope.localCache.customerList;
             $scope.tableOptions.listData = $scope.customerList;
+           // $scope.tableOptions.sortBy('customerId');
         }
     }
 
@@ -173,7 +178,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
             var customerId = $scope.selectedData[0].customerId
             var id = $scope.selectedData[0].id
             var customerName = $scope.selectedData[0].customerName;
-            $rootScope.showModal('/api/delete/customer/' + id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + ' ? This action can not be undone.', 'Cancel', 'Confirm');
+            $rootScope.showModal('/api/delete/customer/' + id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + '<span></span> ? This action can not be undone.', 'Cancel', 'Confirm');
             $scope.$watch('isPostSuccess', function(nValue, oValue) {
                 if (nValue == null || (nValue == oValue))
                     return;

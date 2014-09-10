@@ -14,8 +14,9 @@
  * @param CurrentTimeStamp
  * @param $timeout
  */
-
-angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat','IsoDateFormat', function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat,IsoDateFormat){
+//function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScope, $modal, $http, $location, $cookieStore, $filter, fileReader, $window, CurrentTimeStamp, $timeout) {
+angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat','IsoDateFormat', 
+ function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat,IsoDateFormat){
     //Rootscope variables used to select the Accordion menus.
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Employee';
@@ -74,6 +75,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 
         }
     });
+    
+   
     /**
      * ==================================================================================================
      * Get the Managers List from the Rootscope if present otherwise
@@ -189,12 +192,17 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     $scope.formatInputData = function() {
 
         if ($scope.EmployeeDetail != null) {
-            var length = $scope.EmployeeDetail.data.contactNumbers.length;
-            for (var i = 0; i < $scope.EmployeeDetail.data.contactNumbers.length; i++) {
-                $scope.contactTypeDetails[i] = $scope.EmployeeDetail.data.contactNumbers[i].details;
-                $scope.contactTypeValue[i] = $scope.EmployeeDetail.data.contactNumbers[i].type;
-            }
+        	if($scope.EmployeeDetail.data.contactNumbers != null)
+        	{
+        		var length = $scope.EmployeeDetail.data.contactNumbers.length;
+                for (var i = 0; i < $scope.EmployeeDetail.data.contactNumbers.length; i++) {
+                    $scope.contactTypeDetails[i] = $scope.EmployeeDetail.data.contactNumbers[i].details;
+                    $scope.contactTypeValue[i] = $scope.EmployeeDetail.data.contactNumbers[i].type;
+                }
+        	}
+            
         }
+
     }
 
     /**
@@ -307,6 +315,10 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 $scope.formatCostamt();
                 $scope.formatStdamt();
                 $scope.formatInputData();
+                if($scope.EmployeeDetail.data.stdCostCur == null)
+					 $scope.EmployeeDetail.data.stdCostCur = 'USD';
+                if($scope.EmployeeDetail.data.otCostCur == null)
+					 $scope.EmployeeDetail.data.otCostCur = 'USD';
                 //Clone the object before pre-processing the input data.
                 angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
                 $scope.formatMapData();
@@ -316,7 +328,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             }).error(function(data, status) {
 
                 $scope.addAlert("Employee Detail not available.", "danger");
-                $scope.isError = true;
+               // $scope.isError = true;
 
                 /**
                  * ===========================================================
@@ -345,7 +357,15 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 				$scope.formatCostamt();
 				$scope.formatStdamt();
 				$scope.formatInputData();
+				if($scope.EmployeeDetail.data.stdCostCur == null)
+					 $scope.EmployeeDetail.data.stdCostCur = 'USD';
+               if($scope.EmployeeDetail.data.otCostCur == null)
+					 $scope.EmployeeDetail.data.otCostCur = 'USD';
 				angular.copy($scope.EmployeeDetail,$scope.ClonedEmployeeDetail,true);
+				console.log($scope.ClonedEmployeeDetail);
+		        console.log($scope.EmployeeDetail);
+				$scope.formatMapData();
+	           
             });
         }
     }
@@ -367,7 +387,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
              * Code Used for Local Testing. It should be removed finally.
              * =============================================================
              */
-            /*$scope.departmentJson = {
+            $scope.departmentJson = {
 						    "success": true,
 						    "total": 4,
 						    "dataType": "department",
@@ -391,7 +411,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 						    ]
 						}
 				 $scope.departments = $scope.departmentJson.data;
-				 $rootScope.localCache.department = $scope.departments;*/
+				 $rootScope.localCache.department = $scope.departments;
         });
     } else {
         //For eliminating the API Calls when the data is available in local cache
@@ -789,9 +809,19 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         //For Converting String to Integer
         if ($scope.EmployeeDetail.data.otCostAmt != null)
             $scope.EmployeeDetail.data.otCostAmt = parseFloat($scope.EmployeeDetail.data.otCostAmt);
+        else
+        {
+        	if($scope.EmployeeDetail.data.otCostCur != null)
+        		delete $scope.EmployeeDetail.data.otCostCur;
+        }
 
         if ($scope.EmployeeDetail.data.stdCostAmt != null)
             $scope.EmployeeDetail.data.stdCostAmt = parseFloat($scope.EmployeeDetail.data.stdCostAmt);
+        else
+        {
+        	if($scope.EmployeeDetail.data.stdCostCur != null)
+        		delete $scope.EmployeeDetail.data.stdCostCur;
+        }
 
         $scope.EmployeeDetail.data.fullName = $scope.EmployeeDetail.data.nickname;
 
@@ -804,6 +834,11 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             delete $scope.EmployeeDetail.data.hireDate;
         if ($scope.EmployeeDetail.data.termDate == "" && !$scope.isTermDateSetinServer)
             delete $scope.EmployeeDetail.data.termDate;
+        
+        angular.forEach($scope.ManagerList,function(data,key){
+        	if(data.id == $scope.EmployeeDetail.data.managerId)
+        		$scope.EmployeeDetail.data.managerName = data.name;
+        });
 
     }
 
@@ -878,13 +913,9 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
      * ==================================================================================
      *
      */
-    $scope.isChangeinContactNumbers = false;
-    $scope.$watch('EmployeeDetail.data.contactNumbers',function(newVal,OldVal){
-    	if(newVal == null || (newVal == OldVal))
-    		return;
-    	$scope.isChangeinContactNumbers = true;
-    });
+   
     $scope.saveEmpdata = function() {
+    	console.log($scope.EmployeeDetail);
         $scope.inSave = true;
         var email_result;
         //Call Image Upload Function
@@ -893,18 +924,14 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 $scope.imageUpload();
             }
         }
+       
+       
+        $scope.tempEmployeeDetail = {};
+        angular.copy($scope.EmployeeDetail,$scope.tempEmployeeDetail,true);
+        console.log($scope.ClonedEmployeeDetail);console.log($scope.tempEmployeeDetail);
+        console.log(angular.equals($scope.ClonedEmployeeDetail, $scope.tempEmployeeDetail));
         $scope.checkDateisChanged();
-        if($scope.ClonedEmployeeDetail.data.contactNumbers != null)
-        {
-        	$scope.contactNumbersClonedArray = $scope.ClonedEmployeeDetail.data.contactNumbers;
-        	delete $scope.ClonedEmployeeDetail.data.contactNumbers;
-        }
-        if($scope.EmployeeDetail.data.contactNumbers != null)
-        {
-        	$scope.contactNumbersArray = $scope.EmployeeDetail.data.contactNumbers;
-        	delete $scope.ClonedEmployeeDetail.data.contactNumbers;
-        }
-        if ((!angular.equals($scope.ClonedEmployeeDetail, $scope.EmployeeDetail)) || isChangeinContactNumbers) {
+        if ((!angular.equals($scope.ClonedEmployeeDetail, $scope.tempEmployeeDetail))) {
             //For Alerting the mandatory field Nickname
             if ($scope.EmployeeDetail.data.nickname == "") {
                 $scope.addAlert("Enter Employee Name.", "danger");
@@ -921,7 +948,6 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 return;
             }
             $scope.closeAlert(); //Used to close the alert message before proceeding.
-            $scope.EmployeeDetail.data.contactNumbers = $scope.contactNumbersArray;
             //For Mapping the departmentName based on the selected departmentID
             angular.forEach($scope.departments, function(data, key) {
                 if (data.id == $scope.EmployeeDetail.data.departmentId)

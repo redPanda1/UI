@@ -13,9 +13,11 @@
  * @param $window
  * @param $interval
  */
-angular.module('redPandaApp').controller('contractDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','CurrentTimeStamp','IsoDateFormat','USDateFormat','$window','$timeout', function($scope,$rootScope,$modal,$http,$location,$cookieStore,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$timeout)
-{	
-	
+//function contractDetailController($scope,$rootScope,$modal,$http,$location,$cookieStore,$timeout,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$interval)
+//{	
+angular.module('redPandaApp').controller('contractDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','CurrentTimeStamp','IsoDateFormat','USDateFormat','$window','$timeout', 
+	function($scope,$rootScope,$modal,$http,$location,$cookieStore,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$timeout){
+
 	$window.scrollTo(0,0);
 	$rootScope.manage             = true;
 	$rootScope.selectedMenu       = 'Contract';//Rootscope variables used to select the Accordion menus.
@@ -45,6 +47,17 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	$scope.customerID = $cookieStore.get("detailId");
 	var timeInterval ="";
 	var contractDetailCookId;
+	
+	 $('#dateRange').daterangepicker({
+         format: 'MM/DD/YYYY',
+         opens:'left'
+       }, function(start, end, label) {
+    	   var dateValue = $('#dateRange').val();
+    	   var startDate = dateValue.split('-')[0];
+    	   var endDate = dateValue.split('-')[1];
+    	   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
+    	   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
+       });
 	
 	//Create mode from customer
 	if ($cookieStore.get("contractId") == "create"){
@@ -79,7 +92,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 * Duration Date validation for start and end date, start date should not be greater than end date
 	 * =================================================================================================
 	 */
-    $('#startDate').datepicker({
+    /*$('#startDate').datepicker({
     		dateFormat: 'mm-dd-yy',
             onSelect: function(dateStr) {      
                   var date = $(this).datepicker('getDate');
@@ -88,14 +101,14 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
                   }
                   $('#endDate').datepicker('option', 'minDate', date);
             }
-      });
+      });*/
     
 	  /**
 	   * ================================================================================================
 	   * Duration Date validation for start and end date, end date should not be lesser than start date
 	   * =================================================================================================
 	   */
-      $('#endDate').datepicker({     
+      /*$('#endDate').datepicker({     
       		dateFormat: 'mm-dd-yy',      
             onSelect: function (selectedDate) {
                   var date = $(this).datepicker('getDate');
@@ -104,7 +117,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
                   }
                   $('#startDate').datepicker('option', 'maxDate', date || 0);
             }
-      });
+      });*/
 
 
     /**
@@ -113,7 +126,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
      * @param index
      * ===================================================================================================
      */
-	$scope.getCurrentStartDate = function(index){
+	/*$scope.getCurrentStartDate = function(index){
 		var id = $(document.activeElement).attr('id');	
 		$scope.activityStartDate = "#"+id;				
 		$scope.activityEndDate   = "#end_"+index;
@@ -125,14 +138,14 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	        
 	    });
 		 $($scope.activityStartDate).datepicker('show');
-	}
+	}*/
 
     /**
      * =====================================================================================================
      * Activity date validation for start and end date, end date should not be lesser than start date
      * =====================================================================================================
      */
-	$scope.getCurrentEndDate = function(index){
+/*	$scope.getCurrentEndDate = function(index){
 		var id = $(document.activeElement).attr('id');	
 		$scope.activityEndDate   = "#"+id;		
 		$scope.activityStartDate = "#start_"+index;	
@@ -143,10 +156,10 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	        }	        
 	    });
 	    $($scope.activityEndDate).datepicker('show');
-	}
+	}*/
 
 	var plusHeaderCellTemplate = '<div class="ngHeaderSortColumn {{col.headerClass}}" ng-style="{\'cursor\': col.cursor}" ng-class="{ \'ngSorted\': !noSortVisible }">' +
-    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(peopleMangers);"><i class="fa fa-plus"></i></button></div>' +
+    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText" style="text-align:center;">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(peopleMangers,\'people\');"><i class="fa fa-plus"></i></button></div>' +
     '<div class="ngSortButtonDown" ng-show="col.showSortButtonDown()"></div>' +
     '<div class="ngSortButtonUp" ng-show="col.showSortButtonUp()"></div>' +
     '<div class="ngSortPriority">{{col.sortPriority}}</div>' +
@@ -155,7 +168,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
     '<div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>';
 	
 	var plusHeaderCellTemplates = '<div class="ngHeaderSortColumn {{col.headerClass}}" ng-style="{\'cursor\': col.cursor}" ng-class="{ \'ngSorted\': !noSortVisible }">' +
-    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(activitiesTableData)"><i class="fa fa-plus"></i></button></div>' +
+    '<div ng-click="col.sort($event)" ng-class="\'colt\' + col.index" class="ngHeaderText" style="text-align:center;">{{col.displayName}} <button class="btn btn-default btn-sm" ng-click="addRow(activitiesTableData,\'activity\')"><i class="fa fa-plus"></i></button></div>' +
     '<div class="ngSortButtonDown" ng-show="col.showSortButtonDown()"></div>' +
     '<div class="ngSortButtonUp" ng-show="col.showSortButtonUp()"></div>' +
     '<div class="ngSortPriority">{{col.sortPriority}}</div>' +
@@ -172,7 +185,8 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
  	        rowHeight : 40,        
  	        headerRowHeight: 40,
  	        columnDefs: [ {field:'activity', displayName:'Activity', width:'20%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><input type="text" class="form-control"/></div>'},
- 	        			  {field:'duration', displayName:'Duration', width:'35%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" ng-model="ActivitiesStartDate[row.rowIndex]" id ="start_{{row.rowIndex}}" ng-click="getCurrentStartDate(row.rowIndex)" /></p> <span class="text-gap">to</span> <p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" format="mm-dd-yy" id ="end_{{row.rowIndex}}" ng-click ="getCurrentEndDate(row.rowIndex)" ng-model="ActivitiesEndDate[row.rowIndex]" ng-change="checkDate(ActivitiesStartDate[row.rowIndex],ActivitiesEndDate[row.rowIndex])" class="form-control"/></p></div>'},
+ 	        			  //{field:'duration', displayName:'Duration', width:'35%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" ng-model="ActivitiesStartDate[row.rowIndex]" id ="start_{{row.rowIndex}}" ng-click="getCurrentStartDate(row.rowIndex)" /></p> <span class="text-gap">to</span> <p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" format="mm-dd-yy" id ="end_{{row.rowIndex}}" ng-click ="getCurrentEndDate(row.rowIndex)" ng-model="ActivitiesEndDate[row.rowIndex]" ng-change="checkDate(ActivitiesStartDate[row.rowIndex],ActivitiesEndDate[row.rowIndex])" class="form-control"/></p></div>'},
+ 	                      {field:'duration', displayName:'Duration', width:'35%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input  class="form-control"  type="text" style="background-color: white;cursor: pointer;width: 190px;" id ="start_{{row.rowIndex}}" readonly ng-focus="initiateDatePicker(row.rowIndex)" /></p></div>'},
  	        			  {field:'billable', displayName:'Billable', width:'10%',cellTemplate:'<div class="ngCellText" style="padding: 12px 0px 0px 20px !important;"><input type="checkbox"/></div>'},
  	        			  {field:'hourlyRate', displayName:'Hourly Rate', width:'14%', cellTemplate:'<div class="ngCellText"><input type="text" hourly-Rate  placeholder="Rate"  class="form-control medium-input right_justify" ng-model="activeHourlyRate[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[0].value"/></div>'},
  	        			  {field:'milestone', displayName:'Fixed Fee', width:'13%', cellTemplate:'<div class="ngCellText"><input type="text" hourly-Rate placeholder="Fixed Fee" class="form-control medium-input right_justify" ng-model="mileStone[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[2].value"/></div>'},
@@ -193,6 +207,16 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 	        			]
 	 }
 	 
+	 $scope.initiateDatePicker = function(index)
+	 {
+		 var elementId = '#start_'+index;
+		 console.log(elementId);
+		 $(elementId).daterangepicker({
+	         format: 'MM/DD/YYYY'
+	       }, function(start, end, label) {
+	       });
+	 }
+	 
 	 /**
 	  * ==================================================================
 	  * Function used to delete the selected row from the table
@@ -204,17 +228,34 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 {
 		 Array.splice(index,1);
 	 }
-	 
-	 /**
-	  * ===================================================================
-	  * Function used to add row to the table
-	  * @param contents
-	  * ====================================================================
-	  */
-	 $scope.addRow = function(contents)
-	 {
-		 contents.push({});
-	 }
+    
+    /**
+	 * Rebuilding the people and activity based on the new rows added
+	 **/
+    $scope.tableRebuild = function(ngtable){
+        ngtable.$gridServices.DomUtilityService.RebuildGrid(
+				ngtable.$gridScope,
+				ngtable.ngGrid
+		);
+    }
+    /**
+     * ===================================================================
+     * Function used to add row to the table
+     * @param contents
+     * ====================================================================
+     */
+    $scope.addRow = function(contents, type)
+    {
+        contents.push({});
+        var tableObj; 
+		if (type == "people")
+			tableObj =  $scope.peopleTableOptions;
+		else
+			tableObj = $scope.activitiesTableOptions;
+        
+		$scope.tableRebuild(tableObj)
+    }
+
 	
 	 /**
 	  * ================================================================
@@ -271,10 +312,12 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	  */
 	 $scope.convertToUSDateFormat = function()
 	 {
-		 if($scope.contractDetail.data.endDate != null)
-			 $scope.contractDetail.data.endDate = USDateFormat.convert($scope.contractDetail.data.endDate);
+		 var DateString = "";
 		 if($scope.contractDetail.data.startDate != null)
-			 $scope.contractDetail.data.startDate = USDateFormat.convert($scope.contractDetail.data.startDate);
+			 DateString += USDateFormat.convert($scope.contractDetail.data.startDate,true);
+		 if($scope.contractDetail.data.endDate != null)
+			 DateString += "-"+USDateFormat.convert($scope.contractDetail.data.endDate,true);
+		 $('#dateRange').val(DateString);
 	 }
 	 
 	 /**
@@ -298,6 +341,8 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				    }
 				}
             $scope.isNew = true;
+		 if($scope.contractDetail.data.currency == null)
+			 $scope.contractDetail.data.currency = 'USD';
 	 }
 	 else
 	 {
@@ -312,8 +357,6 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 if($scope.contractDetail.data.value != null)
 					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);	
 				 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
-				 console.log($scope.contractDetail);
-				 console.log($scope.ClonedcontractDetail)
 				 $scope.convertToUSDateFormat();
 				 if($scope.contractDetail.data.managerName != null)
 				 {
@@ -322,7 +365,8 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 }	
 				 if($scope.contractDetail.data.type == null)
 					 $scope.contractDetail.data.type = $scope.invoicemethods[0].value;
-				 
+				 if($scope.contractDetail.data.currency == null)
+					 $scope.contractDetail.data.currency = 'USD';
 			 
 				 		
 				// if (contractDetailCookId != "create" && $rootScope.customerName)
@@ -330,8 +374,8 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		  				$scope.contractDetail.data.customerName = $rootScope.customerName;	
 				 
 			 }).error(function(data, status){
-			 	$scope.isError = true;				
-			 	 $scope.disabledSave = true;
+			 	//$scope.isError = true;				
+			 	// $scope.disabledSave = true;
 			 	  if($location.path() == '/ContractDetail')
 			 		  $rootScope.addAlert("No contract details available.","danger");
 			 	  
@@ -339,6 +383,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 	  
 				$scope.contractDetail=$rootScope.ContractDetailData;
 				$scope.convertToUSDateFormat();
+				
 				 if($scope.contractDetail.data.type == null)
 				 {
 					 $scope.contractDetail.data.type = $scope.invoicemethods[0].value;
@@ -347,7 +392,11 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 {
 					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);
 				 }
+				 if($scope.contractDetail.data.currency == null)
+					 $scope.contractDetail.data.currency = 'USD';
 				angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
+				console.log($scope.contractDetail);
+				console.log($scope.contractDetail.data.currency);
 			 });
 		 }
 				 
@@ -359,9 +408,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 $rootScope.localCache.customers = $scope.customerList;
 			 $rootScope.localCache.isFindCustomerAPINeeded = false;
 		 }).error(function(data, status){
-		    $rootScope.addAlert("Customer List is not available","danger");
+		    /*$rootScope.addAlert("Customer List is not available","danger");
 			$scope.customerList =$rootScope.customerlist.data; 
-		    $rootScope.localCache.customers = $scope.customerList;
+		    $rootScope.localCache.customers = $scope.customerList;*/
 		 });
 	 }
 	 else
@@ -438,7 +487,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 $scope.checkDateisChanged = function()
 	 {
 		 //For mapping the start Date and end Date
-		 if($('#startDate').val() != "")
+		 /*if($('#startDate').val() != "")
 			 $scope.contractDetail.data.startDate = IsoDateFormat.convert($('#startDate').val());
 		 else
 			 $scope.contractDetail.data.startDate = "";
@@ -446,7 +495,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 if($('#endDate').val() != "")
 			 $scope.contractDetail.data.endDate = IsoDateFormat.convert($('#endDate').val());
 		 else
-			 $scope.contractDetail.data.endDate = "";
+			 $scope.contractDetail.data.endDate = "";*/
 	 }
 	 
 	 /**
@@ -505,8 +554,11 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			    	$scope.contractDetail.data.managerId = data.id;
 		 });
 		 
-		 if($scope.contractDetail.data.value != null)
-			 $scope.contractDetail.data.currency = "USD"; 
+		 if($scope.contractDetail.data.value == null)
+		 {
+			 if($scope.contractDetail.data.currency != null)
+				 delete $scope.contractDetail.data.currency;
+		 }
 	
 	 } 
 	 /**
@@ -571,7 +623,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 $scope.customerContractObj.title    = contrObj.title;
 		 $scope.customerContractObj.poNumber = contrObj.poNumber;
 		 
-		 if (contrObj.value != 0 && contrObj.value != null){
+		 if (contrObj.value != null){
 			 contrObj.value =  Number(contrObj.value).toFixed(2);
 			}
 		 
@@ -587,8 +639,8 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 $scope.customerContractObj.commentsExist    = false;
 		 $scope.customerContractObj.attachmentsExist = false;
 		 $scope.customerContractObj.deleted          = false;
-		 $scope.customerContractObj.currency         = "USD";
-		 $scope.customerContractObj.managerName      = contrObj.managerName
+		 $scope.customerContractObj.currency         = contrObj.currency;
+		 $scope.customerContractObj.managerName      = contrObj.managerName;
 		 return $scope.customerContractObj;
 	 }
 	 /**
@@ -601,6 +653,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	  */
 	 $scope.savecontractData = function()
 	 {
+		 
 		 if($scope.contractDetail.data.title == "")
 		 {
 			 $rootScope.addAlert("You must enter a description for the contract to be saved.","danger");
@@ -614,6 +667,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 console.log("contractDetail",$scope.contractDetail)
 		 if(!angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))		 
 		 {			
+			 console.log($scope.contractDetail.data.currency);
 			 $rootScope.closeAlert();
 			 $scope.formatPostData();
 			 var postData = $scope.contractDetail.data;			 
@@ -666,7 +720,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 
 				 //Code used for local testing and it should be removed finally
 				 
-				$scope.contractDetail = $rootScope.newContactDetails;
+				/*$scope.contractDetail = $rootScope.newContactDetails;
 				$scope.inSave = false;
 
 					if ($scope.cookContractId){
@@ -681,7 +735,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 					}
 				 	else{
 					 	$location.path('/Contract');
-				 	}
+				 	}*/
 
 			 });
 		   }
