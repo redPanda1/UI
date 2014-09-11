@@ -144,10 +144,6 @@ body
 	.navigationblock.shift>ul.alignNav>li:hover>ul>li>ul>li>a>span.hidden-sm {
 		display: inline-block!important;
 	}
-	.emp-icons-container button
-	{
-		padding: 3px;
-	}
 }
 @media(max-width:767px) {
 	.container {
@@ -163,14 +159,6 @@ body
 		margin-left: 2px !important;
 		padding: 2px 0px !important;		
 	}
-	.emp-icons-container button
-	{
-		padding: 0px;
-	} 
-	.emp-icons-container
-	{
-		display: inline-flex;
-	}    
  }
  
 .contwidthInc

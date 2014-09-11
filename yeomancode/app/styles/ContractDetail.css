@@ -39,18 +39,6 @@
 	overflow: hidden;
 	height: auto !important;
 }
-/*.activity-table .ngCanvas,
-.people .ngCanvas
-{
-	min-height: 188px !important;
-	height: auto !important;
-}*/
-.ngRow.selected {
-	background-color: transparent;
-}
-.ngRow.even, .ngRow.selected.even {
-background-color: #f3f3f3 !important;
-}
 .people .gridStyle .ngVerticalBar,
 .activity-table .gridStyle .ngVerticalBar
 {

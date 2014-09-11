@@ -43,6 +43,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
     $scope.isHireDateSetinServer = false;
     $scope.isTermDateSetinServer = false;
 
+    
     /** 
      * Date validation for start and end date, start date should not be greater than end date
      */
@@ -174,12 +175,18 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 	        if ($scope.EmployeeDetail.data.hireDate != null) {
 	            $scope.isHireDateSetinServer = true;
 	            $scope.EmployeeDetail.data.hireDate = USDateFormat.convert($scope.EmployeeDetail.data.hireDate);
+	            $scope.tempStartDate = $scope.EmployeeDetail.data.hireDate;
 	        }
+	        else
+	        	$scope.tempStartDate = "";
 	
 	        if ($scope.EmployeeDetail.data.termDate != null) {
 	            $scope.isTermDateSetinServer = true;
 	            $scope.EmployeeDetail.data.termDate = USDateFormat.convert($scope.EmployeeDetail.data.termDate);
+	            $scope.tempEndDate = $scope.EmployeeDetail.data.termDate;
 	        }
+	        else
+	        	$scope.tempEndDate = "";
         }
     }
     /**
@@ -318,8 +325,9 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 if($scope.EmployeeDetail.data.otCostCur == null)
 					 $scope.EmployeeDetail.data.otCostCur = 'USD';
                 //Clone the object before pre-processing the input data.
-                angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
                 $scope.formatMapData();
+                angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
+                
                 console.log($scope.ClonedEmployeeDetail);
                 console.log($scope.EmployeeDetail);
                 $scope.isError = false;
@@ -779,9 +787,28 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $location.path('/Employee');
                 return;
             }
-
-            $scope.checkDateisChanged();
-            if (!angular.equals($scope.ClonedEmployeeDetail, $scope.EmployeeDetail)) {
+            //$scope.checkDateisChanged();
+            $scope.tempEmployeeDetail = {};        
+            angular.copy($scope.EmployeeDetail,$scope.tempEmployeeDetail,true); 
+            if($scope.tempEmployeeDetail.data.contactNumbers.length ==1 && $scope.tempEmployeeDetail.data.contactNumbers.details == null)
+            	$scope.tempEmployeeDetail.data.contactNumbers.length = 0;
+            if($scope.ClonedEmployeeDetail.data.contactNumbers.length ==1 && $scope.ClonedEmployeeDetail.data.contactNumbers.details == null)
+            	$scope.ClonedEmployeeDetail.data.contactNumbers.length = 0;
+            if($scope.tempEmployeeDetail.data.otCostAmt == null)
+            	delete $scope.tempEmployeeDetail.data.otCostCur;
+            
+            //Comparing the objects to identify the changes
+            $scope.needToSave = false;
+            angular.forEach($scope.tempEmployeeDetail.data,function(data,key){
+            	if(!angular.equals(data,$scope.ClonedEmployeeDetail.data[key]))
+            		$scope.needToSave = true;
+            });        
+            console.log($scope.needToSave);
+            $scope.isDateChanged();
+            if($scope.dateChanged)
+            	$scope.needToSave = true;
+            
+            if ($scope.needToSave) {
                 if ($scope.EmployeeDetail.data.nickname == "") {
                     $scope.addAlert("Enter Employee Name.", "danger");
                     return;
@@ -805,7 +832,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
      */
     $scope.formatPostData = function() {
         //For Converting String to Integer
-        if ($scope.EmployeeDetail.data.otCostAmt != null)
+        if ($scope.EmployeeDetail.data.otCostAmt != null && $scope.EmployeeDetail.data.otCostAmt != "")
             $scope.EmployeeDetail.data.otCostAmt = parseFloat($scope.EmployeeDetail.data.otCostAmt);
         else
         {
@@ -813,7 +840,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
         		delete $scope.EmployeeDetail.data.otCostCur;
         }
 
-        if ($scope.EmployeeDetail.data.stdCostAmt != null)
+        if ($scope.EmployeeDetail.data.stdCostAmt != null && $scope.EmployeeDetail.data.stdCostAmt != "")
             $scope.EmployeeDetail.data.stdCostAmt = parseFloat($scope.EmployeeDetail.data.stdCostAmt);
         else
         {
@@ -893,16 +920,31 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
         if ($('#hireDate').val() != "")
             $scope.EmployeeDetail.data.hireDate = IsoDateFormat.convert($('#hireDate').val());
         else
-            $scope.EmployeeDetail.data.hireDate = $('#hireDate').val();
+        {
+        	if($scope.EmployeeDetail.data.hireDate != null)
+        		$scope.EmployeeDetail.data.hireDate = $('#hireDate').val();
+        }
 
         if ($('#endDate').val() != "")
             $scope.EmployeeDetail.data.termDate = IsoDateFormat.convert($('#endDate').val());
         else
-            $scope.EmployeeDetail.data.termDate = $('#endDate').val();
+        {
+        	if($scope.EmployeeDetail.data.termDate != null)
+        		$scope.EmployeeDetail.data.termDate = $('#endDate').val();
+        }
     }
-
-
-
+    
+    $scope.dateChanged = false;
+    $scope.isDateChanged = function()
+    {
+    	if($('#hireDate').val() != $scope.tempStartDate)
+    		$scope.dateChanged = true;
+    	else
+        {
+    		if($('#endDate').val() != $scope.tempEndDate)
+    			$scope.dateChanged = true;
+        }
+    }
     /**
      * ==================================================================================
      * Function used to save the Employee details when save button is clicked
@@ -913,7 +955,6 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
      */
    
     $scope.saveEmpdata = function() {
-    	console.log($scope.EmployeeDetail);
         $scope.inSave = true;
         var email_result;
         //Call Image Upload Function
@@ -922,14 +963,30 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.imageUpload();
             }
         }
-       
-       
-        $scope.tempEmployeeDetail = {};
-        angular.copy($scope.EmployeeDetail,$scope.tempEmployeeDetail,true);
-        console.log($scope.ClonedEmployeeDetail);console.log($scope.tempEmployeeDetail);
-        console.log(angular.equals($scope.ClonedEmployeeDetail, $scope.tempEmployeeDetail));
-        $scope.checkDateisChanged();
-        if ((!angular.equals($scope.ClonedEmployeeDetail, $scope.tempEmployeeDetail))) {
+        //$scope.checkDateisChanged();
+        $scope.tempEmployeeDetail = {};        
+        angular.copy($scope.EmployeeDetail,$scope.tempEmployeeDetail,true); 
+        if($scope.tempEmployeeDetail.data.contactNumbers.length ==1 && $scope.tempEmployeeDetail.data.contactNumbers.details == null)
+        	$scope.tempEmployeeDetail.data.contactNumbers.length = 0;
+        if($scope.ClonedEmployeeDetail.data.contactNumbers.length ==1 && $scope.ClonedEmployeeDetail.data.contactNumbers.details == null)
+        	$scope.ClonedEmployeeDetail.data.contactNumbers.length = 0;
+        
+        if($scope.tempEmployeeDetail.data.otCostAmt == null)
+        	delete $scope.tempEmployeeDetail.data.otCostCur;
+        
+        //Comparing the objects to identify the changes
+        $scope.needToSave = false;
+        angular.forEach($scope.tempEmployeeDetail.data,function(data,key){
+        	if(!angular.equals(data,$scope.ClonedEmployeeDetail.data[key]))
+        		$scope.needToSave = true;
+        });        
+        console.log($scope.needToSave);
+        $scope.isDateChanged();
+        if($scope.dateChanged)
+        	$scope.needToSave = true;
+        
+        if ($scope.needToSave) {
+        	$scope.checkDateisChanged();
             //For Alerting the mandatory field Nickname
             if ($scope.EmployeeDetail.data.nickname == "") {
                 $scope.addAlert("Enter Employee Name.", "danger");

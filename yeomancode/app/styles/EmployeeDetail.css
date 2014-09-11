@@ -1,13 +1,3 @@
-/* Style for Mouse over in ng grid*/
-.ngRow:hover,.ngRow.even:hover,.ngRow.odd:hover
-{
-	background: #E8F3FD;
-}
-/*Style for selected menu in navigation bar*/
-.selected
-{
-	background-color:#CED1D4!important;
-}
 .employee-img img
 {
 	width: 120px;

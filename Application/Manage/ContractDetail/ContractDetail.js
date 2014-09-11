@@ -47,13 +47,14 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	var contractDetailCookId;
 	
 	 $('#dateRange').daterangepicker({
-         format: 'MM/DD/YYYY'
+         format: 'MM/DD/YYYY',
+         opens:'left'
        }, function(start, end, label) {
     	   var dateValue = $('#dateRange').val();
     	   var startDate = dateValue.split('-')[0];
-    	   var endDate = dateValue.split('-')[1];
-    	   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
-    	   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
+		   var endDate = dateValue.split('-')[1];
+		   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
+		   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
        });
 	
 	//Create mode from customer
@@ -197,7 +198,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 	        rowHeight : 40,        
 	 	        headerRowHeight: 40,
 
-	 	        columnDefs: [ {field:'name', displayName:'Name',width:'38%',cellTemplate:'<div class="ngCellText" style ="width:65%;"><select ng-options="value.name as value.name  for value in nickNames" ng-model ="managerName[row.rowIndex]" class ="form-control" > <option value="">-- Select --</option></select></div>'},
+	 	        columnDefs: [ {field:'name', displayName:'Name',width:'38%',cellTemplate:'<div class="ngCellText" style ="width:65%;"><div ng-show="managerName[row.rowIndex]">{{managerName[row.rowIndex]}}</div><select ng-hide="managerName[row.rowIndex]" ng-options="value.name as value.name  for value in nickNames" ng-model ="managerName[row.rowIndex]" class ="form-control" > <option value="">-- Select --</option></select></div>'},
 	 	        			  {field:'manager', displayName:'Manager',width:'19%',cellTemplate:'<div class="ngCellText" style="padding: 12px 0px 0px 20px !important;"><input ng-click="deselectOthers(row.rowIndex)" ng-model="peopleMangerscheckbox[row.rowIndex]" type="checkbox"></div>'},
 	 	        			  {field:'hourlyRate', displayName:'Hourly Rate',width:'35%',cellTemplate:'<div class="ngCellText"><input type="text" class="form-control right_justify" hourly-Rate  placeholder="Rate" ng-model="personHourlyRate[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[1].value"/></div>'},
 	 	        			  {field:'', displayName:'',width:'5%',headerCellTemplate:plusHeaderCellTemplate,cellTemplate:'<div class="ngCellText"><button class="btn btn-default btn-sm" ng-click="deleteSelectedRow(row.rowIndex,peopleMangers)"><i class="fa fa-times"></i></button></div>'},
@@ -225,15 +226,23 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 {
 		 Array.splice(index,1);
 	 }
+	 
+    $scope.$watch('shiftNav', function(newVal, oldVal) {
+        if (newVal != oldVal){
+        	$scope.tableRebuild($scope.peopleTableOptions);
+        	$scope.tableRebuild($scope.activitiesTableOptions);
+        }
+            
+    }, true);
     
     /**
 	 * Rebuilding the people and activity based on the new rows added
 	 **/
     $scope.tableRebuild = function(ngtable){
         ngtable.$gridServices.DomUtilityService.RebuildGrid(
-                                                            ngtable.$gridScope,
-                                                            ngtable.ngGrid
-                                                            );
+			  ngtable.$gridScope,
+			  ngtable.ngGrid
+			  );
     }
     /**
      * ===================================================================
@@ -310,10 +319,10 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 $scope.convertToUSDateFormat = function()
 	 {
 		 var DateString = "";
-		 if($scope.contractDetail.data.endDate != null)
-			 DateString += USDateFormat.convert($scope.contractDetail.data.endDate,true);
 		 if($scope.contractDetail.data.startDate != null)
-			 DateString += "-"+USDateFormat.convert($scope.contractDetail.data.startDate,true);
+			 DateString += USDateFormat.convert($scope.contractDetail.data.startDate,true);
+		 if($scope.contractDetail.data.endDate != null)
+			 DateString += "-"+USDateFormat.convert($scope.contractDetail.data.endDate,true);
 		 $('#dateRange').val(DateString);
 	 }
 	 
@@ -556,6 +565,12 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			 if($scope.contractDetail.data.currency != null)
 				 delete $scope.contractDetail.data.currency;
 		 }
+		 else
+		 {
+			 $scope.contractDetail.data.value = parseFloat($scope.contractDetail.data.value);
+		 }
+		 if($scope.contractDetail.data.budgetedHours != null)
+			 $scope.contractDetail.data.budgetedHours = parseInt($scope.contractDetail.data.budgetedHours);
 	
 	 } 
 	 /**
@@ -579,7 +594,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 {			 
 			 if(!angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))		 
 			 {
-			 	 if($scope.contractDetail.data.title == "")
+			 	 if($scope.contractDetail.data.title == "" || $scope.contractDetail.data.title == null)
 				 {
 					 $rootScope.addAlert("You must enter a description for the contract to be saved.","danger");
 					 return;
@@ -651,7 +666,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 $scope.savecontractData = function()
 	 {
 		 
-		 if($scope.contractDetail.data.title == "")
+		 if($scope.contractDetail.data.title == "" || $scope.contractDetail.data.title == null)
 		 {
 			 $rootScope.addAlert("You must enter a description for the contract to be saved.","danger");
 			 return;
@@ -667,6 +682,13 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			 console.log($scope.contractDetail.data.currency);
 			 $rootScope.closeAlert();
 			 $scope.formatPostData();
+			 //Whenever user clicks outside the calendar once it is opened, it will trigger the cancel function.
+			 //To avoid the following code is been added
+			 if($scope.contractDetail.data.startDate == "NaN-NaN-NaN")
+				 delete $scope.contractDetail.data.startDate;
+			 if($scope.contractDetail.data.endDate == "NaN-NaN-NaN")
+				 delete $scope.contractDetail.data.endDate;
+			 
 			 var postData = $scope.contractDetail.data;			 
 			 var postTime =  CurrentTimeStamp.postTimeStamp();
 			 $http({

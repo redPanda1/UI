@@ -13,7 +13,7 @@
 angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$rootScope', '$route', '$http', 'CurrentTimeStamp', '$cookieStore','fileReader',
     function($scope, $rootScope, $route, $http, CurrentTimeStamp, $cookieStore,fileReader) {
 
-    $scope.noContactSelected = false;
+        $scope.noContactSelected = false;
     $scope.invalidEmail = false;
     $scope.debugMode = true;
     $scope.invalidEmail = false;
@@ -21,6 +21,7 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
     $scope.isRequired = false;
     //$scope.isInfoRequired    = false;
     $scope.mapOptions = {};
+    $scope.clonedContactObj = {};
     $scope.needMapCall = {
         "callMap": false
     };
@@ -34,6 +35,7 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
     $scope.contactTypeValue = [];
     $scope.contactTypeDetails = [];
     $scope.isInfoRequired = [];
+    $scope.custContactList = {};
     $scope.contactObj = {
         "id": "",
         "type": "",
@@ -72,11 +74,11 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
          */
     $scope.formatInputData = function() {
         if ($scope.contactDetail != null) {
-            if ($scope.contactDetail.data.addressISOCountry != null) {
+           if ($scope.contactDetail.data.addressCountryISO != null) {
                 if ($scope.countries != null) {
                     angular.forEach($scope.countries, function(data, key) {
-                        if (data.code == $scope.contactDetail.data.addressISOCountry)
-                            $scope.contactDetail.data.addressISOCountry = data;
+                        if (data.code == $scope.contactDetail.data.addressCountryISO)
+                            $scope.contactDetail.data.addressCountryISO = data.name;
                     });
                 }
             }
@@ -110,20 +112,23 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
             $scope.contactDetail.data.contactNumbers.push({});
             $scope.contactTypeValue[0] = "email";
             $scope.contactTypeDetails[0] = "";
-        }
-
-
+        }  
+        
+        angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
     } else {
         $http.get('/api/contactDetail/' + $cookieStore.get("contactID")).success(function(data) {
             $scope.contactDetail = data;
             $scope.needMapCall.callMap = true;
             $scope.mapOptions = $scope.contactDetail;
             updateContactTableData();
+            $scope.formatInputData();
+            angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
         }).error(function() {
             //Codes used for local testing and it should be removed finally.
 
             $scope.contactDetail=$scope.contactRemovedDetails;
  			updateContactTableData();
+            angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
         });
     }
 
@@ -224,13 +229,13 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
      */
     $scope.deleteEmployeeContactInfo = function(index) {
         $scope.contactDetail.data.contactNumbers.splice(index, 1);
+        $scope.contactTypeDetails.splice(index, 1);
+        $scope.contactTypeValue.splice(index, 1);
         if ($scope.contactDetail.data.contactNumbers.length == 0) {
             $scope.contactDetail.data.contactNumbers.push({});
             $scope.contactTypeDetails[0] = "";
             $scope.contactTypeValue[0] = "Phone";
-
         }
-
     };
     /**
      * Showing new row for accepting new contact detail from user
@@ -433,6 +438,12 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
                 }
             }
         }
+        
+            if ($scope.contactDetail.data.contactNumbers.length == 0) {
+            $scope.contactDetail.data.contactNumbers.push({});
+            $scope.contactTypeDetails[0] = "";
+            $scope.contactTypeValue[0] = "email";
+        }
         return isInvalidEmail;
     } //Save contact function ends
 
@@ -481,53 +492,103 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
 
     $scope.ok = function() {
 
-        if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
-            $scope.UploadImage();
-        }
+        $scope.needToSave = false;
+        var tempClonedContactObj = {};
+       if ($scope.saveContactNumbers()) 
+            return;  
+        //
+        angular.copy($scope.contactDetail, tempClonedContactObj, true);
+        angular.forEach(tempClonedContactObj.data,function(data,key){            
+            if(!angular.equals(data,$scope.clonedContactObj.data[key]))
+                $scope.needToSave = true;
+                      });
 
-        if ($scope.contactDetail.data.nickname == "" || $scope.contactDetail.data.nickname == null) {
-            $scope.isRequired = true;
+        if (!$scope.needToSave){
+            $scope.cancel();
             return;
         }
-        if ($scope.saveContactNumbers()) {
-            return;
-        }
 
-        if ($scope.contactDetail.data.addressStateCode != null) {
-            var stateCode = $scope.contactDetail.data.addressStateCode;
-            if (typeof stateCode == 'object')
-                $scope.contactDetail.data.addressStateCode = stateCode.code;
-        }
-        if ($scope.contactDetail.data.addressCountryISO != null) {
-            var countryCode = $scope.contactDetail.data.addressCountryISO;
-            if (typeof countryCode == 'object') {
-                $scope.contactDetail.data.addressCountryISO = countryCode.code;
-                $scope.contactDetail.data.addressCountryName = countryCode.name;
-            }
-        }
-
-        if ($scope.contactDetail == undefined) { //
-        } else {
-
-            $http({
-                "method": "post",
-                "url": '/api/contactDetail/update?timestamp=' + CurrentTimeStamp.postTimeStamp(),
-                "data": $scope.contactDetail.data,
-                "headers": {
-                    "content-type": "application/json"
+         else{
+                if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
+                        $scope.UploadImage();
                 }
-            }).success(function(data) {
-                $scope.custContactList = data.data;
-                $scope.newContact = false;
-                if ($scope.isImageuploaded && $cookieStore.get("contactID") == "create") {
-                    //$cookieStore.put("contactID",$scope.custContactList.id);
-                    $scope.UploadImage($scope.custContactList.id);
+
+                if ($scope.contactDetail.data.nickname == "" || $scope.contactDetail.data.nickname == null) {
+                    $scope.isRequired = true;
+                    return;
+                }                
+                
+                if ($scope.contactDetail.data.addressStateCode != null) {
+                    var stateCode = $scope.contactDetail.data.addressStateCode;
+                    if (typeof stateCode == 'object')
+                        $scope.contactDetail.data.addressStateCode = stateCode.code;
                 }
-				$rootScope.modalInstance.close(formatContactData($scope.custContactList));
-            }).error(function(data, status) {
-                console.log("Failed");              
-            });
-        }
+                if ($scope.contactDetail.data.addressCountryISO != null) {
+                    var countryCode = $scope.contactDetail.data.addressCountryISO;
+                    if (typeof countryCode == 'object') {
+                        $scope.contactDetail.data.addressCountryISO = countryCode.code;
+                        $scope.contactDetail.data.addressCountryName = countryCode.name;
+                    }
+                }
+                
+                //Validation for state code and country code
+                var isValidState = false;
+                var isValidCountry = false;
+                $scope.inValidCountryCode=false;
+                $scope.inValidStateCode = false;               
+                if($scope.contactDetail.data.addressStateCode != "" && $scope.contactDetail.data.addressStateCode != null)
+                {
+                	angular.forEach($scope.states,function(data,key){
+                	if(data.code == $scope.contactDetail.data.addressStateCode)
+                		isValidState = true;
+                	});
+                	if(!isValidState)
+                    {
+                     	$scope.inValidStateCode = true;
+                     	return;
+                    }
+                }      
+                if($scope.contactDetail.data.addressCountryISO != "" && $scope.contactDetail.data.addressCountryISO != null)
+                {
+	                angular.forEach($scope.countries,function(data,key){
+	                	if(data.code == $scope.contactDetail.data.addressCountryISO)
+	                		isValidCountry = true;
+	                });
+	                if(!isValidCountry)
+	                {
+	                	$scope.inValidCountryCode = true;
+	                	return;
+	                }
+                }
+                
+                if ($scope.contactDetail == undefined) { //
+                } else {
+
+                    $http({
+                        "method": "post",
+                        "url": '/api/contactDetail/update?timestamp=' + CurrentTimeStamp.postTimeStamp(),
+                        "data": $scope.contactDetail.data,
+                        "headers": {
+                            "content-type": "application/json"
+                        }
+                    }).success(function(data) {
+                        $scope.custContactList = data.data;
+                        $scope.newContact = false;
+                        if ($scope.isImageuploaded && $cookieStore.get("contactID") == "create") {
+                            //$cookieStore.put("contactID",$scope.custContactList.id);
+                            $scope.UploadImage($scope.custContactList.id);
+                        }
+                        if ($cookieStore.get("contactID") == "create") {
+                            $rootScope.modalInstance.close(formatContactData($scope.custContactList));
+                        } else {
+                            $rootScope.modalInstance.close(formatContactData($scope.custContactList));
+                        }
+
+                    }).error(function(data, status) {
+                        console.log("Failed");              
+                    });
+                }
+             }        
     };
     /**
      * ==================================================================================
@@ -537,5 +598,7 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
     $scope.cancel = function() {
         $rootScope.modalInstance.dismiss('cancel');
     };
+
+
 
 }]);

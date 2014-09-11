@@ -22,10 +22,11 @@ function customerController($scope, $rootScope, $location, $http, $filter, $moda
     $scope.selectedData = [];
     $scope.displayWarning = false;
     $scope.alerts = [];
+    $('.simplecolorpicker').hide();
     $scope.previousSortIndex = '';
     $scope.sortInfo = {
         fields: ['', '', '', '', '', '', ''],
-        directions: ['asc']
+        directions: ['']
     };
     $scope.formattedCustomerList = [];
     $scope.isJsonFormattingNeeded = true;
@@ -136,18 +137,21 @@ function customerController($scope, $rootScope, $location, $http, $filter, $moda
             $http.get('/api/customerList').success(function(data) {
                 $scope.customerList = data.data;
                 $rootScope.localCache.customerList = $scope.customerList; //customer List is stored in local cache.For avoiding unwanted API calls		 
-                $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid		  
+                $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid	
+                //$scope.tableOptions.sortBy('customerId');
 
             }).error(function(data, status) {
             	//Local stub data for local testing
                 $scope.customerList = $rootScope.customerData.data;
                 $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid
                 $rootScope.localCache.customerList = $scope.customerList;
+                //$scope.tableOptions.sortBy('customerId');
                 if (status == 304) {}
             });
         } else {
             $scope.customerList = $rootScope.localCache.customerList;
             $scope.tableOptions.listData = $scope.customerList;
+           // $scope.tableOptions.sortBy('customerId');
         }
     }
 

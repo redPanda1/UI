@@ -26,7 +26,8 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     $scope.formattedContractList = [];
     $rootScope.closeAlert();
     $cookieStore.remove("contractId");
-    var activeContractList = []
+    var activeContractList = [];
+    $('.daterangepicker').hide();
 
     //Used to maintain the same filter when navigating from different page  and corresponding detail page
     if (!$rootScope.calledFromContractDetail)
@@ -136,7 +137,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style="text-align:right;height:50px;"> <span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style="display:inline-block;width:75%;text-align:right;height:50px;line-height:40px;"> <span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -148,7 +149,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
             displayName: '',
             sortable: false,
             width: "13%",
-            cellTemplate: '<div class="ngCellText emp-icons-container"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
+            cellTemplate: '<div class="ngCellText contract-icons-container"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}" style="margin-right:5px;"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
         }]
     }
 
@@ -240,7 +241,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     $scope.confirmDelete = function(size) {
         if ($scope.selectedData.length > 0) {
             $scope.closeAlert();
-            $rootScope.showModal('/api/delete/contract/' + $scope.selectedData[0].id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.selectedData[0].title + '<span></span> ? This action can not be undone.', 'Cancel', 'Confirm');
+            $rootScope.showModal('/api/delete/contract/' + $scope.selectedData[0].id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.selectedData[0].title + '? This action can not be undone.', 'Cancel', 'Confirm');
             $scope.$watch('isPostSuccess', function(nValue, oValue) {
                 if (nValue == null || (nValue == oValue))
                     return;

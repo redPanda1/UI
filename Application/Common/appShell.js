@@ -87,10 +87,9 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
         if (field.is('span.simplecolorpicker')) {
             $('span.picker').hide();
         }
-        /*if (field[0].id="daterange") {
-            console.log("****");
-            $('#daterange').daterangepicker();
-        }*/
+        if (field[0].id="daterange") {
+            $(".daterangepicker").hide()
+        }
     });
 
     /**

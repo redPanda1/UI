@@ -1,22 +1,58 @@
-/* Employe ng grid table style starts */
 .gridStyle
 {
-	height:250px;
+	width:100% !important;
+	height: auto !important;
+	border: 1px solid #DBDEE0;
+	margin-bottom: 20px;
 }
-.employee .gridStyle
+.gridStyle .ngViewport {
+    height: auto !important;
+    overflow-y: hidden;
+}
+.ngTopPanel.ng-scope, .ngHeaderContainer {
+    width: auto !important;
+}
+.gridStyle .ngCanvas
 {
-	height: auto ;
+	margin-top: -1px;
 }
-.gridStyle .ngCanvas button.btn
+.gridStyle .ngTopPanel,
+.gridStyle .ngHeaderContainer,
+.gridStyle .ngFooterPanel,
+.gridStyle .ngRow,
+.gridStyle .ngViewport,
+.gridStyle .ngCanvas
 {
-	margin:0px 7px 0px 10px !important
+	width:100% !important;
 }
-.commentsButton
+.ngTopPanel
 {
-	width: 100%;
-	display: inline-block;
-	text-align: center;
+	background-color:white;
 }
+.ngHeaderContainer
+{
+	border-bottom: 1px solid #DBDEE0;
+}
+.ngVerticalBarVisible 
+{
+	width:0px;
+}
+.ngCellText,.ngHeaderText {
+	display: table-cell;
+	vertical-align: middle;
+	white-space: normal;
+}
+.gridStyle .ngCanvas label.label
+{
+	line-height: 53px;
+	margin-left: 5px;
+}
+.gridStyle .ngCanvas label.btn
+{
+	margin-left: 5px;
+	margin-top:10px;
+}
+
 .gridStyle .ngViewport {
     height: auto !important;
     overflow-y: hidden;
@@ -27,27 +63,36 @@
 }
 .employee .gridStyle .ngCanvas img
 {
-	width: 40px;
-	height: 40px;
-	margin-left: 30%;
-	margin-top: 10px;
+	width: 50px;
+	height: 50px;
 	cursor: default !important;
 }
-
-/**Grid row selection background**/
-.ngRow.selected
+.ngRow {
+	border-top: 1px solid #DBDEE0;
+	border-bottom: none !important;
+}
+.ngRow.even {
+	background-color: #F9F9F9 !important;
+}
+.ngRow.selected {
+	background-color: transparent;
+}
+.emp-row-list .ngRow.selected,
+.emp-row-list .ngRow.selected.even,
+.emp-row-list .ngRow.selected.odd
 {
 	background-color:#CED1D4 !important;
 }
-
+.emp-row-list .ngRow:hover, 
+.emp-row-list .ngRow.even:hover, 
+.emp-row-list .ngRow.odd:hover 
+{
+	background: #E8F3FD !important;
+}
 /**For hiding the vertical line in the grid**/
 .ngVerticalBarVisible 
 {
 	width:0px;
-}
-.searchContainer
-{
-	text-align:right;
 }
 @media (max-width: 767px)
 {
@@ -57,13 +102,17 @@
 		margin-top:5%;
 		margin-bottom: 3%;
 	}
-}
-@media (min-width: 768px)
-{
-	.timesheets .employeeList
+	.searchContainer,
+	.pagination 
 	{
-		margin-bottom: 10px;
+		float: left !important;
 	}
+}
+.commentsButton
+{
+	width: 100%;
+	display: inline-block;
+	text-align: center;
 }
 .label-grey
 {
@@ -79,4 +128,34 @@
 {
 	height: 25px;
 	line-height: 25px;
+}
+.pageSelection select
+{
+	width: 70px;
+	display:inline;
+	margin-right: 5px;
+}
+.searchContainer
+{
+	float:right;
+	display: inline;
+}
+.searchContainer .form-control
+{
+	width:135px;
+	display:inline;
+	margin-left: 5px;
+}
+.search-pagination-container
+{
+	margin-bottom:5px;
+}
+.default-image
+{
+	background-image: url('/images/redPanda50.jpg');
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	background-repeat: no-repeat;
+	cursor: default !important;
 }

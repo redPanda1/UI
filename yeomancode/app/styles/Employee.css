@@ -1,18 +1,4 @@
-.ngRow:hover,.ngRow.even:hover,.ngRow.odd:hover
-{
-	background: #E8F3FD;
-}
-.selected
-{
-	background-color:#CED1D4!important;
-}
-.searchbox
-{
-	margin-bottom:10px;
-}
-
 /*===========Styles for the labels in employee list======= */
-
 .label
 {
 	font-weight: 300;
@@ -24,25 +10,12 @@
 .label-important{
 	background: #ff5454;
 }
-/*.label-grey
+.employee-Button-container
 {
-	border: none;
-	text-shadow: none;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;	
-	background: #e9ebec;
-	color: #7c848d;	
-}*/
+	height:55px;
+}
 .label-mid
 {
 	font-size:15px;
-}
-
-/*===============Style for the buttons "New" and "Download" ================*/
-
-.employee .searchbox select
-{
-	width: 70px;
 }
 

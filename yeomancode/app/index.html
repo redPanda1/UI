@@ -16,6 +16,7 @@
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" type="text/css" href="styles/appShell.css"/>
+    <link rel="stylesheet" type="text/css" href="styles/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="styles/jquery.simplecolorpicker.css"/>
     <link rel="stylesheet" type="text/css" href="styles/Employee.css"/>
     <link rel="stylesheet" type="text/css" href="styles/EmployeeDetail.css"/>
@@ -200,7 +201,9 @@
 									<a ng-click="time = !time"><i class="fa fa-clock-o"></i><span class="hidden-sm"> Time</span><i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': (time && !shiftNav) || shiftNav , 'glyphicon-chevron-left': !time && !shiftNav}"></i></a>						
 									<ul collapse="!time && !shiftNav" class="nav">
 										<li><a ng-class="{'selected':(selectedMenu == 'Timesheets')}" ng-click="selectedMenu = 'Timesheets';xscollapse = false" href="#"><i class="fa fa-clock-o"></i><span class="hidden-sm"> Timesheets</span></a></li>
-									</ul>							
+									</ul>	
+								</li>	
+														
 								<li>
 									<a ng-click="manage = !manage"><i class="fa fa-sliders"></i><span class="hidden-sm"> Manage</span> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': (manage && !shiftNav) || shiftNav, 'glyphicon-chevron-left': !manage && !shiftNav}"></i></a>
 									<ul collapse="!manage && !shiftNav" class="nav">
@@ -224,7 +227,7 @@
 									</ul>
 								</li>															
 							</ul>
-							<span class="hidden-xs hidden-sm arrowspan" ng-click="selectedMenu = 'home';xscollapse=false;"><i ng-class="{'fa fa-angle-double-left':!shiftNav,'fa fa-angle-double-right':shiftNav}" ng-click="shiftNav = !shiftNav"></i></span>
+							<span class="hidden-xs hidden-sm arrowspan" ng-click="xscollapse=false;"><i ng-class="{'fa fa-angle-double-left':!shiftNav,'fa fa-angle-double-right':shiftNav}" ng-click="shiftNav = !shiftNav"></i></span>
 													
 					</div>
 					<!-- CONTENT AREA -->

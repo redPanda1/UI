@@ -73,9 +73,9 @@
         <div class="col-sm-5 col-md-5 col-lg-5 contect-address">  
             <input type="text" ng-model="contactDetail.data.addressStreet" placeholder="street" class="form-control">
             <input type="text" ng-model="contactDetail.data.addressCity" placeholder="city/town" class="form-control">
-            <input type="text" ng-model="contactDetail.data.addressStateCode" placeholder="state/province" class="form-control"  typeahead="state as state.name for state in states | filter:$viewValue">              
+            <input type="text" ng-model="contactDetail.data.addressStateCode"  ng-class="{'red': inValidStateCode}" placeholder="state/province" class="form-control"  typeahead="state as state.name for state in states | filter:$viewValue">              
             <input type="text" ng-model="contactDetail.data.addressPostZip" placeholder="zip" class="form-control small-input">            
-            <input type="text" ng-model="contactDetail.data.addressCountryISO" placeholder="US" class="form-control"  typeahead="country as country.name for country in countries | filter:$viewValue">
+            <input type="text" ng-model="contactDetail.data.addressCountryISO"  ng-class="{'red': inValidCountryCode}" placeholder="US" class="form-control"  typeahead="country as country.name for country in countries | filter:$viewValue">
             <button class="btn btn-sm btn-default" ng-click="needMapCall.callMap = true" ng-disabled="(contactDetail.data.addressStreet == '' || contactDetail.data.addressStreet == null)&&(contactDetail.data.addressCity == '' || contactDetail.data.addressCity == null)&&(contactDetail.data.addressStateCode == '' || contactDetail.data.addressStateCode == null)&&(contactDetail.data.addressPostZip == '' || contactDetail.data.addressPostZip == null)&&(contactDetail.data.addressISOCountry == '' || contactDetail.data.addressISOCountry == null)">Update Map</button>
         </div>
         <div class="col-sm-7 col-md-7 col-lg-7 contact-map">

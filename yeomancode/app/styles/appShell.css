@@ -630,68 +630,8 @@ ul
 {
 	width: 80% !important;
 }
-/*input controls style ends*/
-
-select.form-control
-{
-   padding-right: 0px;
-}
-
 
 /* box container layout common style ends */
-
-/* ng grid common style starts */
-.gridStyle
-{
-	width:100% !important;
-	border: 1px solid #DBDEE0;
-	margin-bottom: 20px;
-}
-.gridStyle .ngCanvas
-{
-	margin-top: -1px;
-}
-.gridStyle .ngTopPanel,
-.gridStyle .ngHeaderContainer,
-.gridStyle .ngFooterPanel,
-.gridStyle .ngRow,
-.gridStyle .ngViewport,
-.gridStyle .ngCanvas
-{
-	width:100% !important;
-}
-.ngTopPanel
-{
-	background-color:white;
-}
-.ngHeaderContainer
-{
-	border-bottom: 1px solid #DBDEE0;
-}
-.ngRow
-{
-	border-top: 1px solid #DBDEE0;
-	border-bottom:none !important;
-}
-.ngRow.even 
-{
-	background-color: #F9F9F9;
-}
-.ngCellText,.ngHeaderText {
-	display: table-cell;
-	vertical-align: middle;
-	white-space: normal;
-}
-.gridStyle .ngCanvas label.label
-{
-	line-height: 53px;
-	margin-left: 5px;
-}
-.gridStyle .ngCanvas label.btn
-{
-	margin-left: 5px;
-	margin-top:10px;
-}
 
 .tableoptionicon i:hover
 {

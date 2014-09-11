@@ -1,20 +1,30 @@
 <!-- TABLE CONTAINER STARTS -->
 <div  ng-controller="tableController">
-	<div class="row">
+	<div class="row search-pagination-container">
 		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
-			<div class="searchbox">
-				<select ng-model="ngGridTableOptions.pageOptions.pageSize" ng-options="page as page for page in ngGridTableOptions.pageOptions.pageSizes">				
+			<div class="pageSelection">
+				<select class="form-control" ng-model="ngGridTableOptions.pageOptions.pageSize" ng-options="page as page for page in ngGridTableOptions.pageOptions.pageSizes">				
 				</select> records per page
 			</div>
 		</div>
 
-		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-9 timesheets">
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
 			<div class="searchContainer">
-				Search: <input type="text" ng-model="filterOptions.filterText" />
+				Search: <input type="text" ng-model="filterOptions.filterText" class="form-control" />
 			</div>
 		</div>
 	</div>
 	<div class="gridStyle employee-grid" ng-grid="tableData"></div>
-	<pagination rotate="false" total-items="totalServerItems" items-per-page="ngGridTableOptions.pageOptions.pageSize"  boundary-links=false max-size="maxSize" ng-model="ngGridTableOptions.pageOptions.currentPage" class="pull-right" previous-text="← Previous" Next-text="Next →"></pagination>
-	<p ng-show="totalServerItems">Showing <span ng-bind="fromshowing"></span> to <span ng-if="toshowing <= totalServerItems" ng-bind="toshowing"></span><span ng-if="toshowing > totalServerItems" ng-bind="totalServerItems"></span> of <span ng-bind="totalServerItems"></span><span> entries</span><span ng-if="ngGridTableOptions.filterOptions.filterText != ''"> (filtered from <span ng-bind="ngGridTableOptions.listData.length"></span> total entries)</span></p>	
+	<div class="row">
+		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		<p ng-show="totalServerItems">Showing <span ng-bind="fromshowing"></span> to <span ng-if="toshowing <= totalServerItems" ng-bind="toshowing"></span><span ng-if="toshowing > totalServerItems" ng-bind="totalServerItems"></span> of <span ng-bind="totalServerItems"></span><span> entries</span><span ng-if="ngGridTableOptions.filterOptions.filterText != ''"> (filtered from <span ng-bind="ngGridTableOptions.listData.length"></span> total entries)</span></p>	
+			
+		</div>
+		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+			<pagination rotate="false" total-items="totalServerItems" items-per-page="ngGridTableOptions.pageOptions.pageSize"  boundary-links=false max-size="maxSize" ng-model="ngGridTableOptions.pageOptions.currentPage" previous-text="← Previous" Next-text="Next →" class=" pull-right"></pagination>	
+		</div>
+	</div>
+	
+	
+
 </div><!-- TABLE CONTAINER ENDS -->

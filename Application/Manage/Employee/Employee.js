@@ -40,7 +40,7 @@ function employeeController($scope,$rootScope,$location,$http,$filter,$cookieSto
 	  * Sort Info Options for the ng-grid Table
 	  * =============================================================================================================
 	  */
-	 $scope.sortInfo = {fields: ['', '', '', '', '' ,'', '',''], directions: ['asc']};
+	 $scope.sortInfo = {fields: ['', '', '', '', '' ,'', '',''], directions: ['']};
 	 
 	 
 	 /**

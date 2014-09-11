@@ -26,7 +26,8 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
     $scope.formattedContractList = [];
     $rootScope.closeAlert();
     $cookieStore.remove("contractId");
-    var activeContractList = []
+    var activeContractList = [];
+    $('.daterangepicker').hide();
 
     //Used to maintain the same filter when navigating from different page  and corresponding detail page
     if (!$rootScope.calledFromContractDetail)
@@ -41,9 +42,10 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
      * Sort Info Options for the ng-grid Table
      * =============================================================================================================
      */
+   
     $scope.sortInfo = {
         fields: ['', '', '', '', ''],
-        directions: ['asc']
+        directions: ['']
     };
 
     /**
@@ -135,7 +137,7 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style="text-align:right;height:50px;"> <span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style="display:inline-block;width:75%;text-align:right;height:50px;line-height:40px;"> <span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -187,6 +189,7 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
                     }
                 });
                 $scope.tableOptions.listData = activeContractList;
+               
             }).error(function(data, status) {
                 //Stub data used for local testing
                 
@@ -198,7 +201,8 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
 					 data.value =  data.value.toFixed(2); 
 				 }
 			 });
-		 	   $scope.tableOptions.listData     = activeContractList;
+              $scope.tableOptions.listData     = activeContractList;
+		 	 
 		 	   $rootScope.localCache.ContractList =  $scope.ContractList;
                 if (status == 304) {}
             });
@@ -206,7 +210,13 @@ function ContractController($scope, $rootScope, $location, $http, $filter, $moda
             $scope.ContractList = $rootScope.localCache.ContractList;
             $scope.convertDatetoUSFormat();
             activeContractList = FilterDeleted.filter($scope.ContractList);
-            $scope.tableOptions.listData = activeContractList; //$scope.ContractList;
+            angular.forEach(activeContractList, function(data, key) {
+                if (data.value != null) {
+                    data.value = Number(data.value).toFixed(2);
+                }
+            });
+            $scope.tableOptions.listData = activeContractList;
+           
         }
     }
 

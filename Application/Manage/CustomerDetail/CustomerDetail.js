@@ -117,7 +117,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style ="height:44px; line-height:33px; text-align:right;width:100%;display:inline-block; padding-right: 69px;text-overflow:clip !important;"><span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span  ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style ="height:44px; line-height:33px; text-align:right;width:75%;display:inline-block;text-overflow:clip !important;"><span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span  ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -172,6 +172,26 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
         });
 
     }
+    
+     $scope.$watch('shiftNav', function(newVal, oldVal) {
+        if (newVal != oldVal){
+        	$scope.tableRebuild($scope.contactTableoptions);
+        	$scope.tableRebuild($scope.contractTableoptions);
+        }
+            
+    }, true);
+    
+    /**
+	 * Rebuilding the table
+	 **/
+    $scope.tableRebuild = function(ngtable){
+        ngtable.$gridServices.DomUtilityService.RebuildGrid(
+			  ngtable.$gridScope,
+			  ngtable.ngGrid
+			  );
+    }
+    
+    
     /**
      *==================================================
      * Deleting the seleted contact from the table.
@@ -275,16 +295,29 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
         if ($rootScope.fromCustomer) {
             angular.copy($rootScope.cutomerContractCopy, $scope.CustomerDetail, true);
             $rootScope.fromCustomer = false;
-            $scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
-            $scope.contractTableData = $scope.CustomerDetail.data.contractList;
+            //$scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+            //$scope.contractTableData = $scope.CustomerDetail.data.contractList;
+            
+           //In get we need to filter the deleted datas of the contractList
+            var tempContractList = [];
+            angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+            	if(!data.deleted)
+            		tempContractList.push(data);
+            }); 
+            $scope.CustomerDetail.data.contractList = tempContractList;
+            $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+            
+            
             $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
             $scope.contactTableData = $scope.CustomerDetail.data.contactList;
+            $scope.disabledSave = false;
 
         }
 
         $scope.disableDelete = true;
         $scope.showEmptyContactDetail = true;
         $scope.mapOptions = $scope.CustomerDetail;
+       
 
     } else {
         $scope.newCustomer = false;
@@ -294,22 +327,30 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
             if ($rootScope.fromCustomer) {
                 //angular.copy($rootScope.cutomerContractCopy,$scope.CustomerDetail,true);
                 $scope.CustomerDetail = {};
-                angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
+                //angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
                 $scope.CustomerDetail = $rootScope.cutomerContractCopy;
                 $scope.mapOptions = $scope.CustomerDetail;
                 $scope.needMapCall.callMap = true;
                 $scope.customerHeading = $scope.CustomerDetail.data.customerName;
                 $scope.isError = false;
                 $scope.formatInputData();
-                angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
                 $scope.newCustomer = false;
                 $rootScope.customerName = $scope.CustomerDetail.data.customerName;
                 $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
                 $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
                 $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-                $scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+                
+                //In get we need to filter the deleted datas of the contractList
+                var tempContractList = [];
+                angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+                	if(!data.deleted)
+                		tempContractList.push(data);
+                }); 
+                $scope.CustomerDetail.data.contractList = tempContractList;
                 $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+                
                 $rootScope.fromCustomer = false;
+                $scope.disabledSave = false;
 
             } else {
                 $http.get('/api/customerDetail/' + $cookieStore.get("detailId")).success(function(data) {
@@ -320,9 +361,9 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                     $scope.needMapCall.callMap = true;
                     $scope.customerHeading = data.data.customerName;
                     $scope.isError = false;
-                    activeContractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+                  // activeContractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
                     $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
-                    angular.forEach(activeContractList, function(data, key) {
+                    angular.forEach($scope.CustomerDetail.data.contractList, function(data, key) {
 
                         if (data.value != null) {
                             data.value = Number(data.value).toFixed(2);
@@ -337,7 +378,15 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                     $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
                     $scope.contactTableData = $scope.CustomerDetail.data.contactList;
                     
-                    $scope.contractTableData = activeContractList;
+                   //In get we need to filter the deleted datas of the contractList
+                    var tempContractList = [];
+                    angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+                    	if(!data.deleted)
+                    		tempContractList.push(data);
+                    }); 
+                    $scope.CustomerDetail.data.contractList = tempContractList;
+                    $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+                    $scope.tableRebuild($scope.contactTableoptions);
                     $scope.formatInputData();
                    //Clone the object before pre formatting of data.
                     angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);                    
@@ -351,7 +400,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                     $scope.isError = true;
                     $scope.addAlert("No customer details available.", "danger");
                     //Code used for local testing and it should be removed finally
-                    
+                 /**
 				$scope.CustomerDetail = $rootScope.customerDetail;
 				$scope.formatInputData();
 				if ($rootScope.fromCustomer){
@@ -385,17 +434,13 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
 				 });
 				$scope.contractTableData = activeContractList;
 				$rootScope.fromCustomer = false;
-				$rootScope.fromCustomer = false;
+				$rootScope.fromCustomer = false;**/
 
                 });
+                $scope.disableDelete = false;
+                $scope.disabledSave = true;
             }
         }
-        if ($rootScope.fromCustomer) {
-            $scope.disabledSave = false;
-        }
-
-        $scope.disableDelete = false;
-        $scope.disabledSave = true;
     }
 
     /**
@@ -578,6 +623,11 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
             	$scope.CustomerDetail.data.contactIds.push(data.id);
             });
             
+            $scope.CustomerDetail.data.contractIds = [];
+            angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+            	$scope.CustomerDetail.data.contractIds.push(data.id);
+            });
+            
             if ($scope.CustomerDetail.data.addressStateCode != null)
                 $scope.CustomerDetail.data.addressStateCode = $scope.CustomerDetail.data.addressStateCode.code;
             if ($scope.CustomerDetail.data.addressISOCountry != null)
@@ -673,6 +723,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
             if (nValue != oValue) {
                 if (!angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail))
                     $scope.disabledSave = false;
+                console.log('...'+angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail));
             }
         }
 
@@ -729,13 +780,13 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                 $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
                 $scope.contactTableData = $scope.CustomerDetail.data.contactList;
             }
-                                         /**
-                                          * Rebuilding the people and activity based on the new rows added
-                                          **/
-                                         /*$scope.customerContactTableOption.$gridServices.DomUtilityService.RebuildGrid(
-                                                                                            $scope.customerContactTableOption.$gridScope,
-                                                                                            $scope.customerContactTableOption.ngGrid
-                                                                                             );*/
+            /**
+             * Rebuilding the people and activity based on the new rows added
+             **/
+             $scope.contactTableoptions.$gridServices.DomUtilityService.RebuildGrid(
+                                                $scope.contactTableoptions.$gridScope,
+                                                $scope.contactTableoptions.ngGrid
+                                                                                );
                                          
 
             $scope.modalInstance = null;
@@ -782,6 +833,7 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
     $scope.isRequired = false;
     //$scope.isInfoRequired    = false;
     $scope.mapOptions = {};
+    $scope.clonedContactObj = {};
     $scope.needMapCall = {
         "callMap": false
     };
@@ -795,6 +847,7 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
     $scope.contactTypeValue = [];
     $scope.contactTypeDetails = [];
     $scope.isInfoRequired = [];
+    $scope.custContactList = {};
     $scope.contactObj = {
         "id": "",
         "type": "",
@@ -833,11 +886,11 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
          */
     $scope.formatInputData = function() {
         if ($scope.contactDetail != null) {
-            if ($scope.contactDetail.data.addressISOCountry != null) {
+            if ($scope.contactDetail.data.addressCountryISO != null) {
                 if ($scope.countries != null) {
                     angular.forEach($scope.countries, function(data, key) {
-                        if (data.code == $scope.contactDetail.data.addressISOCountry)
-                            $scope.contactDetail.data.addressISOCountry = data;
+                        if (data.code == $scope.contactDetail.data.addressCountryISO)
+                            $scope.contactDetail.data.addressCountryISO = data.name;
                     });
                 }
             }
@@ -847,7 +900,7 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
                 if ($scope.states != null) {
                     angular.forEach($scope.states, function(data, key) {
                         if (data.code == $scope.contactDetail.data.addressStateCode)
-                            $scope.contactDetail.data.addressStateCode = data;
+                            $scope.contactDetail.data.addressStateCode = data.name;
                     });
                 }
             }
@@ -871,20 +924,23 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
             $scope.contactDetail.data.contactNumbers.push({});
             $scope.contactTypeValue[0] = "email";
             $scope.contactTypeDetails[0] = "";
-        }
-
-
+        }  
+        
+        angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
     } else {
         $http.get('/api/contactDetail/' + $cookieStore.get("contactID")).success(function(data) {
             $scope.contactDetail = data;
             $scope.needMapCall.callMap = true;
             $scope.mapOptions = $scope.contactDetail;
             updateContactTableData();
+            $scope.formatInputData();
+            angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
         }).error(function() {
             //Codes used for local testing and it should be removed finally.
 
             $scope.contactDetail=$scope.contactRemovedDetails;
  			updateContactTableData();
+            angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
         });
     }
 
@@ -985,13 +1041,13 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
      */
     $scope.deleteEmployeeContactInfo = function(index) {
         $scope.contactDetail.data.contactNumbers.splice(index, 1);
+        $scope.contactTypeDetails.splice(index, 1);
+        $scope.contactTypeValue.splice(index, 1);
         if ($scope.contactDetail.data.contactNumbers.length == 0) {
             $scope.contactDetail.data.contactNumbers.push({});
             $scope.contactTypeDetails[0] = "";
             $scope.contactTypeValue[0] = "Phone";
-
         }
-
     };
     /**
      * Showing new row for accepting new contact detail from user
@@ -1194,6 +1250,12 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
                 }
             }
         }
+        
+            if ($scope.contactDetail.data.contactNumbers.length == 0) {
+            $scope.contactDetail.data.contactNumbers.push({});
+            $scope.contactTypeDetails[0] = "";
+            $scope.contactTypeValue[0] = "email";
+        }
         return isInvalidEmail;
     } //Save contact function ends
 
@@ -1242,58 +1304,103 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
 
     $scope.ok = function() {
 
-        if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
-            $scope.UploadImage();
-        }
+        $scope.needToSave = false;        
+        var tempClonedContactObj = {};
+       if ($scope.saveContactNumbers()) 
+            return;  
+        //
+        angular.copy($scope.contactDetail, tempClonedContactObj, true);
+        angular.forEach(tempClonedContactObj.data,function(data,key){            
+            if(!angular.equals(data,$scope.clonedContactObj.data[key]))
+                $scope.needToSave = true;
+                      });
 
-        if ($scope.contactDetail.data.nickname == "" || $scope.contactDetail.data.nickname == null) {
-            $scope.isRequired = true;
+        if (!$scope.needToSave){
+            $scope.cancel();
             return;
         }
-        if ($scope.saveContactNumbers()) {
-            return;
-        }
 
-        if ($scope.contactDetail.data.addressStateCode != null) {
-            var stateCode = $scope.contactDetail.data.addressStateCode;
-            if (typeof stateCode == 'object')
-                $scope.contactDetail.data.addressStateCode = stateCode.code;
-        }
-        if ($scope.contactDetail.data.addressCountryISO != null) {
-            var countryCode = $scope.contactDetail.data.addressCountryISO;
-            if (typeof countryCode == 'object') {
-                $scope.contactDetail.data.addressCountryISO = countryCode.code;
-                $scope.contactDetail.data.addressCountryName = countryCode.name;
-            }
-        }
-
-        if ($scope.contactDetail == undefined) { //
-        } else {
-
-            $http({
-                "method": "post",
-                "url": '/api/contactDetail/update?timestamp=' + CurrentTimeStamp.postTimeStamp(),
-                "data": $scope.contactDetail.data,
-                "headers": {
-                    "content-type": "application/json"
+         else{
+                if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
+                        $scope.UploadImage();
                 }
-            }).success(function(data) {
-                $scope.custContactList = data.data;
-                $scope.newContact = false;
-                if ($scope.isImageuploaded && $cookieStore.get("contactID") == "create") {
-                    //$cookieStore.put("contactID",$scope.custContactList.id);
-                    $scope.UploadImage($scope.custContactList.id);
+
+                if ($scope.contactDetail.data.nickname == "" || $scope.contactDetail.data.nickname == null) {
+                    $scope.isRequired = true;
+                    return;
+                }                
+                
+                if ($scope.contactDetail.data.addressStateCode != null) {
+                    var stateCode = $scope.contactDetail.data.addressStateCode;
+                    if (typeof stateCode == 'object')
+                        $scope.contactDetail.data.addressStateCode = stateCode.code;
                 }
-                if ($cookieStore.get("contactID") == "create") {
-                    $modalInstance.close(formatContactData($scope.custContactList));
+                if ($scope.contactDetail.data.addressCountryISO != null) {
+                    var countryCode = $scope.contactDetail.data.addressCountryISO;
+                    if (typeof countryCode == 'object') {
+                        $scope.contactDetail.data.addressCountryISO = countryCode.code;
+                        $scope.contactDetail.data.addressCountryName = countryCode.name;
+                    }
+                }
+                
+                //Validation for state code and country code
+                var isValidState = false;
+                var isValidCountry = false;
+                $scope.inValidCountryCode=false;
+                $scope.inValidStateCode = false;               
+                if($scope.contactDetail.data.addressStateCode != "" && $scope.contactDetail.data.addressStateCode != null)
+                {
+                	angular.forEach($scope.states,function(data,key){
+                	if(data.code == $scope.contactDetail.data.addressStateCode)
+                		isValidState = true;
+                	});
+                	if(!isValidState)
+                    {
+                     	$scope.inValidStateCode = true;
+                     	return;
+                    }
+                }      
+                if($scope.contactDetail.data.addressCountryISO != "" && $scope.contactDetail.data.addressCountryISO != null)
+                {
+	                angular.forEach($scope.countries,function(data,key){
+	                	if(data.code == $scope.contactDetail.data.addressCountryISO)
+	                		isValidCountry = true;
+	                });
+	                if(!isValidCountry)
+	                {
+	                	$scope.inValidCountryCode = true;
+	                	return;
+	                }
+                }
+                
+                if ($scope.contactDetail == undefined) { //
                 } else {
-                    $modalInstance.close(formatContactData($scope.custContactList));
-                }
 
-            }).error(function(data, status) {
-                console.log("Failed");              
-            });
-        }
+                    $http({
+                        "method": "post",
+                        "url": '/api/contactDetail/update?timestamp=' + CurrentTimeStamp.postTimeStamp(),
+                        "data": $scope.contactDetail.data,
+                        "headers": {
+                            "content-type": "application/json"
+                        }
+                    }).success(function(data) {
+                        $scope.custContactList = data.data;
+                        $scope.newContact = false;
+                        if ($scope.isImageuploaded && $cookieStore.get("contactID") == "create") {
+                            //$cookieStore.put("contactID",$scope.custContactList.id);
+                            $scope.UploadImage($scope.custContactList.id);
+                        }
+                        if ($cookieStore.get("contactID") == "create") {
+                            $modalInstance.close(formatContactData($scope.custContactList));
+                        } else {
+                            $modalInstance.close(formatContactData($scope.custContactList));
+                        }
+
+                    }).error(function(data, status) {
+                        console.log("Failed");              
+                    });
+                }
+             }        
     };
     /**
      * ==================================================================================
@@ -1305,3 +1412,4 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
     };
 
 }
+

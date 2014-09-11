@@ -54,9 +54,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
        }, function(start, end, label) {
     	   var dateValue = $('#dateRange').val();
     	   var startDate = dateValue.split('-')[0];
-    	   var endDate = dateValue.split('-')[1];
-    	   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
-    	   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
+		   var endDate = dateValue.split('-')[1];
+		   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
+		   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
        });
 	
 	//Create mode from customer
@@ -186,11 +186,11 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
  	        headerRowHeight: 40,
  	        columnDefs: [ {field:'activity', displayName:'Activity', width:'20%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><input type="text" class="form-control"/></div>'},
  	        			  //{field:'duration', displayName:'Duration', width:'35%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" ng-model="ActivitiesStartDate[row.rowIndex]" id ="start_{{row.rowIndex}}" ng-click="getCurrentStartDate(row.rowIndex)" /></p> <span class="text-gap">to</span> <p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" format="mm-dd-yy" id ="end_{{row.rowIndex}}" ng-click ="getCurrentEndDate(row.rowIndex)" ng-model="ActivitiesEndDate[row.rowIndex]" ng-change="checkDate(ActivitiesStartDate[row.rowIndex],ActivitiesEndDate[row.rowIndex])" class="form-control"/></p></div>'},
- 	                      {field:'duration', displayName:'Duration', width:'35%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input  class="form-control"  type="text" style="background-color: white;cursor: pointer;width: 190px;" id ="start_{{row.rowIndex}}" readonly ng-focus="initiateDatePicker(row.rowIndex)" /></p></div>'},
- 	        			  {field:'billable', displayName:'Billable', width:'10%',cellTemplate:'<div class="ngCellText" style="padding: 12px 0px 0px 20px !important;"><input type="checkbox"/></div>'},
- 	        			  {field:'hourlyRate', displayName:'Hourly Rate', width:'14%', cellTemplate:'<div class="ngCellText"><input type="text" hourly-Rate  placeholder="Rate"  class="form-control medium-input right_justify" ng-model="activeHourlyRate[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[0].value"/></div>'},
- 	        			  {field:'milestone', displayName:'Fixed Fee', width:'13%', cellTemplate:'<div class="ngCellText"><input type="text" hourly-Rate placeholder="Fixed Fee" class="form-control medium-input right_justify" ng-model="mileStone[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[2].value"/></div>'},
- 	        			  {field:'', displayName:'', width:'5%',headerCellTemplate:plusHeaderCellTemplates,cellTemplate:'<div class="ngCellText"><button class="btn btn-default btn-sm" ng-click="deleteSelectedRow(row.rowIndex,activitiesTableData)"><i class="fa fa-times"></i></button></div>'},
+ 	                      {field:'duration', displayName:'Duration', width:'20%',cellTemplate:'<div class="ngCellText calender-flex" style="width: 100%;"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input  class="form-control"  type="text" style="background-color: white;cursor: pointer;width: 190px;" id ="start_{{row.rowIndex}}" readonly ng-focus="initiateDatePicker(row.rowIndex)" /></p></div>'},
+ 	        			  {field:'billable', displayName:'Billable', width:'15%',cellTemplate:'<div class="ngCellText" style="padding: 12px 0px 0px 20px !important;"><input type="checkbox"/></div>'},
+ 	        			  {field:'hourlyRate', displayName:'Hourly Rate', width:'19%', cellTemplate:'<div class="ngCellText" style="display:inline-block;width:100%;"><input type="text" hourly-Rate  placeholder="Rate"  class="form-control medium-input right_justify" ng-model="activeHourlyRate[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[0].value"/></div>'},
+ 	        			  {field:'milestone', displayName:'Fixed Fee', width:'18%', cellTemplate:'<div class="ngCellText" style="display:inline-block;width:100%;><input type="text" hourly-Rate placeholder="Fixed Fee" class="form-control medium-input right_justify" ng-model="mileStone[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[2].value"/></div>'},
+ 	        			  {field:'', displayName:'', width:'5%',headerCellTemplate:plusHeaderCellTemplates,cellTemplate:'<div class="ngCellText" style="display:inline-block;width:100%;text-align:center;"><button class="btn btn-default btn-sm" ng-click="deleteSelectedRow(row.rowIndex,activitiesTableData)"><i class="fa fa-times"></i></button></div>'},
  	        			]
 	 }
 	 $scope.peopleTableOptions = {
@@ -200,10 +200,10 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 	        rowHeight : 40,        
 	 	        headerRowHeight: 40,
 
-	 	        columnDefs: [ {field:'name', displayName:'Name',width:'38%',cellTemplate:'<div class="ngCellText" style ="width:65%;"><select ng-options="value.name as value.name  for value in nickNames" ng-model ="managerName[row.rowIndex]" class ="form-control" > <option value="">-- Select --</option></select></div>'},
+	 	        columnDefs: [ {field:'name', displayName:'Name',width:'38%',cellTemplate:'<div class="ngCellText" style ="display:inline-block;width:100%;"><div ng-show="managerName[row.rowIndex]">{{managerName[row.rowIndex]}}</div><select ng-hide="managerName[row.rowIndex]" ng-options="value.name as value.name  for value in nickNames" ng-model ="managerName[row.rowIndex]" class ="form-control medium-input"> <option value="">-- Select --</option></select></div>'},
 	 	        			  {field:'manager', displayName:'Manager',width:'19%',cellTemplate:'<div class="ngCellText" style="padding: 12px 0px 0px 20px !important;"><input ng-click="deselectOthers(row.rowIndex)" ng-model="peopleMangerscheckbox[row.rowIndex]" type="checkbox"></div>'},
-	 	        			  {field:'hourlyRate', displayName:'Hourly Rate',width:'35%',cellTemplate:'<div class="ngCellText"><input type="text" class="form-control right_justify" hourly-Rate  placeholder="Rate" ng-model="personHourlyRate[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[1].value"/></div>'},
-	 	        			  {field:'', displayName:'',width:'5%',headerCellTemplate:plusHeaderCellTemplate,cellTemplate:'<div class="ngCellText"><button class="btn btn-default btn-sm" ng-click="deleteSelectedRow(row.rowIndex,peopleMangers)"><i class="fa fa-times"></i></button></div>'},
+	 	        			  {field:'hourlyRate', displayName:'Hourly Rate',width:'35%',cellTemplate:'<div class="ngCellText" style="display:inline-block;width:100%;"><input type="text" class="form-control medium-input right_justify" hourly-Rate  placeholder="Rate" ng-model="personHourlyRate[row.rowIndex]" ng-disabled="contractDetail.data.type != invoicemethods[1].value"/></div>'},
+	 	        			  {field:'', displayName:'',width:'5%',headerCellTemplate:plusHeaderCellTemplate,cellTemplate:'<div class="ngCellText" style="display:inline-block;width:100%;text-align:center;"><button class="btn btn-default btn-sm" ng-click="deleteSelectedRow(row.rowIndex,peopleMangers)"><i class="fa fa-times"></i></button></div>'},
 	 	        			]
 	 }
 	 
@@ -228,6 +228,14 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 {
 		 Array.splice(index,1);
 	 }
+	 
+    $scope.$watch('shiftNav', function(newVal, oldVal) {
+        if (newVal != oldVal){
+        	$scope.tableRebuild($scope.peopleTableOptions);
+        	$scope.tableRebuild($scope.activitiesTableOptions);
+        }
+            
+    }, true);
     
     /**
 	 * Rebuilding the people and activity based on the new rows added
@@ -559,6 +567,12 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 if($scope.contractDetail.data.currency != null)
 				 delete $scope.contractDetail.data.currency;
 		 }
+		 else
+		 {
+			 $scope.contractDetail.data.value = parseFloat($scope.contractDetail.data.value);
+		 }
+		 if($scope.contractDetail.data.budgetedHours != null)
+			 $scope.contractDetail.data.budgetedHours = parseInt($scope.contractDetail.data.budgetedHours);
 	
 	 } 
 	 /**
@@ -582,7 +596,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 {			 
 			 if(!angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))		 
 			 {
-			 	 if($scope.contractDetail.data.title == "")
+			 	 if($scope.contractDetail.data.title == "" || $scope.contractDetail.data.title == null)
 				 {
 					 $rootScope.addAlert("You must enter a description for the contract to be saved.","danger");
 					 return;
@@ -654,7 +668,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 $scope.savecontractData = function()
 	 {
 		 
-		 if($scope.contractDetail.data.title == "")
+		 if($scope.contractDetail.data.title == "" || $scope.contractDetail.data.title == null)
 		 {
 			 $rootScope.addAlert("You must enter a description for the contract to be saved.","danger");
 			 return;
@@ -670,6 +684,13 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 console.log($scope.contractDetail.data.currency);
 			 $rootScope.closeAlert();
 			 $scope.formatPostData();
+			 //Whenever user clicks outside the calendar once it is opened, it will trigger the cancel function.
+			 //To avoid the following code is been added
+			 if($scope.contractDetail.data.startDate == "NaN-NaN-NaN")
+				 delete $scope.contractDetail.data.startDate;
+			 if($scope.contractDetail.data.endDate == "NaN-NaN-NaN")
+				 delete $scope.contractDetail.data.endDate;
+			 
 			 var postData = $scope.contractDetail.data;			 
 			 var postTime =  CurrentTimeStamp.postTimeStamp();
 			 $http({
@@ -749,7 +770,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	  */
 	 $scope.confirmDelete = function(size)
 	 {
-		$rootScope.showModal('/api/delete/contract/'+$cookieStore.get("detailId")+'?timestamp='+CurrentTimeStamp.postTimeStamp(),'Confirm Delete','Are you sure you would like to delete '+$scope.contractDetail.data.title+'<span></span> ? This action can not be undone.','Cancel', 'Confirm');
+		$rootScope.showModal('/api/delete/contract/'+$cookieStore.get("detailId")+'?timestamp='+CurrentTimeStamp.postTimeStamp(),'Confirm Delete','Are you sure you would like to delete '+$scope.contractDetail.data.title+'? This action can not be undone.','Cancel', 'Confirm');
 		$scope.$watch('isPostSuccess',function(nValue,oValue){
 			if(nValue == null || (nValue == oValue))
 				return;

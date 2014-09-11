@@ -31,7 +31,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
     $scope.formattedCustomerList = [];
     $scope.isJsonFormattingNeeded = true;
     $rootScope.closeAlert();
-
+    $('.simplecolorpicker').hide();
     //Used to maintain the same filter when navigating from different page  and corresponding detail page
     if (!$rootScope.calledFromCustomerDetail)
         $rootScope.searchData = false;
@@ -123,7 +123,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
             displayName: '',
             width: '20%',
             sortable: false,
-            cellTemplate: '<div class="customer-icons-container ngCellText"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
+            cellTemplate: '<div class="customer-icons-container ngCellText"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}" style="margin-right:5px;"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
         }]
     }
     /**
@@ -178,7 +178,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
             var customerId = $scope.selectedData[0].customerId
             var id = $scope.selectedData[0].id
             var customerName = $scope.selectedData[0].customerName;
-            $rootScope.showModal('/api/delete/customer/' + id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + '<span></span> ? This action can not be undone.', 'Cancel', 'Confirm');
+            $rootScope.showModal('/api/delete/customer/' + id + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + '? This action can not be undone.', 'Cancel', 'Confirm');
             $scope.$watch('isPostSuccess', function(nValue, oValue) {
                 if (nValue == null || (nValue == oValue))
                     return;

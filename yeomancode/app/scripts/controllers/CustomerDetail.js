@@ -81,7 +81,7 @@
         data: 'contactTableData',
         multiSelect: false,
         headerRowHeight: 40,
-        rowHeight: 40,
+        rowHeight: 45,
         rowTemplate: '<div ng-dblclick="openContactInfo(row,row.rowIndex)" ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}"><div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div><div ng-cell></div></div>',
         columnDefs: [{
             field: 'name',
@@ -92,7 +92,7 @@
             displayName: '',
             sortable: false,
             width: "11%",
-            cellTemplate: '<div class="ngCellText"  style="text-align: center;"><button class="btn btn-default btn-sm" ng-click="deleteContactList(row,row.rowIndex)" ><i class="fa fa-times"></i></button></div>',
+            cellTemplate: '<div class="ngCellText custDetail-contract-ButContaniner"><button class="btn btn-default btn-sm" ng-click="deleteContactList(row,row.rowIndex)" ><i class="fa fa-times"></i></button></div>',
             headerCellTemplate: contactHeaderCell
         }]
     };
@@ -119,7 +119,7 @@
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style ="height:44px; line-height:33px; text-align:right;width:100%;display:inline-block; padding-right: 69px;text-overflow:clip !important;"><span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span  ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style ="height:44px; line-height:33px; text-align:right;width:75%;display:inline-block;text-overflow:clip !important;"><span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span  ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -137,7 +137,7 @@
             displayName: '',
             sortable: false,
             width: "5%",
-            cellTemplate: '<div class="ngCellText custDetail-contract-ButContaniner deleteButton" style="text-align: center;"><button class="btn btn-default btn-sm" ng-click="deleteContractList(row, row.rowIndex)" ><i class="fa fa-times"></i></button></div>',
+            cellTemplate: '<div class="ngCellText custDetail-contract-ButContaniner"><button class="btn btn-default btn-sm" ng-click="deleteContractList(row, row.rowIndex)" ><i class="fa fa-times"></i></button></div>',
             headerCellTemplate: myHeaderCellTemplate
         }, ]
     };
@@ -174,6 +174,26 @@
         });
 
     }
+    
+     $scope.$watch('shiftNav', function(newVal, oldVal) {
+        if (newVal != oldVal){
+        	$scope.tableRebuild($scope.contactTableoptions);
+        	$scope.tableRebuild($scope.contractTableoptions);
+        }
+            
+    }, true);
+    
+    /**
+	 * Rebuilding the table
+	 **/
+    $scope.tableRebuild = function(ngtable){
+        ngtable.$gridServices.DomUtilityService.RebuildGrid(
+			  ngtable.$gridScope,
+			  ngtable.ngGrid
+			  );
+    }
+    
+    
     /**
      *==================================================
      * Deleting the seleted contact from the table.
@@ -277,10 +297,22 @@
         if ($rootScope.fromCustomer) {
             angular.copy($rootScope.cutomerContractCopy, $scope.CustomerDetail, true);
             $rootScope.fromCustomer = false;
-            $scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
-            $scope.contractTableData = $scope.CustomerDetail.data.contractList;
+            //$scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+            //$scope.contractTableData = $scope.CustomerDetail.data.contractList;
+            
+           //In get we need to filter the deleted datas of the contractList
+            var tempContractList = [];
+            angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+            	if(!data.deleted)
+            		tempContractList.push(data);
+            }); 
+            $scope.CustomerDetail.data.contractList = tempContractList;
+            $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+            
+            
             $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
             $scope.contactTableData = $scope.CustomerDetail.data.contactList;
+            $scope.disabledSave = false;
 
         }
 
@@ -296,22 +328,29 @@
             if ($rootScope.fromCustomer) {
                 //angular.copy($rootScope.cutomerContractCopy,$scope.CustomerDetail,true);
                 $scope.CustomerDetail = {};
-                angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
+                //angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
                 $scope.CustomerDetail = $rootScope.cutomerContractCopy;
                 $scope.mapOptions = $scope.CustomerDetail;
                 $scope.needMapCall.callMap = true;
                 $scope.customerHeading = $scope.CustomerDetail.data.customerName;
                 $scope.isError = false;
                 $scope.formatInputData();
-                angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
                 $scope.newCustomer = false;
                 $rootScope.customerName = $scope.CustomerDetail.data.customerName;
                 $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
                 $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
                 $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-                $scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+                
+                //In get we need to filter the deleted datas of the contractList
+                var tempContractList = [];
+                angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+                	if(!data.deleted)
+                		tempContractList.push(data);
+                }); 
+                $scope.CustomerDetail.data.contractList = tempContractList;
                 $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
                 $rootScope.fromCustomer = false;
+                $scope.disabledSave = false;
 
             } else {
                 $http.get('/api/customerDetail/' + $cookieStore.get("detailId")).success(function(data) {
@@ -322,9 +361,9 @@
                     $scope.needMapCall.callMap = true;
                     $scope.customerHeading = data.data.customerName;
                     $scope.isError = false;
-                    activeContractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+                  // activeContractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
                     $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
-                    angular.forEach(activeContractList, function(data, key) {
+                    angular.forEach($scope.CustomerDetail.data.contractList, function(data, key) {
 
                         if (data.value != null) {
                             data.value = Number(data.value).toFixed(2);
@@ -339,7 +378,15 @@
                     $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
                     $scope.contactTableData = $scope.CustomerDetail.data.contactList;
                     
-                    $scope.contractTableData = activeContractList;
+                   //In get we need to filter the deleted datas of the contractList
+                    var tempContractList = [];
+                    angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+                    	if(!data.deleted)
+                    		tempContractList.push(data);
+                    }); 
+                    $scope.CustomerDetail.data.contractList = tempContractList;
+                    $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+                    $scope.tableRebuild($scope.contactTableoptions);
                     $scope.formatInputData();
                    //Clone the object before pre formatting of data.
                     angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);                    
@@ -353,7 +400,7 @@
                     $scope.isError = true;
                     $scope.addAlert("No customer details available.", "danger");
                     //Code used for local testing and it should be removed finally
-                    
+                 /**
 				$scope.CustomerDetail = $rootScope.customerDetail;
 				$scope.formatInputData();
 				if ($rootScope.fromCustomer){
@@ -387,17 +434,13 @@
 				 });
 				$scope.contractTableData = activeContractList;
 				$rootScope.fromCustomer = false;
-				$rootScope.fromCustomer = false;
+				$rootScope.fromCustomer = false;**/
 
                 });
+                $scope.disableDelete = false;
+                $scope.disabledSave = true;
             }
-        }
-        if ($rootScope.fromCustomer) {
-            $scope.disabledSave = false;
-        }
-
-        $scope.disableDelete = false;
-        $scope.disabledSave = true;
+        }  
     }
 
     /**
@@ -580,6 +623,11 @@
             	$scope.CustomerDetail.data.contactIds.push(data.id);
             });
             
+            $scope.CustomerDetail.data.contractIds = [];
+            angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+            	$scope.CustomerDetail.data.contractIds.push(data.id);
+            });
+            
             if ($scope.CustomerDetail.data.addressStateCode != null)
                 $scope.CustomerDetail.data.addressStateCode = $scope.CustomerDetail.data.addressStateCode.code;
             if ($scope.CustomerDetail.data.addressISOCountry != null)
@@ -628,7 +676,7 @@
     $scope.confirmDelete = function(size) {
         var customerName = $scope.CustomerDetail.data.customerName;
 
-        $rootScope.showModal('/api/delete/customer/' + $cookieStore.get("detailId") + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + '<span></span> ? This action can not be undone.', 'Cancel', 'Confirm');
+        $rootScope.showModal('/api/delete/customer/' + $cookieStore.get("detailId") + '?timestamp=' + CurrentTimeStamp.postTimeStamp(), 'Confirm Delete', 'Are you sure you would like to delete ' + customerName + '? This action can not be undone.', 'Cancel', 'Confirm');
         $scope.$watch('isPostSuccess', function(nValue, oValue) {
             if (nValue == null || (nValue == oValue))
                 return;

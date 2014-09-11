@@ -22,6 +22,7 @@ function tableController($scope, $timeout, $window, $rootScope) {
             return;
         if ($rootScope.searchData)
             $scope.ngGridTableOptions.filterOptions.filterText = $rootScope.searchData;
+        console.log($scope.ngGridTableOptions);
         $scope.getTableData($scope.ngGridTableOptions.pageOptions.pageSize, $scope.ngGridTableOptions.pageOptions.currentPage, $scope.ngGridTableOptions.filterOptions.filterText);
     }, true);
 

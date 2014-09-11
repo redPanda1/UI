@@ -1,23 +1,9 @@
-/*.content-align .form-group label,
-.content-align .form-group span
-
-{
-	font-family: "LotoFont", sans-serif;
-	font-weight: normal !important;
-	width:40%;
-	font-size:14px;
-	float:left;
-	height: 25px;
-	line-height: 25px;
-}*/
-
 .form-group span.unit-position
 {
 	font-family: "LotoFont", sans-serif;
 	font-weight: normal;
 	font-size:12px;
 }
-
 .imgContain
 {
 	background-size:contain;	
@@ -312,14 +298,12 @@ ul[id^="typeahead"] {
 	text-align: center;
 	height: 44px;
 }
-.deleteButton
-{
-	margin-top: 10px;
-	margin-left: 8px;
-}
 .custDetail-contract-ButContaniner
 {
 	height:45px;
+	text-align: center;
+	display: inline-block;
+	width: 100%;
 }
 /*.commentsButton
 {
