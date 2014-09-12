@@ -36,11 +36,11 @@
 				</div>
 				
 				<div class="form-group">
-					<label>Contractor</label>  <span><input type="checkbox" ng-model="EmployeeDetail.data.isContractor" /></span>
+					<label>Contractor</label>  <label><input type="checkbox" ng-model="EmployeeDetail.data.isContractor" /></label>
 				</div>
 				
 				<div class="form-group">
-					<label>Part Time</label>   <span><input type="checkbox" ng-model="EmployeeDetail.data.isPartTime" /></span>
+					<label>Part Time</label>   <label><input type="checkbox" ng-model="EmployeeDetail.data.isPartTime" /></label>
 				</div>
 			</form>				
 		</div>			
@@ -85,7 +85,7 @@
 			<!-- TABLE CONTAINER BODY STARS -->
 			<div class="row collapse-container" collapse="contactcollapseTable">
 				<div class="boxcontainer-body">			
-					<div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">	
+					<div class="col-sm-6 col-md-6 col-lg-6 contact-address-map">	
 						
 						<div class="row boxcontainer-body" collapse="contactcollapseTable">											
 							<div class="col-sm-5 col-md-5 col-lg-5 contect-address">	
@@ -108,24 +108,25 @@
 
 					</div>
 					<div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">
-						<div class="contact-type-table-header">
-							<div class="contact-second-column">Type</div>
-							<div class="contact-third-column">Info</div>
-							<div class="contact-first-column"><button ng-click="addEmployeeContactInfo();" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></button></div>
-						</div>	
-						<div class="contact-type-table-body">
-							<table class="table table-bordered table-striped">				
-								<tr ng-repeat="emp_contact in EmployeeDetail.data.contactNumbers">
-									<td class="contact-second-column"><span><select class="form-control" ng-options="contact as contact for contact in contactNumberTypes" ng-model="contactTypeValue[$index]"></select></span></td>
-									<td class="contact-third-column"><span><input type="text"  class="form-control" ng-model="contactTypeDetails[$index]"/></span></td>
-									<td class="contact-first-column">
-										<button  ng-click="deleteEmployeeContactInfo($index);" class="btn btn-default btn-sm"><i class="fa fa-times"></i></button>
-									</td>
-								</tr>
-							</table>
-						</div>				
+						<table class="table table-bordered table-striped">	
+						<thead>
+							<tr>
+								<td>Type</td>
+								<td>Info</td>
+								<td><button ng-click="addEmployeeContactInfo();" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></button></td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="emp_contact in EmployeeDetail.data.contactNumbers">
+								<td><span><select class="form-control" ng-options="contact as contact for contact in contactNumberTypes" ng-model="contactTypeValue[$index]"></select></span></td>
+								<td><span><input type="text"  class="form-control" ng-model="contactTypeDetails[$index]"/></span></td>
+								<td>
+									<button  ng-click="deleteEmployeeContactInfo($index);" class="btn btn-default btn-sm"><i class="fa fa-times"></i></button>
+								</td>
+							</tr>
+						</tbody>				
+						</table>												
 					</div>	
-
 				</div><!-- TABLE CONTAINER BODY ENDS -->
 			</div>
 

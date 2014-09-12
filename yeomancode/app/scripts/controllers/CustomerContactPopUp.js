@@ -57,16 +57,31 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
 
             if ($scope.contactDetail.data.contactNumbers == null || $scope.contactDetail.data.contactNumbers.length === 0) {
                 $scope.contactDetail.data.contactNumbers = [];
-                $scope.contactDetail.data.contactNumbers.push({});
-                $scope.contactTypeValue[0] = "email";
-                $scope.contactTypeDetails[0] = "";
+                console.log("...");
             }
 
             for (var i = 0; i < $scope.contactDetail.data.contactNumbers.length; i++) {
                 $scope.contactTypeDetails[i] = $scope.contactDetail.data.contactNumbers[i].details;
                 $scope.contactTypeValue[i] = $scope.contactDetail.data.contactNumbers[i].type;
             }
-        }
+     }
+      /**
+       * ====================================================================================================
+       * Function used to format table data
+       * ====================================================================================================
+       */
+    
+	    $scope.formatTableData = function()
+	    {
+	    	if ($scope.contactDetail.data.contactNumbers.length === 0) {
+	            $scope.contactDetail.data.contactNumbers = [];
+	            $scope.contactDetail.data.contactNumbers.push({});
+	            $scope.contactTypeValue[0] = "email";
+	            $scope.contactTypeDetails[0] = "";
+	        }
+	    }
+    
+    
         /**
          * ========================================================================================================
          * Function Used to map the country code to the country name during GET and POST.
@@ -88,7 +103,7 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
                 if ($scope.states != null) {
                     angular.forEach($scope.states, function(data, key) {
                         if (data.code == $scope.contactDetail.data.addressStateCode)
-                            $scope.contactDetail.data.addressStateCode = data;
+                            $scope.contactDetail.data.addressStateCode = data.name;
                     });
                 }
             }
@@ -123,6 +138,8 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
             updateContactTableData();
             $scope.formatInputData();
             angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
+            console.log($scope.clonedContactObj.data.contactNumbers);
+            $scope.formatTableData();
         }).error(function() {
             //Codes used for local testing and it should be removed finally.
 
@@ -438,12 +455,6 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
                 }
             }
         }
-        
-            if ($scope.contactDetail.data.contactNumbers.length == 0) {
-            $scope.contactDetail.data.contactNumbers.push({});
-            $scope.contactTypeDetails[0] = "";
-            $scope.contactTypeValue[0] = "email";
-        }
         return isInvalidEmail;
     } //Save contact function ends
 
@@ -503,6 +514,11 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
                 $scope.needToSave = true;
                       });
 
+        console.log($scope.needToSave);
+        //To upload image if there is no change in the detail object
+        if ($scope.isImageuploaded && !$scope.needToSave)
+        	$scope.needToSave = true;
+        
         if (!$scope.needToSave){
             $scope.cancel();
             return;
@@ -531,7 +547,11 @@ angular.module('redPandaApp').controller('ContactModalController', ['$scope', '$
                     }
                 }
                 
-                //Validation for state code and country code
+                /**
+                 * ===================================================================
+                 * Validation for state code and country code
+                 * ===================================================================
+                 */
                 var isValidState = false;
                 var isValidCountry = false;
                 $scope.inValidCountryCode=false;

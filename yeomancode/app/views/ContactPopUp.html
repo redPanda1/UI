@@ -35,39 +35,42 @@
                  </div>
                 
             </form>
-        </div>
-       
+        </div>       
     </div><!-- PHOTO UPLOAD AND BASIC INFO ENDS -->
+   
     <div class = "row"><!-- CONTACT TABLE STRATS  -->
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 contactPopUp">                       
-           <div class="contact-type-table-header">
-				<div class="contact-second-column">Type</div>
-				<div class="contact-third-column">Info</div>
-				<div class="contact-first-column plusButton"><button ng-click="addEmployeeContactInfo();" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></button></div>
-		   </div>	
-			<div class="contact-type-table-body">
-				<table class="table table-bordered table-striped contactTableContents">				
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 contactPopUp">                           
+			<table class="table table-bordered table-striped contact-info-type">				
+				<thead>
+					<tr>
+						<td>Type</td>
+						<td>Info</td>
+						<td><button ng-click="addEmployeeContactInfo();" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></button></td>
+					</tr>
+				</thead>
+				<tbody>
 					<tr ng-repeat="emp_contact in contactDetail.data.contactNumbers">
-						<td class="contact-second-column">
+						<td>
 
 							<select ng-options="contact as contact for contact in contactNumberTypes" 
-							         ng-model="contactTypeValue[$index]" class="form-control">
+								     ng-model="contactTypeValue[$index]" class="form-control">
 							</select>
 
 						</td>
-						<td class="contact-third-column">
+						<td>
 
 							<input type="text" 	ng-model="contactTypeDetails[$index]" ng-change ="isInfoRequired[$index] = false"
 								class="form-control" ng-class="{'red': isInfoRequired[$index]}"  id ="info_{{$index}}"/>
 
 						</td>
-						<td class="contact-first-column">
+						<td>
 							<button ng-click="deleteEmployeeContactInfo($index);" class="btn btn-default btn-sm"><i class="fa fa-times"></i></button></td>
-					</tr>					
-				</table>
-			</div>	
+					</tr>	
+				</tbody>				
+			</table>
         </div>
     </div><!-- CONTACT TABLE ENDS  -->
+    
     <div class="row"><!-- CONTACT MAP STARTS -->
         <div class="col-sm-5 col-md-5 col-lg-5 contect-address">  
             <input type="text" ng-model="contactDetail.data.addressStreet" placeholder="street" class="form-control">

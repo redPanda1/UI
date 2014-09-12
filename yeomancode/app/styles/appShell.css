@@ -1,20 +1,19 @@
-/*Apply lato font to the whole body*/
 body
 {
 	font-family: "LotoFont", sans-serif;
   	font-weight: 400;
   	font-size: 1.4em;
   	background: #E9EBEC;
+  	
 }
 @font-face {
     font-family: LotoFont;
-    src: url(/fonts/Lato-Regular.ttf);
+    src: url(../fonts/Lato-Regular.ttf);
 }
 @font-face {
     font-family: LotoLightFont;
-    src: url(/fonts/Lato-Light.ttf);}
-/*ngGrid styles*/
-
+    src: url(../fonts/Lato-Light.ttf);
+   }
 
 /*Style for the Header*/
 .header
@@ -587,9 +586,8 @@ ul
 }
 .boxcontainer-body
 {
-	padding-top: 15px;
+	padding-top: 10px;
 	height: auto;
-	min-height: 60px;
 }
 .collapse-container
 {
@@ -712,6 +710,15 @@ body {
 	text-align: right;
 	cursor: pointer;
 }
+.modal 
+{
+	overflow-y: auto;
+}
+
+.modal-open 
+{
+	overflow: auto;
+}
 .content-align .form-group label
 {
 	font-family: "LotoFont", sans-serif;
@@ -755,13 +762,7 @@ body {
 {
 	margin-right:29px!important;
 }
-.modal {
- overflow-y: auto;
-}
 
-.modal-open {
- overflow: auto;
-}
 .labelcaption
 {
 	text-align: right;

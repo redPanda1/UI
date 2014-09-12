@@ -1,4 +1,3 @@
-
 <!-- EMPLOYEE DETAIL CONTENT STARTS -->
 <div ng-controller="contractDetailController" class="employee">
 	<div id="alertBox"></div>	
@@ -96,14 +95,14 @@
 			<!-- TABLE CONTAINER BODY STARS -->
 			<div class="row collapse-container" collapse="contactcollapseTable">
 				<div class="boxcontainer-body">			
-					<div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">						
+					<div class="col-sm-6 col-md-6 col-lg-6">						
 						Revenue	
 						<progress><bar ng-repeat="bar in stacked" value="bar.value" type="{{bar.type}}"><span ng-hide="bar.value < 5"><span ng-bind="bar.value"></span>%</span></bar></progress>
 
 						Billed: $1300.00
 
 					</div>
-					<div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">
+					<div class="col-sm-6 col-md-6 col-lg-6">
 						Hours
 						<progress><bar ng-repeat="bar in stacked" value="bar.value" type="{{bar.type}}"><span ng-hide="bar.value < 5"><span ng-bind="bar.value"></span>%</span></bar></progress>
 						<p>Worked: 31 hours</p>

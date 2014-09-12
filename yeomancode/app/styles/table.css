@@ -3,7 +3,7 @@
 	width:100% !important;
 	height: auto !important;
 	border: 1px solid #DBDEE0;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 .gridStyle .ngViewport {
     height: auto !important;
@@ -152,7 +152,7 @@
 }
 .default-image
 {
-	background-image: url('/images/redPanda50.jpg');
+	background-image: url('../images/redPanda50.jpg');
 	display: inline-block;
 	width: 50px;
 	height: 50px;

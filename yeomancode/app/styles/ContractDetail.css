@@ -46,17 +46,9 @@
 }
 .contract-description
 {
-	margin-top: 45px;
+	margin-top: 40px;
 }
-/*.content-align .contract-description  .form-group label:first-child
-{
-	width: 30%;
-}
-.contract-description .form-group .duration
-{
-	width: 65%;
-}
-*/.calender-flex
+.calender-flex
 {
 	display: -webkit-inline-flex;
 	display: -ms-inline-flexbox;
@@ -92,7 +84,7 @@
 }
 .modal-body
 {
-	height: 250px;
+	height: auto;
 }
 .multi-select-model .multiselect-btn
 {

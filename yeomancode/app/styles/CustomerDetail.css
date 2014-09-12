@@ -12,10 +12,6 @@
 {
 	width:30%;
 }
-.contact-map
-{
-	height: 250px;
-}
 .comments-container .comments .time
 {
 	color: gray;
@@ -39,37 +35,16 @@
 	display: inline-table;
 	margin-top: 4px;
 }
-.contect-address
-{
-	height: 255px;
-}
 /* Removing border for contact type table map */
 .contect-address input,.contect-address .state-name
 {
 	margin-bottom: 15px;
 
 }
-/*.content-align .form-group label:first-child,
-.content-align .form-group span:first-child
-{
-	text-indent: 15px;	
-}*/
 /*for overtime cost row bottom position*/
 .financial .Overtime label, .financial .Overtime .input-group
 {
 	margin-top: 45px;
-}
-.contact-info-type
-{
-	padding-left: 25px; 
-	padding-top: 10px;
-}
-.contact-info-type .boxcontainer-body
-{
-	border: 1px solid #DBDEE0;
-	height: auto !important;
-	margin-bottom: 10px;
-	margin-right: 0px;
 }
 /* attachments container style */
 .emp-attachments-container
@@ -92,17 +67,6 @@
 .attachments-buttons
 {
 	margin-left: 0px !important;
-}
-
-/* to make elastic padding for all device in bootstrap table (overriding bootstrap css)*/
-.contact-info-type .table>thead>tr>th, 
-.contact-info-type .table>tbody>tr>th, 
-.contact-info-type .table>tfoot>tr>th, 
-.contact-info-type .table>thead>tr>td, 
-.contact-info-type .table>tbody>tr>td, 
-.contact-info-type .table>tfoot>tr>td {
-	padding: 1%;
-	vertical-align: middle !important;
 }
 .contact-info-type .contact-type-table-body .table>tbody>tr>td.contact-second-column
 {
@@ -157,56 +121,10 @@
 {
 	margin-left:4%;	
 }
-
-.customer .contact-first-column
-{
-	width: 85%;
-	float: left;
-	line-height: 2.4 !important;
-}
-.contact-second-column
-{
-	width: 15%;
-	float: left;
-	line-height: 2.4 !important;
-}
-.contact-third-column
-{
-	width: 60%;
-	float: left;
-	line-height: 2.4 !important;
-}
-.contact-type-table-body
-{
-	height: auto;
-	margin-bottom: 10px;
-	overflow-y: auto;
-	width: 100%;
-}
-.contact-type-table-body table
-{
-	margin-bottom: 0;
-}
-.contact-type-table-header 
-{
-	font-weight: bold;
-	width: 100%;
-	display: inline-flex;
-	float: left;
-	line-height: 26px;
-	border: 1px solid #ddd;
-	border-bottom-width: 0;
-}
-
 @media(max-width:767px) {
 	.financial .Overtime label, .financial .Overtime .input-group {
 		margin-top: 0;
 	}
-}
-/** style for aligning text to right side **/
-.right-justify
-{
-	text-align: right !important;
 }
 /** style for enabling scroll bar in auto complete **/
 .contect-address ul.dropdown-menu
@@ -269,29 +187,6 @@ ul[id^="typeahead"] {
 {
 	line-height: 30px;
 }
-.contact-first-column
-{
-	width: 20%;
-	float: left;
-}
-.contact-second-column
-{
-	width: 20%;
-	float: left;
-	line-height: 2.4 !important;
-}
-.contact-third-column
-{
-	width: 60%;
-	float: left;
-	line-height: 2.4 !important;
-}
-.contact-type-table-header .contact-first-column,
-.contact-type-table-header .contact-second-column, 
-.contact-type-table-header .contact-third-column
-{
-	padding: 1px 10px;	
-}
 .contact-type-table-body table tbody td
 {
 	border: 0px;
@@ -301,16 +196,11 @@ ul[id^="typeahead"] {
 .custDetail-contract-ButContaniner
 {
 	height:45px;
+	line-height: 32px;
 	text-align: center;
 	display: inline-block;
 	width: 100%;
 }
-/*.commentsButton
-{
-	width: 100%;
-	display: inline-block;
-	text-align: center;
-}*/
 .plusButton
 {
 	text-align: center;
