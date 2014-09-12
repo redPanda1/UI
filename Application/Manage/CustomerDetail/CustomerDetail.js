@@ -869,16 +869,31 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
 
             if ($scope.contactDetail.data.contactNumbers == null || $scope.contactDetail.data.contactNumbers.length === 0) {
                 $scope.contactDetail.data.contactNumbers = [];
-                $scope.contactDetail.data.contactNumbers.push({});
-                $scope.contactTypeValue[0] = "email";
-                $scope.contactTypeDetails[0] = "";
+                console.log("...");
             }
 
             for (var i = 0; i < $scope.contactDetail.data.contactNumbers.length; i++) {
                 $scope.contactTypeDetails[i] = $scope.contactDetail.data.contactNumbers[i].details;
                 $scope.contactTypeValue[i] = $scope.contactDetail.data.contactNumbers[i].type;
             }
-        }
+     }
+      /**
+       * ====================================================================================================
+       * Function used to format table data
+       * ====================================================================================================
+       */
+    
+	    $scope.formatTableData = function()
+	    {
+	    	if ($scope.contactDetail.data.contactNumbers.length === 0) {
+	            $scope.contactDetail.data.contactNumbers = [];
+	            $scope.contactDetail.data.contactNumbers.push({});
+	            $scope.contactTypeValue[0] = "email";
+	            $scope.contactTypeDetails[0] = "";
+	        }
+	    }
+    
+    
         /**
          * ========================================================================================================
          * Function Used to map the country code to the country name during GET and POST.
@@ -908,7 +923,7 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
         }
 
     }
-
+   
     if ($cookieStore.get("contactID") == "create") {
         $scope.contactDetail = {
             "success": true,
@@ -935,6 +950,8 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
             updateContactTableData();
             $scope.formatInputData();
             angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
+            console.log($scope.clonedContactObj.data.contactNumbers);
+            $scope.formatTableData();
         }).error(function() {
             //Codes used for local testing and it should be removed finally.
 
@@ -943,7 +960,7 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
             angular.copy($scope.contactDetail, $scope.clonedContactObj, true);
         });
     }
-
+    
 
     /**
      * =======================================================
@@ -1250,12 +1267,6 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
                 }
             }
         }
-        
-            if ($scope.contactDetail.data.contactNumbers.length == 0) {
-            $scope.contactDetail.data.contactNumbers.push({});
-            $scope.contactTypeDetails[0] = "";
-            $scope.contactTypeValue[0] = "email";
-        }
         return isInvalidEmail;
     } //Save contact function ends
 
@@ -1304,22 +1315,26 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
 
     $scope.ok = function() {
 
-        $scope.needToSave = false;        
-        var tempClonedContactObj = {};
+       $scope.needToSave = false;        
+       var tempClonedContactObj = {};
        if ($scope.saveContactNumbers()) 
             return;  
-        //
+       
         angular.copy($scope.contactDetail, tempClonedContactObj, true);
-        angular.forEach(tempClonedContactObj.data,function(data,key){            
+        angular.forEach(tempClonedContactObj.data,function(data,key){   
             if(!angular.equals(data,$scope.clonedContactObj.data[key]))
                 $scope.needToSave = true;
-                      });
+        });
 
+        console.log($scope.needToSave);
+        //To upload image if there is no change in the detail object
+        if ($scope.isImageuploaded && !$scope.needToSave)
+        	$scope.needToSave = true;
+        
         if (!$scope.needToSave){
             $scope.cancel();
             return;
         }
-
          else{
                 if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
                         $scope.UploadImage();
@@ -1343,7 +1358,11 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
                     }
                 }
                 
-                //Validation for state code and country code
+                /**
+                 * ===================================================================
+                 * Validation for state code and country code
+                 * ===================================================================
+                 */
                 var isValidState = false;
                 var isValidCountry = false;
                 $scope.inValidCountryCode=false;

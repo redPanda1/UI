@@ -288,14 +288,12 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
         if ($cookieStore.get("detailId") != null) {
             $http.get('/api/employeeDetail/' + $cookieStore.get("detailId")).success(function(data) {
                 $scope.EmployeeDetail = data;
+              
                 $scope.truncateurl();
                 $scope.mapOptions = $scope.EmployeeDetail;
                 $scope.needMapCall.callMap = true;
                 if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
-                    $scope.EmployeeDetail.data.contactNumbers = [];
-                    $scope.EmployeeDetail.data.contactNumbers.push({});
-                    $scope.contactTypeValue[0] = "email";
-                    $scope.contactTypeDetails[0] = "";
+                    $scope.EmployeeDetail.data.contactNumbers = [];                  
                 }
                 if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0) {
                     $scope.EmployeeDetail.data.timeOff = [{
@@ -324,9 +322,16 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 					 $scope.EmployeeDetail.data.stdCostCur = 'USD';
                 if($scope.EmployeeDetail.data.otCostCur == null)
 					 $scope.EmployeeDetail.data.otCostCur = 'USD';
+                
                 //Clone the object before pre-processing the input data.
                 $scope.formatMapData();
                 angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
+                if ($scope.EmployeeDetail.data.contactNumbers.length === 0) {
+                    $scope.EmployeeDetail.data.contactNumbers = [];
+                    $scope.EmployeeDetail.data.contactNumbers.push({});
+                    $scope.contactTypeValue[0] = "email";
+                    $scope.contactTypeDetails[0] = "";
+                }
                 
                 console.log($scope.ClonedEmployeeDetail);
                 console.log($scope.EmployeeDetail);
@@ -346,12 +351,8 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 				 $scope.truncateurl();
                  $scope.mapOptions = $scope.EmployeeDetail;
                  $scope.needMapCall.callMap = true;
-				 //$scope.geocoding();
                  if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
-                	$scope.EmployeeDetail.data.contactNumbers =[];
-					 $scope.EmployeeDetail.data.contactNumbers.push({});
-					 $scope.contactTypeValue[0]="Phone";
-					 $scope.contactTypeDetails[0]="";
+                	$scope.EmployeeDetail.data.contactNumbers =[];					
 				 }
 				if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0)	{
 				 $scope.EmployeeDetail.data.timeOff = [{'type' : 'Vacation', 'allowance': 0, 'taken': 0},{'type' : 'Sick', 'allowance': 0, 'taken': 0}];
@@ -368,6 +369,12 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                if($scope.EmployeeDetail.data.otCostCur == null)
 					 $scope.EmployeeDetail.data.otCostCur = 'USD';
 				angular.copy($scope.EmployeeDetail,$scope.ClonedEmployeeDetail,true);
+				if ($scope.EmployeeDetail.data.contactNumbers.length === 0) {
+                    $scope.EmployeeDetail.data.contactNumbers = [];
+                    $scope.EmployeeDetail.data.contactNumbers.push({});
+                    $scope.contactTypeValue[0] = "email";
+                    $scope.contactTypeDetails[0] = "";
+                }
 				console.log($scope.ClonedEmployeeDetail);
 		        console.log($scope.EmployeeDetail);
 				$scope.formatMapData();
@@ -582,7 +589,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
     $scope.saveContactNumbers = function() {
         var isInvalidEmail = false;
         for (var i = 0; i < $scope.contactTypeDetails.length; i++) {
-            if ($scope.contactTypeValue[i] == "" || $scope.contactTypeValue[i] == null)
+            if ($scope.contactTypeValue[i] == "" || $scope.contactTypeValue[i] == null || $scope.contactTypeDetails[i] == "" || $scope.contactTypeDetails[i] == null)
                 continue;
             if ($scope.contactTypeValue[i].toLowerCase() == "email") {
                 var email_regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -780,20 +787,22 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
      * ===================================================================================
      */
     $scope.backtoEmp = function() {
-        //To Skip saving during create
         if (!($cookieStore.get("detailId") == 'create')) {
             if ($scope.isError) {
                 $rootScope.localCache.isEmpAPINeeded = false;
                 $location.path('/Employee');
                 return;
             }
-            //$scope.checkDateisChanged();
+            if ($scope.saveContactNumbers()) {
+                $scope.addAlert("Enter valid email address.", "danger");
+                $scope.inSave = false;
+                $scope.needFormat = false;
+                return;
+            }
+            
             $scope.tempEmployeeDetail = {};        
             angular.copy($scope.EmployeeDetail,$scope.tempEmployeeDetail,true); 
-            if($scope.tempEmployeeDetail.data.contactNumbers.length ==1 && $scope.tempEmployeeDetail.data.contactNumbers.details == null)
-            	$scope.tempEmployeeDetail.data.contactNumbers.length = 0;
-            if($scope.ClonedEmployeeDetail.data.contactNumbers.length ==1 && $scope.ClonedEmployeeDetail.data.contactNumbers.details == null)
-            	$scope.ClonedEmployeeDetail.data.contactNumbers.length = 0;
+           
             if($scope.tempEmployeeDetail.data.otCostAmt == null)
             	delete $scope.tempEmployeeDetail.data.otCostCur;
             
@@ -802,8 +811,8 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             angular.forEach($scope.tempEmployeeDetail.data,function(data,key){
             	if(!angular.equals(data,$scope.ClonedEmployeeDetail.data[key]))
             		$scope.needToSave = true;
-            });        
-            console.log($scope.needToSave);
+            });  
+            
             $scope.isDateChanged();
             if($scope.dateChanged)
             	$scope.needToSave = true;
@@ -857,8 +866,13 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 
         if ($scope.EmployeeDetail.data.hireDate == "" && !$scope.isHireDateSetinServer)
             delete $scope.EmployeeDetail.data.hireDate;
+        else if($scope.EmployeeDetail.data.hireDate == "" && $scope.isHireDateSetinServer)
+            $scope.EmployeeDetail.data.hireDate = null;
+                                       
         if ($scope.EmployeeDetail.data.termDate == "" && !$scope.isTermDateSetinServer)
             delete $scope.EmployeeDetail.data.termDate;
+        else if($scope.EmployeeDetail.data.termDate == "" && $scope.isTermDateSetinServer)
+            $scope.EmployeeDetail.data.termDate = null;
         
         angular.forEach($scope.ManagerList,function(data,key){
         	if(data.id == $scope.EmployeeDetail.data.managerId)
@@ -957,19 +971,17 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
     $scope.saveEmpdata = function() {
         $scope.inSave = true;
         var email_result;
-        //Call Image Upload Function
-        if ($scope.isImageuploaded) {
-            if ($cookieStore.get("detailId") != 'create') {
-                $scope.imageUpload();
-            }
+       
+        if ($scope.saveContactNumbers()) {
+            $scope.addAlert("Enter valid email address.", "danger");
+            $scope.inSave = false;
+            $scope.needFormat = false;
+            return;
         }
-        //$scope.checkDateisChanged();
+        
         $scope.tempEmployeeDetail = {};        
         angular.copy($scope.EmployeeDetail,$scope.tempEmployeeDetail,true); 
-        if($scope.tempEmployeeDetail.data.contactNumbers.length ==1 && $scope.tempEmployeeDetail.data.contactNumbers.details == null)
-        	$scope.tempEmployeeDetail.data.contactNumbers.length = 0;
-        if($scope.ClonedEmployeeDetail.data.contactNumbers.length ==1 && $scope.ClonedEmployeeDetail.data.contactNumbers.details == null)
-        	$scope.ClonedEmployeeDetail.data.contactNumbers.length = 0;
+      
         
         if($scope.tempEmployeeDetail.data.otCostAmt == null)
         	delete $scope.tempEmployeeDetail.data.otCostCur;
@@ -979,15 +991,49 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
         angular.forEach($scope.tempEmployeeDetail.data,function(data,key){
         	if(!angular.equals(data,$scope.ClonedEmployeeDetail.data[key]))
         		$scope.needToSave = true;
-        });        
+        });   
+        
         console.log($scope.needToSave);
+        
+        if(!$scope.needToSave)
+        {
+        	if($scope.EmployeeDetail.data.contactNumbers != null && $scope.EmployeeDetail.data.contactNumbers.length == 0)
+        	{
+        		$scope.EmployeeDetail.data.contactNumbers.push({});
+        		$scope.contactTypeValue[0] = "email";
+                $scope.contactTypeDetails[0] = "";
+        	}
+        }
         $scope.isDateChanged();
         if($scope.dateChanged)
         	$scope.needToSave = true;
         
+        //Call Image Upload Function
+        if ($scope.isImageuploaded) {
+            if ($cookieStore.get("detailId") != 'create') {
+              //To Navigate to list page if there is no change in the detail object
+              if($scope.isImageuploaded && !$scope.needToSave)
+              {
+            	  $scope.imageUpload();
+            	  timeInterval = $timeout(function() {
+            		  $rootScope.localCache.isEmpAPINeeded = true;
+                      $location.path('/Employee');
+                  }, 1000);
+            	  
+              }
+              else
+              {
+            	  //Normal scenario in which we need to update the image and save the detail object
+            	  $scope.imageUpload();
+              }
+            }
+        }
+        
         if ($scope.needToSave) {
+        	
         	$scope.checkDateisChanged();
-            //For Alerting the mandatory field Nickname
+            
+        	//For Alerting the mandatory field Nickname
             if ($scope.EmployeeDetail.data.nickname == "") {
                 $scope.addAlert("Enter Employee Name.", "danger");
                 $scope.inSave = false;
@@ -996,13 +1042,9 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             } else {
                 $scope.assignNames(); //For assigning the first,last name to the post object
             }
-            if ($scope.saveContactNumbers()) {
-                $scope.addAlert("Enter valid email address.", "danger");
-                $scope.inSave = false;
-                $scope.needFormat = false;
-                return;
-            }
+            
             $scope.closeAlert(); //Used to close the alert message before proceeding.
+            
             //For Mapping the departmentName based on the selected departmentID
             angular.forEach($scope.departments, function(data, key) {
                 if (data.id == $scope.EmployeeDetail.data.departmentId)
@@ -1065,6 +1107,13 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.isImageuploaded = false;
                 $scope.inSave = false;
                 $rootScope.localCache.isEmpAPINeeded = false;
+                //In Error Case where we need to need to display the default one row to the table.
+                if($scope.EmployeeDetail.data.contactNumbers != null && $scope.EmployeeDetail.data.contactNumbers.length == 0)
+            	{
+            		$scope.EmployeeDetail.data.contactNumbers.push({});
+            		$scope.contactTypeValue[0] = "email";
+                    $scope.contactTypeDetails[0] = "";
+            	}
 
             });
         }
