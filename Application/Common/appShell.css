@@ -538,6 +538,7 @@ ul
 .box-container
 {
 	margin: 0px 15px 30px 15px;
+	/*box-shadow: 17px 4px 10px 2px #ccc;*/
 }
 .boxcontanier-header 
 {
@@ -820,7 +821,18 @@ body {
 {
 	height: 28px;
 	border-radius: 0px;
-	padding: 3px 10px 3px 10px;
+	padding: 3px 10px 3px 16px;
+	width: 60px;
+	font-size: 12px;
+	border-right-color: transparent;
+	background-color: #eee;
+	border-bottom-left-radius: 4px !important;
+	border-top-left-radius: 4px !important;
+}
+.currency-select .dropdown ul li a{
+	height: 17px;
+	font-size: 12px;
+	padding: 0px !important;
 }
 .currency-select .dropdown
 {
@@ -836,6 +848,27 @@ body {
 }
 .currency-select .dropdown-menu
 {
-	min-width: 41px;
+	min-width: 31px;
 	margin: 0px;
+	background-color: #eee;
+}
+.button-container-align
+{
+	text-align: right;
+	display: inline-block;
+	width: 100%;
+}
+
+.cell-container
+{
+	display: inline-block;
+	width: 100%;
+}
+.gridStyle .colt0
+{
+	text-indent: 10px
+}
+.inputtext
+{
+	width: 90% !important;
 }

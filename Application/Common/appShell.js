@@ -65,6 +65,7 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
     $rootScope.calledFromEmployeeDetail = false;
     $rootScope.calledFromCustomerDetail = false;
     $rootScope.calledFromContractDetail = false;
+    $rootScope.empDetailCache = {};
 
     /**
      * Function used to navigate to the home page.
@@ -309,7 +310,7 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
                 "termDate": "2014-09-26",
                 "lastName": "Blake",
                 "fullName": "Peter Blake",
-                "nickname": "Peter Blake",
+                "nickName": "Peter Blake",
                 "isPartTime": false,
                 "isContractor": false,
                 "addressStreet": "23 Ridge Road",
@@ -352,7 +353,7 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
                 "firstName": "Jennifer",
                 "lastName": "Harvey",
                 "fullName": "Jennifer Harvey",
-                "nickname": "Jennifer Harvey",
+                "nickName": "Jennifer Harvey",
                 "isPartTime": false,
                 "isContractor": false,
                 "contactNumbers": [
@@ -395,7 +396,7 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
                 "firstName": "Richard",
                 "lastName": "Minney",
                 "fullName": "Richard Minney",
-                "nickname": "Richard Minney",
+                "nickName": "Richard Minney",
                 "isPartTime": false,
                 "isContractor": true,
                 "departmentName": "Peter Edgar Blake",
@@ -433,7 +434,7 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
                 "firstName": "Ellie",
                 "lastName": "Clarke",
                 "fullName": "Elenor Amy Clarke",
-                "nickname": "Ellie clarke",
+                "nickName": "Ellie clarke",
                 "isPartTime": false,
                 "isContractor": false,
                 "addressStreet": "23 Ridge Road",
@@ -672,22 +673,59 @@ redPanda.controller('maincontroller', function($scope, $location, $rootScope, $c
     }
 
     $rootScope.ContractDetailData = {
-        "success": true,
-        "total": 1,
-        "data": {
-            "id": "53d80b2313a2e63528ae5378",
-            "poNumber": "PO 887664",
-            "title": "Double Shot",
-            "customerId": "53b41103353f736efcab467d",
-            "startDate": "2014-09-05",
-            "endDate": "2014-09-06",
-            "customerName": "Small World",
-            "type": "fee",
-            "value": 0,
-            "budgetedHours": 67
-        }
+    "success": true,
+    "total": 1,
+    "data": {
+        "id": "53d80b2313a2e63528ae5378",
+        "poNumber": "PO 887664",
+        "title": "Double Shot",
+        "customerId": "53b41103353f736efcab467d",
+        "startDate": "2014-09-05",
+        "endDate": "2014-09-06",
+        "customerName": "Small World",
+        "type": "fee",
+        "value": 0,
+        "managerName":"Peter Blake",
+        "budgetedHours": 67,
+        "assignedData": [
+  //          {"employeeId": "53ff7a9ae4b07d7a503a6b28",
+//"employeeName": "Ginsberg Allen",
+///"isBlocked": false,
+//"rateAmt": 22,
+//"rateCur": "EUR",
+//"thumbUrl": "/resources/redpanda/thumbnail.540aa340e4b0edb4867bedd9.jpg"
+//}
+        ],
+        "activityData": [
+            
+        ]
     }
+}
 
+	$rootScope.newContractActivityData =
+	{
+    "success": true,
+    "total": 1,
+    "data": {
+        "id": "54197b2ce4b084e5935f2f72",
+        "isStandard": false,
+        "isInternal": false,
+        "title": "Test to show correct creation of an activity",
+        "status": 0,
+        "start": "2014-07-23",
+        "end": "2014-09-30",
+        "isBillable": false,
+        "isFixedFee": false,
+        "rateAmt": 0,
+        "feeAmt": 0,
+        "customerId": "5406ed16e4b0544656725bdc",
+        "customerName": "TestName",
+        "customerColor": "#fbd75b",
+        "contractId": "5406ecf5e4b0544656725bdb",
+        "contractName": "Example T&M with activity pricing",
+        "deleted": false
+    	}
+	}
 });
 
 /**
@@ -945,6 +983,58 @@ redPanda.directive('isValue', function() {
         }
     };
 });
+
+
+/**
+ * For handling 2dp value for budgeted hours
+ */
+redPanda.directive('twoDecimalPoints', function() {
+    return {
+        require: 'ngModel',
+        link: function(scope, element) {
+            scope.$watch('contractDetail.data.budgetedHours', function(newValue, oldValue) {
+                if (newValue == '' || newValue == null)
+                    return;
+                var data = String(newValue).split("");
+                if (data.length === 0) return;
+                if (data.length === 1 && data[0] === '.') return;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] === '.' && data.length - 1 - i > 2) {
+                        scope.contractDetail.data.budgetedHours = oldValue;
+                    }
+                }
+                if (isNaN(newValue)) {
+                    if (scope.contractDetail == null)
+                        return;
+                    scope.contractDetail.data.budgetedHours = oldValue;
+                }
+            });
+            element.bind('blur', function(event) {
+                var val = event.target.value;
+                if (val == '')
+                    return;
+                var isdotPresent = false;
+                for (var i = 0; i < event.target.value.length; i++) {
+                    if (event.target.value[i] === '.') {
+                        isdotPresent = true;
+
+                        //If current position plus 2 is not equal to length of the value append 0 at the end.
+                        //To add 0 at the end for 2dp numbers
+                        if ((i + 2) != (event.target.value.length + 1)) {
+                            scope.contractDetail.data.budgetedHours = event.target.value + "0";
+                            scope.$apply();
+                        }
+                    }
+                }
+                if (!isdotPresent) {
+                    scope.contractDetail.data.budgetedHours = event.target.value + ".00";
+                    scope.$apply();
+                }
+            });
+        }
+    };
+});
+
 /**
  * For handling 2dp value for overtime cost
  */
@@ -995,6 +1085,8 @@ redPanda.directive('isOvertimeTwodp', function() {
     };
 });
 
+
+
 /**
  * Directive for Image file selection.
  * Upload.js module has been used for Image Uploading.
@@ -1007,6 +1099,11 @@ redPanda.directive("ngFileSelect", function() {
                 if ($scope.file != null) {
                     if ($scope.file.type.split('/')[0] != 'image') {
                         $scope.addAlert("Upload valid Image file.", "danger");
+                        $scope.$apply();
+                        return;
+                    }
+                    if (($scope.file.size/1024) > 1000) {
+                        $scope.addAlert("Image file exceeds maximum area.Please choose a file under 1MB.", "danger");
                         $scope.$apply();
                         return;
                     }
@@ -1164,7 +1261,7 @@ redPanda.service('USDateFormat', function() {
         var newDate = new Date(value);
         var month = (newDate.getMonth() + 1).toString().length == 1 ? "0" + (newDate.getMonth() + 1) : newDate.getMonth() + 1;
         var date = (newDate.getDate().toString().length) == 1 ? "0" + (newDate.getDate()) : newDate.getDate();
-        var year = newDate.getFullYear();
+        var year = newDate.getFullYear().toString().substring(2,4);
         if (isSlash != null)
             var USDate = month + "/" + date + "/" + year;
         else

@@ -41,7 +41,7 @@ function mapController($scope, $cookieStore) {
             $scope.city = "";
 
         if ($scope.mapOptions.data[$scope.addressKeys[3]] != null)
-            $scope.zip = $scope.mapOptions.data[$scope.addressKeys[2]];
+            $scope.zip = $scope.mapOptions.data[$scope.addressKeys[3]];
         else
             $scope.zip = "";
 
@@ -68,8 +68,7 @@ function mapController($scope, $cookieStore) {
         * Posting the address details of the user entered value to the Google map API
         * =============================================================================
         */
-//$scope.street + "," + $scope.city + "," + $scope.state + "," + $scope.zip + "," + $scope.country,
-        var mapAddress = $scope.country+","+$scope.state+","+ $scope.zip +","+ $scope.city +","+$scope.street 
+        var mapAddress =$scope.country+","+$scope.state+","+$scope.zip+","+$scope.city+","+$scope.street; 
         geocoder.geocode({
             'address': mapAddress,
             'region' : $scope.country
@@ -87,7 +86,7 @@ function mapController($scope, $cookieStore) {
                         latitude: latLong[0],
                         longitude: latLong[1]
                     },
-                    zoom: 12
+                    zoom: 11
                 };
 
                 $scope.marker = {
@@ -112,23 +111,15 @@ function mapController($scope, $cookieStore) {
             latitude: 40.0000, 
             longitude: -74.5000 
         },
-        zoom: 12
+        zoom: 2
     };
 
     //Setting Marker position based on the mode i.e create mode or update mode
-    if (($cookieStore.get("detailId") != 'create')) {
-        $scope.marker = {
+     $scope.marker = {
             center: {
                 latitude: 40.0000,
                 longitude: -74.5000
             }
-        }
-    } else {
-
-        $scope.marker = {
-            center: {}
-        }
-        $scope.map.zoom = 1;
-
-    }
+     }
+   
 }

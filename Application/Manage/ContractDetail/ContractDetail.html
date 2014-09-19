@@ -52,7 +52,7 @@
 							  <label>
 							  <p class="input-group">
 								  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
-                     			  <input type="text" style="background-color: white;cursor: pointer;" name="dateRange" id="dateRange" class="form-control" class="span4" readonly/>
+                     			  <input type="text" style="background-color: white;cursor: pointer;" name="dateRange" id="dateRange" class="form-control" class="span4" ng-keyup="clearDate()"/>
 							  </p>
 							  </label>
 						</div> 
@@ -100,18 +100,21 @@
 			<div class="row collapse-container" collapse="contactcollapseTable">
 				<div class="boxcontainer-body">			
 					<div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">						
-						Revenue	
-						<progress><bar ng-repeat="bar in stacked" value="bar.value" type="{{bar.type}}"><span ng-hide="bar.value < 5"><span ng-bind="bar.value"></span>%</span></bar></progress>
+						<p>Revenue	</p>
+						<progress><bar ng-repeat="bar in stacked" value="bar.value" 
+										type="{{bar.type}}">
+										<span ><span ng-bind="bar.value"></span>
+										%</span></bar></progress>
 
-						Billed: $1300.00
+						<p>Billed <span class ="progress-value">:&nbsp $ 0</span></p>
 
 					</div>
 					<div class="col-sm-6 col-md-6 col-lg-6 contact-info-type">
-						Hours
-						<progress><bar ng-repeat="bar in stacked" value="bar.value" type="{{bar.type}}"><span ng-hide="bar.value < 5"><span ng-bind="bar.value"></span>%</span></bar></progress>
-						<p>Worked: 31 hours</p>
-						<p>Billed: 25 hours</p>
-						<p>Remaining: 49 hours</p>
+						<p>Hours</p>
+						<progress><bar ng-repeat="bar in stacked" value="bar.value" type="{{bar.type}}"><span><span ng-bind="bar.value"></span>%</span></bar></progress>
+						<p>Worked     <span class ="progress-value"> :  &nbsp 0 hour</span></p>
+						<p>Billed     <span class ="progress-value"> : &nbsp  0 hour</span></p>
+						<p>Remaining  <span class ="progress-value"> : &nbsp  0 hour</span></p>
 										
 					</div>	
 
@@ -140,16 +143,15 @@
 							<div class="form-group">
 								<label>Contract Value</label>						
 								<div class="input-group">
+									<!-- <span class="input-group-addon">$</span> -->
 									  <span class="input-group-addon currency-select">
 										<div class="dropdown">
-										  <a class="btn btn-default" data-toggle="dropdown"> <span ng-if="contractDetail.data.currency=='USD'">{{'&#36;'}}</span><span ng-if="contractDetail.data.currency=='GBP'">{{'&#xa3;'}}</span><span ng-if="contractDetail.data.currency=='EUR'">{{'&#x80;'}}</span><span ng-if="contractDetail.data.currency=='JPY'">{{'&#xa5;'}}</span> <b class="caret"></b></a>
+										  <a class="btn btn-default" data-toggle="dropdown"> <span ng-bind="currencySymbol"></span></a>
 										  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownCountry">
-										    <li>
-										       <a ng-click="contractDetail.data.currency='USD'">{{'&#36;'}}</a>
-										       <a ng-click="contractDetail.data.currency='GBP'">{{'&#xa3;'}}</a>
-										       <a ng-click="contractDetail.data.currency='EUR'">{{'&#x80;'}}</a>
-										       <a ng-click="contractDetail.data.currency='JPY'">{{'&#xa5;'}}</a>
-										    </li>
+										    <li ng-repeat="currency in currencies">
+										       <a ng-show="currency.symbol != null && currency.symbol != ''" ng-click="setCurrencySymbol(currency)">{{currency.symbol}}</a>
+										       <a ng-hide="currency.symbol != null && currency.symbol != ''">{{currency.code}}</a>
+										      </li>
 										  </ul>										 
 										</div>
 										</span>	
@@ -158,7 +160,7 @@
 							</div>	
 
 							<div class="form-group">
-								<label>Invoice Method</label>
+								<label>Type</label>
 								<label>
 									<select class="form-control" ng-model="contractDetail.data.type" ng-options="method.value as method.description for method in invoicemethods">
 									</select>
@@ -170,7 +172,7 @@
 						<form class="form-horizontal" role="form">
 							<div class="form-group">
 								<label> Budgeted Hours </label>
-								<label><input type="text" ng-model="contractDetail.data.budgetedHours" placeholder="Total Hours" class="form-control right_justify" numbers-only /> </label>
+								<label><input type="text" ng-model="contractDetail.data.budgetedHours"two-decimal-points placeholder="Total Hours" class="form-control right_justify" /> </label>
 							</div>	
 						</form>	
 					</div>

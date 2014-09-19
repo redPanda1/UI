@@ -10,7 +10,7 @@
  * @param $window
  */
 
-function employeeController($scope,$rootScope,$location,$http,$filter,$cookieStore,$timeout,$window)
+function employeeController($scope,$rootScope,$location,$http,$filter,$cookieStore,$timeout,$window,CurrentTimeStamp)
 {
 	 //Rootscope variables used to select the Accordion menus.
 	 $rootScope.manage = true;
@@ -102,6 +102,7 @@ function employeeController($scope,$rootScope,$location,$http,$filter,$cookieSto
 	  else
 		  $cookieStore.put("detailId","create");
 	  
+	  $rootScope.selectedEmpType = $cookieStore.get("detailId");
 	  $rootScope.closeAlert();
 	  $location.path('/EmployeeDetail');
    }
@@ -250,14 +251,16 @@ function employeeController($scope,$rootScope,$location,$http,$filter,$cookieSto
 	    
 	 var  callEmployeeListAPI = function()
 	 {
-		 if($rootScope.localCache.empList == null || $rootScope.localCache.isEmpAPINeeded == true)
+		 if($rootScope.localCache.empList == null)
 		 {
+			 console.log("In request call");
 			 $http.get('/api/employeeList').success(function (data) {	
 				 $scope.employeeList = data.data;
 				 $rootScope.localCache.empList =  $scope.employeeList;	//employee List is stored in local cache.For avoiding unwanted API calls
 				 $scope.truncateurl();  								//Function call used to truncate the photo-url path. 	
 				 $scope.storeManagerNames(); 							//storing all the employee names for the manager list to use it in detail page.
 				 $scope.tableOptions.listData = $scope.employeeList;    //Input for the ngGrid
+				 $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
 				  
 			 }).error(function(data, status){
 				 
@@ -280,9 +283,93 @@ function employeeController($scope,$rootScope,$location,$http,$filter,$cookieSto
 		 }
 		 else
 		 {
-			
-			 $scope.employeeList = $rootScope.localCache.empList;
-			 $scope.tableOptions.listData = $scope.employeeList;
+			 console.log('In else part');
+			 //For getting the employee list after some particular time 
+			 if($rootScope.localCache.empList != null && $rootScope.localCache.isEmpAPINeeded == true)
+			 {
+				 console.log('In timestamp');
+				 console.log($rootScope.getTime);
+				 $http.get('/api/employeeList?timestamp='+ $rootScope.getTime).success(function (data) {	
+					 $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
+					
+					 if($rootScope.selectedEmpType == 'create')
+					 {
+						 console.log('In create');
+						//For Create
+						 for(var i=0; i<data.data.length;i++)
+						 {
+							 $rootScope.localCache.empList.push(data.data[i]);
+							 $scope.employeeList = $rootScope.localCache.empList;
+							 
+						 }
+					 }
+					 else
+					 {
+						 //For Looping through the data coming from the server.If more than one data is coming from the 
+						 //timestamp api.
+						 
+						 for(var j=0; j< data.data.length; j++)
+						 {
+							 //For looping through the local cache value
+							 for(var i=0; i<$rootScope.localCache.empList.length; i++)
+							 {
+								 if($rootScope.localCache.empList[i].id == data.data[j].id)
+								 {
+									 if(data.data[j].deleted)
+									 {
+										 $rootScope.localCache.empList.splice(i,1);
+										 $scope.employeeList = $rootScope.localCache.empList;
+									 }
+									 else
+									 {
+										 $rootScope.localCache.empList[i] = data.data[j];
+										 $scope.employeeList = $rootScope.localCache.empList;
+									 }
+									 
+								 }
+							 }
+						 }
+						
+					 }
+					 $rootScope.selectedEmpType = null;
+					 
+					 
+					 $scope.truncateurl();  								 		//Function call used to truncate the photo-url path. 	
+					 $scope.storeManagerNames(); 									//storing all the employee names for the manager list to use it in detail page.
+					 $scope.tableOptions.listData = $rootScope.localCache.empList;  //Input for the ngGrid
+					  
+				 }).error(function(data, status){
+					   if(status == 304)
+					   {
+						   $scope.employeeList = $rootScope.localCache.empList;
+						   $scope.tableOptions.listData = $scope.employeeList;
+					   }   
+					   else
+					   {
+
+						   /**
+							* ==========================================================================
+							* Codes used for local testing. Finally it should be removed
+							* ==========================================================================
+							*/
+						   angular.forEach(data.data,function(value,key){
+								 $scope.employeeList.push(value);
+								 $rootScope.localCache.empList.push(value);
+						   });
+					 	   $scope.truncateurl();
+					 	   $scope.storeManagerNames();	 	  	
+					 	   $scope.tableOptions.listData = $scope.employeeList;
+					   }
+				 });
+				 $rootScope.localCache.isEmpAPINeeded = false;
+			 }
+			 else
+			 {
+				 console.log('In local cache');
+				 $scope.employeeList = $rootScope.localCache.empList;
+				 $scope.tableOptions.listData = $scope.employeeList;
+			 }
+			 
 		 }
 
 	 }

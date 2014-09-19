@@ -36,6 +36,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
     };
     $scope.addressKeys = ["addressStreet", "addressCity", "addressStateCode", "addressPostZip", "addressISOCountry"];
     $scope.isError = false;
+    $scope.isUpdateError = false;
     $scope.contractTableData = [];
     $scope.contactTableData = [];
     $scope.currentPath = $location.path();
@@ -70,6 +71,120 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
         '</div>' +
         '<div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>';
 
+    
+    /**
+     * ========================================================================================================
+     * Function Used to map the country code to the country name during GET and POST.
+     * ========================================================================================================
+     */
+    $scope.formatInputData = function() {
+        if ($scope.CustomerDetail != null) {
+            if ($scope.CustomerDetail.data.addressISOCountry != null) {
+                if ($scope.countries != null) {
+                    angular.forEach($scope.countries, function(data, key) {
+                        if (data.code == $scope.CustomerDetail.data.addressISOCountry)
+                            $scope.CustomerDetail.data.addressISOCountry = data;
+                    });
+                }
+            }
+        }
+        if ($scope.CustomerDetail != null) {
+            if ($scope.CustomerDetail.data.addressStateCode != null) {
+                if ($scope.states != null) {
+                    angular.forEach($scope.states, function(data, key) {
+                        if (data.code == $scope.CustomerDetail.data.addressStateCode)
+                            $scope.CustomerDetail.data.addressStateCode = data;
+                    });
+                }
+            }
+
+        }
+
+    }
+
+    /**
+     * ======================================================
+     *  API call to get the Country names
+     *  =====================================================
+     */
+    if ($rootScope.localCache.countries == null) {
+        $http.get('/api/listData/countries').success(function(data) {
+            $scope.countries = data.data;
+            $rootScope.localCache.countries = $scope.countries;
+            $scope.formatInputData();
+        }).error(function(data, status) {
+            //Code used for local testing and it should be removed finally.
+            $scope.countriesJson            = {"success":true,"total":1,"data":[{"name":"Ascension Island","code":"AC"},{"name":"Andorra","code":"AD"},{"name":"United Arab Emirates","code":"AE"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Bonaire, Saint Eustatius And Saba","code":"BQ"},{"name":"Brazil","code":"BR"},{"name":"Bahamas","code":"BS"},{"name":"Bhutan","code":"BT"},{"name":"Bouvet Island","code":"BV"},{"name":"Botswana","code":"BW"},{"name":"Belarus","code":"BY"},{"name":"Belize","code":"BZ"},{"name":"Canada","code":"CA"},{"name":"Cocos (Keeling) Islands","code":"CC"},{"name":"Democratic Republic Of Congo","code":"CD"},{"name":"Central African Republic","code":"CF"},{"name":"Republic Of Congo","code":"CG"},{"name":"Switzerland","code":"CH"},{"name":"Cote d'Ivoire","code":"CI"},{"name":"Cook Islands","code":"CK"},{"name":"Chile","code":"CL"},{"name":"Cameroon","code":"CM"},{"name":"China","code":"CN"},{"name":"Colombia","code":"CO"},{"name":"Clipperton Island","code":"CP"},{"name":"Costa Rica","code":"CR"},{"name":"Cuba","code":"CU"},{"name":"Cape Verde","code":"CV"},{"name":"Curacao","code":"CW"},{"name":"Christmas Island","code":"CX"},{"name":"Cyprus","code":"CY"},{"name":"Czech Republic","code":"CZ"},{"name":"Germany","code":"DE"},{"name":"Diego Garcia","code":"DG"},{"name":"Djibouti","code":"DJ"},{"name":"Denmark","code":"DK"},{"name":"Dominica","code":"DM"},{"name":"Dominican Republic","code":"DO"},{"name":"Algeria","code":"DZ"},{"name":"Ceuta, Mulilla","code":"EA"},{"name":"Ecuador","code":"EC"},{"name":"Estonia","code":"EE"},{"name":"Egypt","code":"EG"},{"name":"Western Sahara","code":"EH"},{"name":"Eritrea","code":"ER"},{"name":"Spain","code":"ES"},{"name":"Ethiopia","code":"ET"},{"name":"European Union","code":"EU"},{"name":"Finland","code":"FI"},{"name":"Fiji","code":"FJ"},{"name":"Falkland Islands","code":"FK"},{"name":"Micronesia, Federated States Of","code":"FM"},{"name":"Faroe Islands","code":"FO"},{"name":"France","code":"FR"},{"name":"France, Metropolitan","code":"FX"},{"name":"Gabon","code":"GA"},{"name":"United Kingdom","code":"GB"},{"name":"Grenada","code":"GD"},{"name":"Georgia","code":"GE"},{"name":"French Guiana","code":"GF"},{"name":"Guernsey","code":"GG"},{"name":"Ghana","code":"GH"},{"name":"Gibraltar","code":"GI"},{"name":"Greenland","code":"GL"},{"name":"Gambia","code":"GM"},{"name":"Great Britain","code":"GB"},{"name":"Guinea","code":"GN"},{"name":"Guadeloupe","code":"GP"},{"name":"Equatorial Guinea","code":"GQ"},{"name":"Greece","code":"GR"},{"name":"South Georgia And The South Sandwich Islands","code":"GS"},{"name":"Guatemala","code":"GT"},{"name":"Guam","code":"GU"},{"name":"Guinea-bissau","code":"GW"},{"name":"Guyana","code":"GY"},{"name":"Hong Kong","code":"HK"},{"name":"Heard Island And McDonald Islands","code":"HM"},{"name":"Honduras","code":"HN"},{"name":"Croatia","code":"HR"},{"name":"Haiti","code":"HT"},{"name":"Hungary","code":"HU"},{"name":"Canary Islands","code":"IC"},{"name":"Indonesia","code":"ID"},{"name":"Ireland","code":"IE"},{"name":"Israel","code":"IL"},{"name":"Isle Of Man","code":"IM"},{"name":"India","code":"IN"},{"name":"British Indian Ocean Territory","code":"IO"},{"name":"Iraq","code":"IQ"},{"name":"Iran, Islamic Republic Of","code":"IR"},{"name":"Iceland","code":"IS"},{"name":"Italy","code":"IT"},{"name":"Jersey","code":"JE"},{"name":"Jamaica","code":"JM"},{"name":"Jordan","code":"JO"},{"name":"Japan","code":"JP"},{"name":"Kenya","code":"KE"},{"name":"Kyrgyzstan","code":"KG"},{"name":"Cambodia","code":"KH"},{"name":"Kiribati","code":"KI"},{"name":"Comoros","code":"KM"},{"name":"Saint Kitts And Nevis","code":"KN"},{"name":"Korea, Democratic People's Republic Of","code":"KP"},{"name":"Korea, Republic Of","code":"KR"},{"name":"Kuwait","code":"KW"},{"name":"Cayman Islands","code":"KY"},{"name":"Kazakhstan","code":"KZ"},{"name":"Lao People's Democratic Republic","code":"LA"},{"name":"Lebanon","code":"LB"},{"name":"Saint Lucia","code":"LC"},{"name":"Liechtenstein","code":"LI"},{"name":"Sri Lanka","code":"LK"},{"name":"Liberia","code":"LR"},{"name":"Lesotho","code":"LS"},{"name":"Lithuania","code":"LT"},{"name":"Luxembourg","code":"LU"},{"name":"Latvia","code":"LV"},{"name":"Libya","code":"LY"},{"name":"Morocco","code":"MA"},{"name":"Monaco","code":"MC"},{"name":"Moldova","code":"MD"},{"name":"Montenegro","code":"ME"},{"name":"Saint Martin","code":"MF"},{"name":"Madagascar","code":"MG"},{"name":"Marshall Islands","code":"MH"},{"name":"Macedonia, The Former Yugoslav Republic Of","code":"MK"},{"name":"Mali","code":"ML"},{"name":"Myanmar","code":"MM"},{"name":"Mongolia","code":"MN"},{"name":"Macao","code":"MO"},{"name":"Northern Mariana Islands","code":"MP"},{"name":"Martinique","code":"MQ"},{"name":"Mauritania","code":"MR"},{"name":"Montserrat","code":"MS"},{"name":"Malta","code":"MT"},{"name":"Mauritius","code":"MU"},{"name":"Maldives","code":"MV"},{"name":"Malawi","code":"MW"},{"name":"Mexico","code":"MX"},{"name":"Malaysia","code":"MY"},{"name":"Mozambique","code":"MZ"},{"name":"Namibia","code":"NA"},{"name":"New Caledonia","code":"NC"},{"name":"Niger","code":"NE"},{"name":"Norfolk Island","code":"NF"},{"name":"Nigeria","code":"NG"},{"name":"Nicaragua","code":"NI"},{"name":"Netherlands","code":"NL"},{"name":"Norway","code":"NO"},{"name":"Nepal","code":"NP"},{"name":"Nauru","code":"NR"},{"name":"Niue","code":"NU"},{"name":"New Zealand","code":"NZ"},{"name":"Oman","code":"OM"},{"name":"Panama","code":"PA"},{"name":"Peru","code":"PE"},{"name":"French Polynesia","code":"PF"},{"name":"Papua New Guinea","code":"PG"},{"name":"Philippines","code":"PH"},{"name":"Pakistan","code":"PK"},{"name":"Poland","code":"PL"},{"name":"Saint Pierre And Miquelon","code":"PM"},{"name":"Pitcairn","code":"PN"},{"name":"Puerto Rico","code":"PR"},{"name":"Palestinian Territory, Occupied","code":"PS"},{"name":"Portugal","code":"PT"},{"name":"Palau","code":"PW"},{"name":"Paraguay","code":"PY"},{"name":"Qatar","code":"QA"},{"name":"Reunion","code":"RE"},{"name":"Romania","code":"RO"},{"name":"Serbia","code":"RS"},{"name":"Russian Federation","code":"RU"},{"name":"Rwanda","code":"RW"},{"name":"Saudi Arabia","code":"SA"},{"name":"Solomon Islands","code":"SB"},{"name":"Seychelles","code":"SC"},{"name":"Sudan","code":"SD"},{"name":"Sweden","code":"SE"},{"name":"Singapore","code":"SG"},{"name":"Saint Helena, Ascension And Tristan Da Cunha","code":"SH"},{"name":"Slovenia","code":"SI"},{"name":"Svalbard And Jan Mayen","code":"SJ"},{"name":"Slovakia","code":"SK"},{"name":"Sierra Leone","code":"SL"},{"name":"San Marino","code":"SM"},{"name":"Senegal","code":"SN"},{"name":"Somalia","code":"SO"},{"name":"Suriname","code":"SR"},{"name":"South Sudan","code":"SS"},{"name":"SÃŒÂ£o TomÃŒÂ© and PrÃŒ_ncipe","code":"ST"},{"name":"USSR","code":"SU"},{"name":"El Salvador","code":"SV"},{"name":"Sint Maarten","code":"SX"},{"name":"Syrian Arab Republic","code":"SY"},{"name":"Swaziland","code":"SZ"},{"name":"Tristan de Cunha","code":"TA"},{"name":"Turks And Caicos Islands","code":"TC"},{"name":"Chad","code":"TD"},{"name":"French Southern Territories","code":"TF"},{"name":"Togo","code":"TG"},{"name":"Thailand","code":"TH"},{"name":"Tajikistan","code":"TJ"},{"name":"Tokelau","code":"TK"},{"name":"East Timor","code":"TL"},{"name":"Turkmenistan","code":"TM"},{"name":"Tunisia","code":"TN"},{"name":"Tonga","code":"TO"},{"name":"Turkey","code":"TR"},{"name":"Trinidad And Tobago","code":"TT"},{"name":"Tuvalu","code":"TV"},{"name":"Taiwan, Province Of China","code":"TW"},{"name":"Tanzania, United Republic Of","code":"TZ"},{"name":"Ukraine","code":"UA"},{"name":"Uganda","code":"UG"},{"name":"United Kingdom","code":"GB"},{"name":"United States Minor Outlying Islands","code":"UM"},{"name":"United States","code":"US"},{"name":"Uruguay","code":"UY"},{"name":"Uzbekistan","code":"UZ"},{"name":"Vatican City State","code":"VA"},{"name":"Saint Vincent And The Grenadines","code":"VC"},{"name":"Venezuela, Bolivarian Republic Of","code":"VE"},{"name":"Virgin Islands (British)","code":"VG"},{"name":"Virgin Islands (US)","code":"VI"},{"name":"Viet Nam","code":"VN"},{"name":"Vanuatu","code":"VU"},{"name":"Wallis And Futuna","code":"WF"},{"name":"Samoa","code":"WS"},{"name":"Yemen","code":"YE"},{"name":"Mayotte","code":"YT"},{"name":"South Africa","code":"ZA"},{"name":"Zambia","code":"ZM"},{"name":"Zimbabwe","code":"ZW"}]};
+				$scope.countries                = $scope.countriesJson.data;
+				$rootScope.localCache.countries = $scope.countries;
+				$scope.formatInputData();
+        });
+    } else {
+        $scope.countries = $rootScope.localCache.countries;
+        $scope.formatInputData();
+    }
+
+    /**
+     * =======================================================
+     * API call to get the State names
+     * =======================================================
+     */
+    if ($rootScope.localCache.states == null) {
+        $http.get('/api/listData/states').success(function(data) {
+            $scope.states = data.data;
+            $rootScope.localCache.states = $scope.states;
+            $scope.formatInputData();
+        }).error(function(data, status) {
+            //Code used for local testing and it should be removed finally.
+            $scope.state_namesJson       = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
+				$scope.states                = $scope.state_namesJson.data;
+				$rootScope.localCache.states = $scope.states;
+				$scope.formatInputData();
+        });
+    } else {
+        $scope.states = $rootScope.localCache.states;
+        $scope.formatInputData();
+    }
+    
+    
+    /**
+     * =========================================================================
+     * Function used to set the currency
+     * @param rowObj
+     * =========================================================================
+     */
+    $scope.setCurrency = function(rowObj)
+    {
+    	if(rowObj != null)
+    	{
+    		if(rowObj.currency != null)
+    		{
+    			 angular.forEach($scope.currencies,function(data,key){
+					 if(rowObj.currency == data.code)
+					 {
+						
+						 if(data.symbol != null && data.symbol != '')
+						 {
+							 rowObj.currency = data.code;
+							 $scope.symbol = data.symbol;
+						 }
+						 else
+						 {
+							 rowObj.currency =data.code;
+							 $scope.symbol = data.code;
+						 }
+							 
+						 
+					 }
+				 });
+    			 return $scope.symbol;
+    		}
+    		else
+    			return '$';
+    	}
+    }
+
+    
     /**
      *==========================================================================================
      *Contract table Grid info
@@ -117,7 +232,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style ="height:44px; line-height:33px; text-align:right;width:75%;display:inline-block;text-overflow:clip !important;"><span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span  ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style ="height:44px; line-height:33px; text-align:right;width:75%;display:inline-block;text-overflow:clip !important;"><span ng-bind="setCurrency(row.entity)"></span><span  ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -239,35 +354,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
         }
         $location.path('/ContractDetail');
     }
-    /**
-     * ========================================================================================================
-     * Function Used to map the country code to the country name during GET and POST.
-     * ========================================================================================================
-     */
-    $scope.formatInputData = function() {
-        if ($scope.CustomerDetail != null) {
-            if ($scope.CustomerDetail.data.addressISOCountry != null) {
-                if ($scope.countries != null) {
-                    angular.forEach($scope.countries, function(data, key) {
-                        if (data.code == $scope.CustomerDetail.data.addressISOCountry)
-                            $scope.CustomerDetail.data.addressISOCountry = data;
-                    });
-                }
-            }
-        }
-        if ($scope.CustomerDetail != null) {
-            if ($scope.CustomerDetail.data.addressStateCode != null) {
-                if ($scope.states != null) {
-                    angular.forEach($scope.states, function(data, key) {
-                        if (data.code == $scope.CustomerDetail.data.addressStateCode)
-                            $scope.CustomerDetail.data.addressStateCode = data;
-                    });
-                }
-            }
-
-        }
-
-    }
+    
 
 
     /**
@@ -275,218 +362,199 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
      * API Call to get the Customer Detail based on the customer id.
      * =====================================================================================================
      */
-    if ($cookieStore.get("detailId") == 'create') {
+    $scope.customerDetailAPI = function()
+    {
+    	 if ($cookieStore.get("detailId") == 'create') {
 
-        $scope.newCustomer = true;
-        $scope.CustomerDetail = {
-            "success": true,
-            "total": 1,
-            "data": {
-                "customerId": null,
-                "customerName": "",
-                "contactList": [],
-                "contactIds": [],
-                "contractList": [],
-                "contractIds": [],
-                "color": "#009999"
-            }
-        }
+    	        $scope.newCustomer = true;
+    	        $scope.CustomerDetail = {
+    	            "success": true,
+    	            "total": 1,
+    	            "data": {
+    	                "customerId": null,
+    	                "customerName": "",
+    	                "contactList": [],
+    	                "contactIds": [],
+    	                "contractList": [],
+    	                "contractIds": [],
+    	                "color": "#009999"
+    	            }
+    	        }
 
-        if ($rootScope.fromCustomer) {
-            angular.copy($rootScope.cutomerContractCopy, $scope.CustomerDetail, true);
-            $rootScope.fromCustomer = false;
-            //$scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
-            //$scope.contractTableData = $scope.CustomerDetail.data.contractList;
-            
-           //In get we need to filter the deleted datas of the contractList
-            var tempContractList = [];
-            angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
-            	if(!data.deleted)
-            		tempContractList.push(data);
-            }); 
-            $scope.CustomerDetail.data.contractList = tempContractList;
-            $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
-            
-            
-            $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
-            $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-            $scope.disabledSave = false;
+    	        if ($rootScope.fromCustomer) {
+    	            angular.copy($rootScope.cutomerContractCopy, $scope.CustomerDetail, true);
+    	            $rootScope.fromCustomer = false;
+    	            //$scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+    	            //$scope.contractTableData = $scope.CustomerDetail.data.contractList;
+    	            
+    	           //In get we need to filter the deleted datas of the contractList
+    	            var tempContractList = [];
+    	            angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+    	            	if(!data.deleted)
+    	            		tempContractList.push(data);
+    	            }); 
+    	            $scope.CustomerDetail.data.contractList = tempContractList;
+    	            $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+    	            
+    	            
+    	            $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
+    	            $scope.contactTableData = $scope.CustomerDetail.data.contactList;
+    	            $scope.disabledSave = false;
 
-        }
+    	        }
 
-        $scope.disableDelete = true;
-        $scope.showEmptyContactDetail = true;
-        $scope.mapOptions = $scope.CustomerDetail;
-       
+    	        $scope.disableDelete = true;
+    	        $scope.showEmptyContactDetail = true;
+    	        $scope.mapOptions = $scope.CustomerDetail;
+    	       
 
-    } else {
-        $scope.newCustomer = false;
-        $scope.showEmptyContactDetail = true;
+    	    } else {
+    	        $scope.newCustomer = false;
+    	        $scope.showEmptyContactDetail = true;
 
-        if ($cookieStore.get("detailId") != null) {
-            if ($rootScope.fromCustomer) {
-                //angular.copy($rootScope.cutomerContractCopy,$scope.CustomerDetail,true);
-                $scope.CustomerDetail = {};
-                //angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
-                $scope.CustomerDetail = $rootScope.cutomerContractCopy;
-                $scope.mapOptions = $scope.CustomerDetail;
-                $scope.needMapCall.callMap = true;
-                $scope.customerHeading = $scope.CustomerDetail.data.customerName;
-                $scope.isError = false;
-                $scope.formatInputData();
-                $scope.newCustomer = false;
-                $rootScope.customerName = $scope.CustomerDetail.data.customerName;
-                $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
-                $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
-                $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-                
-                //In get we need to filter the deleted datas of the contractList
-                var tempContractList = [];
-                angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
-                	if(!data.deleted)
-                		tempContractList.push(data);
-                }); 
-                $scope.CustomerDetail.data.contractList = tempContractList;
-                $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
-                
-                $rootScope.fromCustomer = false;
-                $scope.disabledSave = false;
+    	        if ($cookieStore.get("detailId") != null) {
+    	            if ($rootScope.fromCustomer) {
+    	                //angular.copy($rootScope.cutomerContractCopy,$scope.CustomerDetail,true);
+    	                $scope.CustomerDetail = {};
+    	                //angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
+    	                $scope.CustomerDetail = $rootScope.cutomerContractCopy;
+    	                $scope.mapOptions = $scope.CustomerDetail;
+    	                $scope.needMapCall.callMap = true;
+    	                $scope.customerHeading = $scope.CustomerDetail.data.customerName;
+    	                $scope.isError = false;
+    	                $scope.formatInputData();
+    	                $scope.newCustomer = false;
+    	                $rootScope.customerName = $scope.CustomerDetail.data.customerName;
+    	                $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
+    	                $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
+    	                $scope.contactTableData = $scope.CustomerDetail.data.contactList;
+    	                
+    	                //In get we need to filter the deleted datas of the contractList
+    	                var tempContractList = [];
+    	                angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+    	                	if(!data.deleted)
+    	                		tempContractList.push(data);
+    	                }); 
+    	                $scope.CustomerDetail.data.contractList = tempContractList;
+    	                $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+    	                
+    	                $rootScope.fromCustomer = false;
+    	                $scope.disabledSave = false;
 
-            } else {
-                $http.get('/api/customerDetail/' + $cookieStore.get("detailId")).success(function(data) {
+    	            } else {
+    	                $http.get('/api/customerDetail/' + $cookieStore.get("detailId")).success(function(data) {
 
-                    $scope.CustomerDetail = data;
-                    
-                    $scope.mapOptions = $scope.CustomerDetail;
-                    $scope.needMapCall.callMap = true;
-                    $scope.customerHeading = data.data.customerName;
-                    $scope.isError = false;
-                  // activeContractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
-                    $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
-                    angular.forEach($scope.CustomerDetail.data.contractList, function(data, key) {
+    	                    $scope.CustomerDetail = data;
+    	                    
+    	                    $scope.mapOptions = $scope.CustomerDetail;
+    	                    $scope.needMapCall.callMap = true;
+    	                    $scope.customerHeading = data.data.customerName;
+    	                    $scope.isError = false;
+    	                  // activeContractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
+    	                    $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
+    	                    angular.forEach($scope.CustomerDetail.data.contractList, function(data, key) {
 
-                        if (data.value != null) {
-                            data.value = Number(data.value).toFixed(2);
-                        }
-                        if (data.endDate != null)
-                            data.endDate = USDateFormat.convert(data.endDate, true);
+    	                        if (data.value != null) {
+    	                            data.value = Number(data.value).toFixed(2);
+    	                        }
+    	                        if (data.endDate != null)
+    	                            data.endDate = USDateFormat.convert(data.endDate, true);
 
-                        if (data.startDate != null)
-                            data.startDate = USDateFormat.convert(data.startDate, true);
+    	                        if (data.startDate != null)
+    	                            data.startDate = USDateFormat.convert(data.startDate, true);
 
-                    });
-                    $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
-                    $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-                    
-                   //In get we need to filter the deleted datas of the contractList
-                    var tempContractList = [];
-                    angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
-                    	if(!data.deleted)
-                    		tempContractList.push(data);
-                    }); 
-                    $scope.CustomerDetail.data.contractList = tempContractList;
-                    $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
-                    $scope.tableRebuild($scope.contactTableoptions);
-                    $scope.formatInputData();
-                   //Clone the object before pre formatting of data.
-                    angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);                    
-                    console.log($scope.CustomerDetail);console.log($scope.ClonedCustomerDetail);
-                    $scope.newCustomer = false;
-                    $rootScope.customerName = $scope.CustomerDetail.data.customerName;                  
-                    $rootScope.fromCustomer = false;
+    	                    });
+    	                    $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
+    	                    $scope.contactTableData = $scope.CustomerDetail.data.contactList;
+    	                    
+    	                   //In get we need to filter the deleted datas of the contractList
+    	                    var tempContractList = [];
+    	                    angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
+    	                    	if(!data.deleted)
+    	                    		tempContractList.push(data);
+    	                    }); 
+    	                    $scope.CustomerDetail.data.contractList = tempContractList;
+    	                    $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
+    	                    $scope.tableRebuild($scope.contactTableoptions);
+    	                    $scope.formatInputData();
+    	                   //Clone the object before pre formatting of data.
+    	                    angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);                    
+    	                    console.log($scope.CustomerDetail);console.log($scope.ClonedCustomerDetail);
+    	                    $scope.newCustomer = false;
+    	                    $rootScope.customerName = $scope.CustomerDetail.data.customerName;                  
+    	                    $rootScope.fromCustomer = false;
 
 
-                }).error(function(data, status) {
-                    $scope.isError = true;
-                    $scope.addAlert("No customer details available.", "danger");
-                    //Code used for local testing and it should be removed finally
-                 /**
-				$scope.CustomerDetail = $rootScope.customerDetail;
-				$scope.formatInputData();
-				if ($rootScope.fromCustomer){
-				angular.copy($rootScope.cutomerContractCopy,$scope.CustomerDetail,true);
+    	                }).error(function(data, status) {
+    	                    $scope.isError = true;
+    	                    $scope.addAlert("No customer details available.", "danger");
+    	                    //Code used for local testing and it should be removed finally
+    	                 /**
+    					$scope.CustomerDetail = $rootScope.customerDetail;
+    					$scope.formatInputData();
+    					if ($rootScope.fromCustomer){
+    					angular.copy($rootScope.cutomerContractCopy,$scope.CustomerDetail,true);
 
-				//$scope.CustomerDetail.data.contractList.push($scope.CustomerDetail.data.contractList);
-				}
-				angular.copy($scope.CustomerDetail,$scope.ClonedCustomerDetail,true);
-				$('.simplecolorpicker.icon').css('background-color',$scope.CustomerDetail.data.color);
+    					//$scope.CustomerDetail.data.contractList.push($scope.CustomerDetail.data.contractList);
+    					}
+    					angular.copy($scope.CustomerDetail,$scope.ClonedCustomerDetail,true);
+    					$('.simplecolorpicker.icon').css('background-color',$scope.CustomerDetail.data.color);
 
-				if ($scope.CustomerDetail.data.contactList != undefined && $scope.CustomerDetail.data.contactList.length > 1)
-				{
-					for (var i=0; i< $scope.CustomerDetail.data.contactList.length;i++){
-						if (!$scope.CustomerDetail.data.contactList[i].deleted){
-							activeContactList.push($scope.CustomerDetail.data.contactList[i])
-						}
-					}
-				}
-				$scope.contactTableData = activeContactList;//$scope.CustomerDetail.data.contactList;
-				$scope.CustomerDetail.data.contractList =  [{"value":0,"poNumber":1,"startDate":"2014-05-06","endDate":"2014-06-09"},{"poNumber":2000, "value":500},{"poNumber":3,"value":80},{"poNumber":4,"value":99000}];
-				 activeContractList = $scope.CustomerDetail.data.contractList;
-				 angular.forEach(activeContractList,function(data,key){
-				 
-				 if (data.value != 0 && data.value != null){
-					 data.value =  Number(data.value).toFixed(2);
-					 }
-					 if(data.endDate != null)
-						 data.endDate = USDateFormat.convert(data.endDate,true);
-					 if(data.startDate != null)
-						 data.startDate =USDateFormat.convert(data.startDate,true);
-				 });
-				$scope.contractTableData = activeContractList;
-				$rootScope.fromCustomer = false;
-				$rootScope.fromCustomer = false;**/
+    					if ($scope.CustomerDetail.data.contactList != undefined && $scope.CustomerDetail.data.contactList.length > 1)
+    					{
+    						for (var i=0; i< $scope.CustomerDetail.data.contactList.length;i++){
+    							if (!$scope.CustomerDetail.data.contactList[i].deleted){
+    								activeContactList.push($scope.CustomerDetail.data.contactList[i])
+    							}
+    						}
+    					}
+    					$scope.contactTableData = activeContactList;//$scope.CustomerDetail.data.contactList;
+    					$scope.CustomerDetail.data.contractList =  [{"value":0,"poNumber":1,"startDate":"2014-05-06","endDate":"2014-06-09"},{"poNumber":2000, "value":500},{"poNumber":3,"value":80},{"poNumber":4,"value":99000}];
+    					 activeContractList = $scope.CustomerDetail.data.contractList;
+    					 angular.forEach(activeContractList,function(data,key){
+    					 
+    					 if (data.value != 0 && data.value != null){
+    						 data.value =  Number(data.value).toFixed(2);
+    						 }
+    						 if(data.endDate != null)
+    							 data.endDate = USDateFormat.convert(data.endDate,true);
+    						 if(data.startDate != null)
+    							 data.startDate =USDateFormat.convert(data.startDate,true);
+    					 });
+    					$scope.contractTableData = activeContractList;
+    					$rootScope.fromCustomer = false;
+    					$rootScope.fromCustomer = false;**/
 
-                });
-                $scope.disableDelete = false;
-                $scope.disabledSave = true;
-            }
-        }
+    	                });
+    	                $scope.disableDelete = false;
+    	                $scope.disabledSave = true;
+    	            }
+    	        }
+    	    }
     }
-
+    
     /**
-     * =======================================================
-     * API call to get the State names
-     * =======================================================
+     * ===============================================================================================
+     * API Call for Currencies
+     * ===============================================================================================
      */
-    if ($rootScope.localCache.states == null) {
-        $http.get('/api/listData/states').success(function(data) {
-            $scope.states = data.data;
-            $rootScope.localCache.states = $scope.states;
-            $scope.formatInputData();
+     if ($rootScope.localCache.currencies == null) {
+        $http.get('/api/listData/currencies').success(function(data) {
+            $scope.currencies = data.data;
+            $rootScope.localCache.currencies = $scope.currencies;
+            $scope.customerDetailAPI();
         }).error(function(data, status) {
             //Code used for local testing and it should be removed finally.
-            $scope.state_namesJson       = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
-				$scope.states                = $scope.state_namesJson.data;
-				$rootScope.localCache.states = $scope.states;
-				$scope.formatInputData();
+                $scope.localcurrencies       = {"success":true,"total":1,"data":[{"code":"USD","name":"US Dollar","symbol":"$","decimals":2.0},{"code":"CAD","name":"Canadian Dollar","symbol":"C$","decimals":2.0},{"code":"MXD","name":"Mexican Dollar","symbol":"MX$","decimals":2.0},{"code":"JPY","name":"Japanese Yen","symbol":"Â¥","decimals":0.0},{"code":"GBP","name":"British Pound","symbol":"Â£","decimals":2.0},{"code":"EUR","name":"Euro","symbol":"â‚¬","decimals":2.0},{"code":"ZAR","name":"Rand","symbol":"R","decimals":2.0},{"code":"INR","name":"Rupee","symbol":"â‚¹","decimals":2.0}]}		
+				$scope.currencies            = $scope.localcurrencies.data;
+				$rootScope.localCache.currencies = $scope.currencies;
+				$scope.customerDetailAPI();
         });
     } else {
-        $scope.states = $rootScope.localCache.states;
-        $scope.formatInputData();
+        $scope.currencies = $rootScope.localCache.currencies;
+        $scope.customerDetailAPI();
     }
-
-    /**
-     * ======================================================
-     *  API call to get the Country names
-     *  =====================================================
-     */
-    if ($rootScope.localCache.countries == null) {
-        $http.get('/api/listData/countries').success(function(data) {
-            $scope.countries = data.data;
-            $rootScope.localCache.countries = $scope.countries;
-            $scope.formatInputData();
-        }).error(function(data, status) {
-            //Code used for local testing and it should be removed finally.
-            $scope.countriesJson            = {"success":true,"total":1,"data":[{"name":"Ascension Island","code":"AC"},{"name":"Andorra","code":"AD"},{"name":"United Arab Emirates","code":"AE"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Bonaire, Saint Eustatius And Saba","code":"BQ"},{"name":"Brazil","code":"BR"},{"name":"Bahamas","code":"BS"},{"name":"Bhutan","code":"BT"},{"name":"Bouvet Island","code":"BV"},{"name":"Botswana","code":"BW"},{"name":"Belarus","code":"BY"},{"name":"Belize","code":"BZ"},{"name":"Canada","code":"CA"},{"name":"Cocos (Keeling) Islands","code":"CC"},{"name":"Democratic Republic Of Congo","code":"CD"},{"name":"Central African Republic","code":"CF"},{"name":"Republic Of Congo","code":"CG"},{"name":"Switzerland","code":"CH"},{"name":"Cote d'Ivoire","code":"CI"},{"name":"Cook Islands","code":"CK"},{"name":"Chile","code":"CL"},{"name":"Cameroon","code":"CM"},{"name":"China","code":"CN"},{"name":"Colombia","code":"CO"},{"name":"Clipperton Island","code":"CP"},{"name":"Costa Rica","code":"CR"},{"name":"Cuba","code":"CU"},{"name":"Cape Verde","code":"CV"},{"name":"Curacao","code":"CW"},{"name":"Christmas Island","code":"CX"},{"name":"Cyprus","code":"CY"},{"name":"Czech Republic","code":"CZ"},{"name":"Germany","code":"DE"},{"name":"Diego Garcia","code":"DG"},{"name":"Djibouti","code":"DJ"},{"name":"Denmark","code":"DK"},{"name":"Dominica","code":"DM"},{"name":"Dominican Republic","code":"DO"},{"name":"Algeria","code":"DZ"},{"name":"Ceuta, Mulilla","code":"EA"},{"name":"Ecuador","code":"EC"},{"name":"Estonia","code":"EE"},{"name":"Egypt","code":"EG"},{"name":"Western Sahara","code":"EH"},{"name":"Eritrea","code":"ER"},{"name":"Spain","code":"ES"},{"name":"Ethiopia","code":"ET"},{"name":"European Union","code":"EU"},{"name":"Finland","code":"FI"},{"name":"Fiji","code":"FJ"},{"name":"Falkland Islands","code":"FK"},{"name":"Micronesia, Federated States Of","code":"FM"},{"name":"Faroe Islands","code":"FO"},{"name":"France","code":"FR"},{"name":"France, Metropolitan","code":"FX"},{"name":"Gabon","code":"GA"},{"name":"United Kingdom","code":"GB"},{"name":"Grenada","code":"GD"},{"name":"Georgia","code":"GE"},{"name":"French Guiana","code":"GF"},{"name":"Guernsey","code":"GG"},{"name":"Ghana","code":"GH"},{"name":"Gibraltar","code":"GI"},{"name":"Greenland","code":"GL"},{"name":"Gambia","code":"GM"},{"name":"Great Britain","code":"GB"},{"name":"Guinea","code":"GN"},{"name":"Guadeloupe","code":"GP"},{"name":"Equatorial Guinea","code":"GQ"},{"name":"Greece","code":"GR"},{"name":"South Georgia And The South Sandwich Islands","code":"GS"},{"name":"Guatemala","code":"GT"},{"name":"Guam","code":"GU"},{"name":"Guinea-bissau","code":"GW"},{"name":"Guyana","code":"GY"},{"name":"Hong Kong","code":"HK"},{"name":"Heard Island And McDonald Islands","code":"HM"},{"name":"Honduras","code":"HN"},{"name":"Croatia","code":"HR"},{"name":"Haiti","code":"HT"},{"name":"Hungary","code":"HU"},{"name":"Canary Islands","code":"IC"},{"name":"Indonesia","code":"ID"},{"name":"Ireland","code":"IE"},{"name":"Israel","code":"IL"},{"name":"Isle Of Man","code":"IM"},{"name":"India","code":"IN"},{"name":"British Indian Ocean Territory","code":"IO"},{"name":"Iraq","code":"IQ"},{"name":"Iran, Islamic Republic Of","code":"IR"},{"name":"Iceland","code":"IS"},{"name":"Italy","code":"IT"},{"name":"Jersey","code":"JE"},{"name":"Jamaica","code":"JM"},{"name":"Jordan","code":"JO"},{"name":"Japan","code":"JP"},{"name":"Kenya","code":"KE"},{"name":"Kyrgyzstan","code":"KG"},{"name":"Cambodia","code":"KH"},{"name":"Kiribati","code":"KI"},{"name":"Comoros","code":"KM"},{"name":"Saint Kitts And Nevis","code":"KN"},{"name":"Korea, Democratic People's Republic Of","code":"KP"},{"name":"Korea, Republic Of","code":"KR"},{"name":"Kuwait","code":"KW"},{"name":"Cayman Islands","code":"KY"},{"name":"Kazakhstan","code":"KZ"},{"name":"Lao People's Democratic Republic","code":"LA"},{"name":"Lebanon","code":"LB"},{"name":"Saint Lucia","code":"LC"},{"name":"Liechtenstein","code":"LI"},{"name":"Sri Lanka","code":"LK"},{"name":"Liberia","code":"LR"},{"name":"Lesotho","code":"LS"},{"name":"Lithuania","code":"LT"},{"name":"Luxembourg","code":"LU"},{"name":"Latvia","code":"LV"},{"name":"Libya","code":"LY"},{"name":"Morocco","code":"MA"},{"name":"Monaco","code":"MC"},{"name":"Moldova","code":"MD"},{"name":"Montenegro","code":"ME"},{"name":"Saint Martin","code":"MF"},{"name":"Madagascar","code":"MG"},{"name":"Marshall Islands","code":"MH"},{"name":"Macedonia, The Former Yugoslav Republic Of","code":"MK"},{"name":"Mali","code":"ML"},{"name":"Myanmar","code":"MM"},{"name":"Mongolia","code":"MN"},{"name":"Macao","code":"MO"},{"name":"Northern Mariana Islands","code":"MP"},{"name":"Martinique","code":"MQ"},{"name":"Mauritania","code":"MR"},{"name":"Montserrat","code":"MS"},{"name":"Malta","code":"MT"},{"name":"Mauritius","code":"MU"},{"name":"Maldives","code":"MV"},{"name":"Malawi","code":"MW"},{"name":"Mexico","code":"MX"},{"name":"Malaysia","code":"MY"},{"name":"Mozambique","code":"MZ"},{"name":"Namibia","code":"NA"},{"name":"New Caledonia","code":"NC"},{"name":"Niger","code":"NE"},{"name":"Norfolk Island","code":"NF"},{"name":"Nigeria","code":"NG"},{"name":"Nicaragua","code":"NI"},{"name":"Netherlands","code":"NL"},{"name":"Norway","code":"NO"},{"name":"Nepal","code":"NP"},{"name":"Nauru","code":"NR"},{"name":"Niue","code":"NU"},{"name":"New Zealand","code":"NZ"},{"name":"Oman","code":"OM"},{"name":"Panama","code":"PA"},{"name":"Peru","code":"PE"},{"name":"French Polynesia","code":"PF"},{"name":"Papua New Guinea","code":"PG"},{"name":"Philippines","code":"PH"},{"name":"Pakistan","code":"PK"},{"name":"Poland","code":"PL"},{"name":"Saint Pierre And Miquelon","code":"PM"},{"name":"Pitcairn","code":"PN"},{"name":"Puerto Rico","code":"PR"},{"name":"Palestinian Territory, Occupied","code":"PS"},{"name":"Portugal","code":"PT"},{"name":"Palau","code":"PW"},{"name":"Paraguay","code":"PY"},{"name":"Qatar","code":"QA"},{"name":"Reunion","code":"RE"},{"name":"Romania","code":"RO"},{"name":"Serbia","code":"RS"},{"name":"Russian Federation","code":"RU"},{"name":"Rwanda","code":"RW"},{"name":"Saudi Arabia","code":"SA"},{"name":"Solomon Islands","code":"SB"},{"name":"Seychelles","code":"SC"},{"name":"Sudan","code":"SD"},{"name":"Sweden","code":"SE"},{"name":"Singapore","code":"SG"},{"name":"Saint Helena, Ascension And Tristan Da Cunha","code":"SH"},{"name":"Slovenia","code":"SI"},{"name":"Svalbard And Jan Mayen","code":"SJ"},{"name":"Slovakia","code":"SK"},{"name":"Sierra Leone","code":"SL"},{"name":"San Marino","code":"SM"},{"name":"Senegal","code":"SN"},{"name":"Somalia","code":"SO"},{"name":"Suriname","code":"SR"},{"name":"South Sudan","code":"SS"},{"name":"SÃŒÂ£o TomÃŒÂ© and PrÃŒ_ncipe","code":"ST"},{"name":"USSR","code":"SU"},{"name":"El Salvador","code":"SV"},{"name":"Sint Maarten","code":"SX"},{"name":"Syrian Arab Republic","code":"SY"},{"name":"Swaziland","code":"SZ"},{"name":"Tristan de Cunha","code":"TA"},{"name":"Turks And Caicos Islands","code":"TC"},{"name":"Chad","code":"TD"},{"name":"French Southern Territories","code":"TF"},{"name":"Togo","code":"TG"},{"name":"Thailand","code":"TH"},{"name":"Tajikistan","code":"TJ"},{"name":"Tokelau","code":"TK"},{"name":"East Timor","code":"TL"},{"name":"Turkmenistan","code":"TM"},{"name":"Tunisia","code":"TN"},{"name":"Tonga","code":"TO"},{"name":"Turkey","code":"TR"},{"name":"Trinidad And Tobago","code":"TT"},{"name":"Tuvalu","code":"TV"},{"name":"Taiwan, Province Of China","code":"TW"},{"name":"Tanzania, United Republic Of","code":"TZ"},{"name":"Ukraine","code":"UA"},{"name":"Uganda","code":"UG"},{"name":"United Kingdom","code":"GB"},{"name":"United States Minor Outlying Islands","code":"UM"},{"name":"United States","code":"US"},{"name":"Uruguay","code":"UY"},{"name":"Uzbekistan","code":"UZ"},{"name":"Vatican City State","code":"VA"},{"name":"Saint Vincent And The Grenadines","code":"VC"},{"name":"Venezuela, Bolivarian Republic Of","code":"VE"},{"name":"Virgin Islands (British)","code":"VG"},{"name":"Virgin Islands (US)","code":"VI"},{"name":"Viet Nam","code":"VN"},{"name":"Vanuatu","code":"VU"},{"name":"Wallis And Futuna","code":"WF"},{"name":"Samoa","code":"WS"},{"name":"Yemen","code":"YE"},{"name":"Mayotte","code":"YT"},{"name":"South Africa","code":"ZA"},{"name":"Zambia","code":"ZM"},{"name":"Zimbabwe","code":"ZW"}]};
-				$scope.countries                = $scope.countriesJson.data;
-				$rootScope.localCache.countries = $scope.countries;
-				$scope.formatInputData();
-        });
-    } else {
-        $scope.countries = $rootScope.localCache.countries;
-        $scope.formatInputData();
-    }
-
+   
 
     /**
      * ==================================================================================
@@ -556,16 +624,24 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
      * ===================================================================================
      */
     $scope.backtoCustomer = function() {
-        if ($scope.isError) {
+        if ($scope.isError || $scope.isUpdateError) {
             $rootScope.localCache.isCustomerAPINeeded = false;
+            $rootScope.closeAlert();
             $location.path('/Customer');
             return
         }
+        /* return to customer list without saving */
+        
+        $rootScope.localCache.isCustomerAPINeeded = false;
+        $rootScope.closeAlert();
+        $location.path('/Customer');
+        
         //To Skip saving during create
-        if (!($cookieStore.get("detailId") == 'create')) {
+        /*if (!($cookieStore.get("detailId") == 'create')) {
             if (!angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail)) {
                 if ($scope.CustomerDetail.data.customerName == "") {
                     $scope.addAlert("Enter Customer Name.", "danger");
+                    $scope.isUpdateError = true; // set error flag true
                     return;
                 }
                 $scope.closeAlert();
@@ -574,12 +650,16 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                 if (!$rootScope.localCache.isCustomerAPINeeded) {
                     $rootScope.localCache.isCustomerAPINeeded = false;
                 }
+                $location.path('/Customer');
+              
 
             }
         } else {
+        	//In create mode
             $rootScope.localCache.isCustomerAPINeeded = false;
-        }
-        $location.path('/Customer');
+            $location.path('/Customer');
+        }*/
+       
     }
     /**
      * ==================================================================================
@@ -593,14 +673,13 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
 
         if ($scope.CustomerDetail.data.customerName == "") {
             $scope.addAlert("Enter Customer Name.", "danger");
+            $scope.isUpdateError = true; // set error flag true
             return;
         }
 
         $scope.disabledSave = true;
         $scope.inSave = true;
         console.log(angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail));
-        console.log("Customer cloned data",$scope.ClonedCustomerDetail);
-        console.log("Customer data",$scope.CustomerDetail);
         if (!angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail)) {
             $scope.closeAlert();
             $rootScope.localCache.isCustomerAPINeeded = true;
@@ -608,11 +687,13 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
             if (($scope.CustomerDetail.data.addressISOCountry != '') && ($scope.CustomerDetail.data.addressISOCountry != null))
                 if ($scope.Validatetypeahead($scope.countries, $scope.CustomerDetail.data.addressISOCountry.name, "name", "Enter a valid Country Code", "danger") == false) {
                     $scope.inSave = false;
+                    $scope.isUpdateError = true; // set error flag true
                     return;
                 }
             if (($scope.CustomerDetail.data.addressStateCode != '') && ($scope.CustomerDetail.data.addressStateCode != null))
                 if ($scope.Validatetypeahead($scope.states, $scope.CustomerDetail.data.addressStateCode.name, "name", "Enter a valid State Code", "danger") == false) {
                     $scope.inSave = false;
+                    $scope.isUpdateError = true; // set error flag true
                     return;
                 }
 
@@ -647,6 +728,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                 $scope.CustomerDetail = data;
                 $rootScope.localCache.isCustomerAPINeeded = true;
                 $rootScope.localCache.isFindCustomerAPINeeded = true;
+                $scope.isError = false; // reset error flag true
                 $scope.formatInputData();
                 angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
                 if ($cookieStore.get("detailId") == 'create') {
@@ -662,6 +744,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                 $rootScope.localCache.isCustomerAPINeeded = false;
                 $rootScope.localCache.isFindCustomerAPINeeded = false;
                 $scope.inSave = false;
+                $scope.isUpdateError = true; // set error flag true
                 //$scope.formatInputData();
             });
         }
@@ -1347,8 +1430,23 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
                 
                 if ($scope.contactDetail.data.addressStateCode != null) {
                     var stateCode = $scope.contactDetail.data.addressStateCode;
+					console.log(stateCode);
                     if (typeof stateCode == 'object')
                         $scope.contactDetail.data.addressStateCode = stateCode.code;
+				    else
+					{
+						if ($scope.states != null) {
+							 angular.forEach($scope.states, function(data, key) {
+								 if (data.name == $scope.contactDetail.data.addressStateCode)
+								 {
+									 //$scope.contactDetail.data.addressStateCode = data.code;
+									 $scope.contactDetail.data.addressStateCode = data.code;
+									 
+								 }	 
+							 });
+						 }
+					}
+						
                 }
                 if ($scope.contactDetail.data.addressCountryISO != null) {
                     var countryCode = $scope.contactDetail.data.addressCountryISO;
@@ -1356,7 +1454,23 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
                         $scope.contactDetail.data.addressCountryISO = countryCode.code;
                         $scope.contactDetail.data.addressCountryName = countryCode.name;
                     }
+					else
+					{
+						
+						 if ($scope.countries != null) {
+							 angular.forEach($scope.countries, function(data, key) {
+								 if (data.name == $scope.contactDetail.data.addressCountryISO)
+								 {
+									 $scope.contactDetail.data.addressCountryISO = data.code;
+									 $scope.contactDetail.data.addressCountryName = data.name;
+									 
+								 }	 
+							 });
+						 }
+
+					}
                 }
+
                 
                 /**
                  * ===================================================================
