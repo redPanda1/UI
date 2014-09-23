@@ -7,7 +7,7 @@
     <span class="modal-close" ng-click="cancel()">x</span>
 </div>
 
-<div class="modal-body"><!-- CONTACT MODAL BODY STARTS  -->
+<div class="modal-body contactPopUp"><!-- CONTACT MODAL BODY STARTS  -->
     <div class="row customerInfo"><!-- PHOTO UPLOAD AND BASIC INFO STARTS -->
         <div class="col-sm-3 col-md-3 col-lg-3 contact-img">
             <input type="file" name="file" class="imageUploader" ng-file-select="onFileSelect($files)" />
@@ -39,8 +39,8 @@
     </div><!-- PHOTO UPLOAD AND BASIC INFO ENDS -->
    
     <div class = "row"><!-- CONTACT TABLE STRATS  -->
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 contactPopUp">                           
-			<table class="table table-bordered table-striped contact-info-type">				
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 contact-info-type">                           
+			<table class="table table-bordered table-striped">				
 				<thead>
 					<tr>
 						<td>Type</td>
@@ -71,7 +71,7 @@
         </div>
     </div><!-- CONTACT TABLE ENDS  -->
     
-    <div class="row"><!-- CONTACT MAP STARTS -->
+    <div class="row contact-address-map"><!-- CONTACT MAP STARTS -->
         <div class="col-sm-5 col-md-5 col-lg-5 contect-address">  
             <input type="text" ng-model="contactDetail.data.addressStreet" placeholder="street" class="form-control">
             <input type="text" ng-model="contactDetail.data.addressCity" placeholder="city/town" class="form-control">

@@ -1,7 +1,7 @@
 .employee-img img
 {
-	width: 120px;
-	height: 120px;
+	width: 115px;
+	height: 115px;
 	border: 1px solid #DBDEE0;
 }
 .imgContain
@@ -78,12 +78,6 @@
 	margin-top: 5px;
 }
 
-/* Removing border for contact type table map */
-.contect-address input,.contect-address .state-name
-{
-	margin-bottom: 15px;
-
-}
 /*for overtime cost row bottom position*/
 .financial .Overtime label, .financial .Overtime .input-group
 {

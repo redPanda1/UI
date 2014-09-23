@@ -679,7 +679,24 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 console.log(angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))
 		 console.log("cloned",$scope.ClonedcontractDetail)
 		 console.log("contractDetail",$scope.contractDetail)
-		 if(!angular.equals($scope.ClonedcontractDetail,$scope.contractDetail))		 
+		 
+		 if($scope.contractDetail.data.value != null && $scope.contractDetail.data.value == 0)
+		 {
+			 if($scope.contractDetail.data.currency != null)
+				 delete $scope.contractDetail.data.currency;
+		 }
+		 
+		 
+		 //Comparing the objects to identify the changes
+         $scope.needToSave = false;
+         angular.forEach($scope.contractDetail.data,function(data,key){ 
+        	console.log(data);
+        	console.log($scope.ClonedcontractDetail.data[key]);
+        	if(!angular.equals(data,$scope.ClonedcontractDetail.data[key]))
+        		$scope.needToSave = true;
+         });
+        
+		 if($scope.needToSave)		 
 		 {			
 			 console.log($scope.contractDetail.data.currency);
 			 $rootScope.closeAlert();
@@ -738,7 +755,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 }).error(function(data, status){
 				 if($location.path() == '/ContractDetail')
 					 $rootScope.addAlert("Update failed","danger");
-				 
+				 $scope.disabledSave = false;
 				 //Code used for local testing and it should be removed finally
 				 
 				/*$scope.contractDetail = $rootScope.newContactDetails;

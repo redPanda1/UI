@@ -729,6 +729,19 @@ body {
 	height: 25px;
 	line-height: 25px;
 }
+.contect-address input, .contect-address .state-name {
+	margin-bottom: 10px;
+}
+.contactPopUp .contact-info-type
+{
+	padding-right: 15px;
+	padding-left: 15px;
+}
+.contactPopUp .contact-address-map
+{
+	padding-right: 5px;
+	padding-left: 5px;
+}
 .form-group span.unit-position
 {
 	font-family: "LotoFont", sans-serif;
@@ -750,7 +763,7 @@ body {
 }
 .attachementContainer
 {
-	padding-bottom: 10px;
+	padding: 0px 10px 10px 10px !important;
 }
 @media (max-width: 767px)
 {

@@ -35,12 +35,6 @@
 	display: inline-table;
 	margin-top: 4px;
 }
-/* Removing border for contact type table map */
-.contect-address input,.contect-address .state-name
-{
-	margin-bottom: 15px;
-
-}
 /*for overtime cost row bottom position*/
 .financial .Overtime label, .financial .Overtime .input-group
 {
