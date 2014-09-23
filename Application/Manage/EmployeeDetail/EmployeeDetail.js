@@ -347,6 +347,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
      */
     $scope.successCalls = function()
     {
+    	console.log($scope.EmployeeDetail);
     	$scope.truncateurl();
         $scope.mapOptions = $scope.EmployeeDetail;
         $scope.needMapCall.callMap = true;
@@ -867,15 +868,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.imageSrc = result;
                 if ($('.PersonImage').width() > 120)
                     $scope.containImg = true;
-                if(!($cookieStore.get("detailId") == 'create'))
-                {
-                	$scope.imageUpload();
-                	$scope.isImageuploaded = false;
-                }
-                else
-                {
-                	$scope.isImageuploaded = true;
-                }
+                $scope.imageUpload();
                 $scope.disabledSave = false;
                 
             });
@@ -1012,7 +1005,8 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
 
         var fd = new FormData();
         fd.append('file', $scope.file);
-        fd.append('contactId', $cookieStore.get("detailId"));
+        if(!($cookieStore.get("detailId") == 'create'))
+            fd.append('contactId', $cookieStore.get("detailId"));
         $http.post('/api/upload/photo', fd, {
             transformRequest: angular.identity,
             headers: {
@@ -1021,6 +1015,8 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
         }).success(function(data, status) {
             console.log("Image Updated Successfully");
             $scope.isImageuploaded = false;
+            console.log(data);
+            $scope.EmployeeDetail.data.photoId = data.data.resourceId;
             $rootScope.localCache.isEmpAPINeeded = true;
         }).error(function(data, status) {
             console.log("Imaged Update Failed");
@@ -1150,7 +1146,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
        
         if ($scope.needToSave) {
         	
-        	$scope.checkDateisChanged();
+        	
             
         	//For Alerting the mandatory field Nickname
             if ($scope.EmployeeDetail.data.nickName == "") {
@@ -1162,7 +1158,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
             } else {
                 $scope.assignNames(); //For assigning the first,last name to the post object
             }
-            
+           
             $scope.closeAlert(); //Used to close the alert message before proceeding.
             
             //For Mapping the departmentName based on the selected departmentID
@@ -1186,7 +1182,7 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 }
 
             $scope.needMapCall.callMap = true;
-
+            $scope.checkDateisChanged();
             $scope.formatPostData();
        	    
             if($scope.EmployeeDetail.data.hireDate == "NaN-NaN-NaN")
@@ -1210,11 +1206,11 @@ function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScop
                 $scope.rootscopeobj = {};
 	    		angular.copy($scope.EmployeeDetail,$scope.rootscopeobj,true);
 	    		$rootScope.empDetailCache.data = $scope.rootscopeobj;
-                if ($cookieStore.get("detailId") == 'create') {
+                /*if ($cookieStore.get("detailId") == 'create') {
                     $cookieStore.put("detailId", data.data.id);
                     if ($scope.isImageuploaded)
                         $scope.imageUpload();
-                }
+                }*/
                 $scope.formatCostamt();
                 $scope.formatStdamt();
                 $scope.formatInputData();

@@ -56,17 +56,6 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	$scope.clonedPeopleData = [];
 	$scope.clonedActivityData = [];
 	
-	 $('#dateRange').daterangepicker({
-         format: 'MM/DD/YY',
-         opens:'left'
-       }, function(start, end, label) {
-    	   var dateValue = $('#dateRange').val();
-    	   var startDate = dateValue.split('-')[0];
-		   var endDate = dateValue.split('-')[1];
-		   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
-		   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
-       });
-	
 	//Create mode from customer
 	if ($cookieStore.get("contractId") == "create"){
 		$cookieStore.put("detailId","create");
@@ -147,7 +136,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
  	        headerRowHeight: 40,
  	        columnDefs: [ {field:'title', displayName:'Activity', width:'20%',cellTemplate:'<div class="ngCellText cell-container"><span ng-show ="row.rowIndex === 0"><input type="text" class="form-control inputtext" placeholder ="description" ng-model="row.entity.title" /></span><span ng-show ="row.rowIndex > 0"><input type="text" class="form-control inputtext"  ng-model="row.entity.title" /></span></div>'},
 
- 	                      {field:'', displayName:'Duration', width:'22%',cellTemplate:'<div class="ngCellText cell-container"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input  class="form-control"  type="text" style="background-color: white;cursor: pointer;width: 190px;" value = "{{activityDuration[row.rowIndex]}}" id ="start_{{row.rowIndex}}"  ng-focus="initiateDatePicker(row,row.rowIndex)" /></p></div>'},
+ 	                      {field:'', displayName:'Duration', width:'22%',cellTemplate:'<div class="ngCellText cell-container"><p class="input-group from-date mini-input"><span class="input-group-addon"><i class="fa fa-calendar"></i></span><input  class="form-control"  type="text" style="background-color: white;cursor: pointer;width: 190px;" value = "{{activityDuration[row.rowIndex]}}" id ="start_{{row.rowIndex}}" ng-keyup ="clearActivityDate(row.rowIndex)"  ng-focus="initiateDatePicker(row,row.rowIndex)" /></p></div>'},
  	        			  {field:'isBillable', displayName:'Billable', width:'10%',cellTemplate:'<div class="ngCellText cell-container" style="padding: 12px 0px 0px 20px !important;"><input type="checkbox" ng-model="row.entity.isBillable" /></div>'},                
  	        			  {field:'rateAmt', displayName:'Hourly Rate', width:'20%', cellTemplate:'<div class="ngCellText cell-container"><div class="input-group"><span class="input-group-addon" ng-bind ="row.entity.rateCur"></span><input type="text" hourly-Rate  placeholder="Rate"  class="form-control inputtext right_justify" ng-model="row.entity.rateAmt" ng-disabled="contractDetail.data.type != invoicemethods[0].value"/></div></div>'},
  	        			  {field:'feeAmt', displayName:'Fixed Fee', width:'20%', cellTemplate:'<div class="ngCellText cell-container"><div class="input-group"><span class="input-group-addon" ng-bind ="row.entity.feeCur"></span><input type="text" hourly-Rate placeholder="Fixed Fee" class="form-control inputtext right_justify" ng-model="row.entity.feeAmt" ng-disabled="contractDetail.data.type != invoicemethods[2].value"/></div></div>'},
@@ -189,10 +178,16 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 
 	 $scope.initiateDatePicker = function(row,index)
 	 {
+		 console.log(row.entity.start);
+		 console.log(row.entity.end);
+		 row.entity.start= USDateFormat.convert(row.entity.start,true);
+		 row.entity.end= USDateFormat.convert(row.entity.end,true);
 		 var elementId = '#start_'+index;
 		 $(elementId).daterangepicker({
 	         format: 'MM/DD/YY',
-	         opens:'left'
+	         opens:'left',
+	         startDate:row.entity.start,
+	         endDate:row.entity.end
 	       }, function(start, end, label) {
 	       var dateValue = $(elementId).val();
     	   var startDate = dateValue.split('-')[0];
@@ -200,7 +195,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		   $scope.activitiesTableData[index].start = IsoDateFormat.convert(startDate);
 		   $scope.activitiesTableData[index].end = IsoDateFormat.convert(endDate);
 		   row.entity.start = IsoDateFormat.convert(startDate);
-		  row.entity.end  = IsoDateFormat.convert(endDate);
+		   row.entity.end  = IsoDateFormat.convert(endDate);
 	       });
 	 }
 	
@@ -289,7 +284,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
     {
         var tableObj; 
 		if (type == "people"){
-			contents.push({"rateCur":$scope.currencySymbol, "rateAmt":'0.00'});
+			contents.push({"rateCur":$scope.currencySymbol, "rateAmt":'0.00',"isBlocked": false});
 			tableObj =  $scope.peopleTableOptions;
 		}
 		else
@@ -359,10 +354,28 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 {
 		 var DateString = "";
 		 if($scope.contractDetail.data.startDate != null)
+		 {
+			 $scope.startDateRange = USDateFormat.convert($scope.contractDetail.data.startDate,true);
 			 DateString += USDateFormat.convert($scope.contractDetail.data.startDate,true);
+		 }
 		 if($scope.contractDetail.data.endDate != null)
+		 {
+			 $scope.endDateRange = USDateFormat.convert($scope.contractDetail.data.endDate,true);
 			 DateString += "-"+USDateFormat.convert($scope.contractDetail.data.endDate,true);
+		 }
 		 $('#dateRange').val(DateString);
+		 $('#dateRange').daterangepicker({
+	         format: 'MM/DD/YY',
+	         opens:'left',
+	         startDate:$scope.startDateRange,
+	         endDate:$scope.endDateRange
+	       }, function(start, end, label) {
+	    	   var dateValue = $('#dateRange').val();
+	    	   var startDate = dateValue.split('-')[0];
+			   var endDate = dateValue.split('-')[1];
+			   $scope.contractDetail.data.startDate = IsoDateFormat.convert(startDate);
+			   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
+	       });
 	 }
 	  /**
 	  * ====================================================================================================
@@ -396,6 +409,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			 {
 			 $scope.contractDetail.data.currency = 'USD';
 			 $scope.currencySymbol ='$';
+			 $scope.currencyCode = 'USD';
 			// $scope.contractDetail.data.currency = currencyObj.code;
 			 }
 			 else
@@ -442,8 +456,94 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	        $scope.currencies = $rootScope.localCache.currencies;
 	        $scope.initializeCurrencies();	
 	    }
-	     
-	     
+	/*
+	*	Setting the manager name for the given manager id from the list 
+	*/
+     var setManagerName = function(){
+		if ($scope.contractDetail.data.managerId != null)
+		{
+			console.log($scope.contractDetail.data.managerName, $scope.contractDetail.data.managerId)
+			if($scope.contractDetail.data.managerId != "")
+			{
+				angular.forEach($scope.nickNames,function(data,key){
+					if($scope.contractDetail.data.managerId == data.id){
+						$scope.contractDetail.data.managerName = data.name;
+					}
+				});
+			}
+		}
+	}
+	/*
+	*Calling the employeeList api for populating the manager names in the manager selection box
+	*/
+	var getManagerList = function(){
+	
+		 if($rootScope.localCache.managers == null)
+		 {
+			 $http.get('/api/employeeList').success(function (data) {	
+				 $scope.employeeList =  data.data;
+			 	  //Getting all the Manager Names for the Detail page
+				  $scope.managers = [];
+				  angular.forEach($scope.employeeList,function(data,key){
+					  if(!data.deleted && !data.isInactive)
+					  {
+						  if(data.firstName != null && data.lastName != null)
+						  {
+							   var manName = data.firstName+" "+data.lastName;
+							   $scope.managers.push({"name":manName,"id":data.id});
+						  }
+						  else if(data.lastName != null)
+						  {
+							  var manName = data.lastName;
+							  $scope.managers.push({"name":manName,"id":data.id});
+						  }
+					  }
+				  });	
+				 $scope.managerList  = $scope.managers;
+				 $rootScope.localCache.managers = $scope.managerList;
+				 $rootScope.peopleTableData = $scope.managerList; 
+				 $scope.nickNames = $scope.managers;
+				  if($cookieStore.get("detailId") != 'create')
+				 	setManagerName();
+			 }).error(function(data, status){
+				$rootScope.addAlert("Manager List is not available","danger");
+			
+				//Code used for local testing and it should be removed finally
+				
+				$scope.employeeList =  $rootScope.employeeData.data;
+				  $scope.managers = [];
+				  angular.forEach($scope.employeeList,function(data,key){
+					  if(!data.deleted && !data.isInactive)
+					  {
+						  if(data.firstName != null && data.lastName != null)
+						  {
+							   var manName = data.firstName+" "+data.lastName;
+							   $scope.managers.push({"name":manName,"id":data.id});
+						  }
+						  else if(data.lastName != null)
+						  {
+							  var manName = data.lastName;
+							  $scope.managers.push({"name":manName,"id":data.id});
+						  }
+					  }
+				  });	
+				  $scope.managerList  = $scope.managers;
+					 $rootScope.localCache.managers = $scope.managerList;
+					 $rootScope.peopleTableData = $scope.managerList; 
+					 $scope.nickNames = $scope.managers;
+					 if($cookieStore.get("detailId") != 'create')
+						 	setManagerName()
+			 });
+		 }
+		 else
+		 {
+			 $scope.managerList =  $rootScope.localCache.managers;
+			 $rootScope.peopleTableData = $scope.managerList;
+			 $scope.nickNames = $rootScope.localCache.managers;
+		     if($cookieStore.get("detailId") != 'create')
+			 	setManagerName();
+		 }
+	}
 	     
 	 /**
 	  * =====================================================================================================
@@ -473,11 +573,13 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 if($scope.contractDetail.data.activityData == null)
 			$scope.contractDetail.data.activityData = [];
 		 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
-		 $scope.contractDetail.data.activityData.push({"title": "","status": 0,"isBillable": false,"isFixedFee": false,"feeAmt": 0,"feeCur" : $scope.currencySymbol,"rateCur" : $scope.currencySymbol});
-		 $scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol});
+		 $scope.contractDetail.data.activityData.push({"title": "","status": 0,"isBillable": false,"isFixedFee": false,"rateAmt":"0.00","feeAmt": '0.00',"feeCur" : $scope.currencySymbol,"rateCur" : $scope.currencySymbol});
+		 $scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":"0.00"});
+		 $scope.currencyCode = "USD";
 		 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
 		 $scope.peopleMangers       = $scope.contractDetail.data.assignedData;
 		 $scope.contractDetail.data.type = $scope.invoicemethods[2].value;
+		 getManagerList();
 	 }
 	 else
 	 {
@@ -488,19 +590,26 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 $scope.isError = false;
 				 $scope.disableDelete = false;
 				 $scope.disabledSave = false;
-				 //Cloning the object before pre processing.
+				 
+				 //Condition used for making the number to 2 fixed position
 				 if($scope.contractDetail.data.value != null)
 					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);
 				 if($scope.contractDetail.data.budgetedHours != null)
 					 $scope.contractDetail.data.budgetedHours = $scope.contractDetail.data.budgetedHours.toFixed(2);
 
+				 //Condition used for initialising the assigned and activity data
 				 if ($scope.contractDetail.data.assignedData == null)
 			  			$scope.contractDetail.data.assignedData = [];
 			  	 if($scope.contractDetail.data.activityData == null)
 			  			$scope.contractDetail.data.activityData = [];
-			  		
+			  	 
+			  	 getManagerList();
+			  	 
+			  	 //Clone the object before formatting the data
 				 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
+				 
 				 $scope.convertToUSDateFormat();
+				 
 				 if ($scope.contractDetail.data.activityData != null)
 					 $scope.convertDateActivities();
 				 if($scope.contractDetail.data.managerName != null)
@@ -511,14 +620,12 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 if($scope.contractDetail.data.type == null)
 					 $scope.contractDetail.data.type = $scope.invoicemethods[2].value;
 				 
-				 $scope.initializeCurrencies();			 
+				 $scope.initializeCurrencies();
 				 		
 				// if (contractDetailCookId != "create" && $rootScope.customerName)
 				 if($rootScope.fromCustomer)
 		  				$scope.contractDetail.data.customerName = $rootScope.customerName;	
-		  		
-		  		
-		  			
+
 		  		if ($scope.contractDetail.data.type != null)
 				{
 					if ($scope.contractDetail.data.type == "fixed")
@@ -538,19 +645,18 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		  		if ($scope.contractDetail.data.type != null)
 		  		{
 		  			if ($scope.contractDetail.data.type == "activity" || $scope.contractDetail.data.type == "fixed") {
-		            	$scope.contractDetail.data.assignedData = [];
-		            	$scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol});
+		            	//$scope.contractDetail.data.assignedData = [];
+		            	//$scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol});
 		            	if($scope.contractDetail.data.activityData.length == 0)
 		            		$scope.contractDetail.data.activityData.push({"title": "","status": 0,"isBillable": false,"isFixedFee": false,"rateAmt": '0.00',"feeAmt": '0.00',"feeCur" : $scope.currencySymbol,"rateCur" : $scope.currencySymbol});
 		     		}
 				 	if ($scope.contractDetail.data.type == "person") {
-				     	$scope.contractDetail.data.activityData = [];
-				     	$scope.contractDetail.data.activityData.push({"title": "","status": 0,"isBillable": false,"isFixedFee": false,"rateAmt": '0.00',"feeAmt": '0.00',"feeCur" : $scope.currencySymbol,"rateCur" : $scope.currencySymbol});
+				     	//$scope.contractDetail.data.activityData = [];
+				     	//$scope.contractDetail.data.activityData.push({"title": "","status": 0,"isBillable": false,"isFixedFee": false,"rateAmt": '0.00',"feeAmt": '0.00',"feeCur" : $scope.currencySymbol,"rateCur" : $scope.currencySymbol});
 				     	if($scope.contractDetail.data.assignedData.length == 0)
-				     		$scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol});
+				     		$scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":0});
 					}
 		  		}
-		  		
 		  		angular.forEach($scope.contractDetail.data.activityData,function(data,key){
 		  			if(data.rateAmt != null)
 			  			data.rateAmt = Number(data.rateAmt).toFixed(2);
@@ -571,10 +677,8 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
                     {
                             $scope.contractDetail.data.assignedData = [{"employeeName":""}];
                              $scope.contractDetail.data.assignedData[0].employeeName = $scope.contractDetail.data.managerName;
-                                                                                    
                     }
                   }
-                                                                                    
                  console.log($scope.contractDetail.data.assignedData)
 				 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
                  $scope.peopleMangers       = $scope.contractDetail.data.assignedData;
@@ -582,15 +686,15 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		  		console.log($scope.peopleMangers)
 
 			 }).error(function(data, status){
-			 	 //$scope.isError = true;
-			 	 //$scope.disabledSave = true;
+			 	 $scope.isError = true;
+			 	 $scope.disabledSave = true;
 
 			 	  if($location.path() == '/ContractDetail')
 			 		  $rootScope.addAlert("No contract details available.","danger");
 
 			 	//Code used for local testing and it should be removed finally
-			 	  
-				$scope.contractDetail  = $rootScope.ContractDetailData;
+			 	 
+				/*$scope.contractDetail  = $rootScope.ContractDetailData;
 				
 				if ($scope.contractDetail.data != null)
 					$scope.convertToUSDateFormat();
@@ -652,7 +756,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		 	 				$scope.contractDetail.data.activityData[i].rateCur = ''
 		 	 			}
 		 	 		}
-				}
+				}*/
 				//$scope.convertDateActivities();
 				//$scope.activitiesTableData =  $scope.contractDetail.data.activityData;
 			 });
@@ -666,80 +770,16 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 			 $rootScope.localCache.customers = $scope.customerList;
 			 $rootScope.localCache.isFindCustomerAPINeeded = false;
 		 }).error(function(data, status){
-		   // $rootScope.addAlert("Customer List is not available","danger");
-			$scope.customerList =$rootScope.customerlist.data; 
-		    $rootScope.localCache.customers = $scope.customerList;
+		    $rootScope.addAlert("Customer List is not available","danger");
+			/*$scope.customerList =$rootScope.customerlist.data; 
+		    $rootScope.localCache.customers = $scope.customerList;*/
 		 });
 	 }
 	 else
 	 {
 		 $scope.customerList =  $rootScope.localCache.customers;
 	 }
-
-
-	 if($rootScope.localCache.managers == null)
-	 {
-		 $http.get('/api/employeeList').success(function (data) {	
-			 $scope.employeeList =  data.data;
-		 	  //Getting all the Manager Names for the Detail page
-			  $scope.managers = [];
-			  angular.forEach($scope.employeeList,function(data,key){
-				  if(!data.deleted && !data.isInactive)
-				  {
-					  if(data.firstName != null && data.lastName != null)
-					  {
-						   var manName = data.firstName+" "+data.lastName;
-						   $scope.managers.push({"name":manName,"id":data.id});
-					  }
-					  else if(data.lastName != null)
-					  {
-						  var manName = data.lastName;
-						  $scope.managers.push({"name":manName,"id":data.id});
-					  }
-				  }
-			  });	
-			 $scope.managerList  = $scope.managers;
-			 $rootScope.localCache.managers = $scope.managerList;
-			 $rootScope.peopleTableData = $scope.managerList; 
-			 $scope.nickNames = $scope.managers;
-		 }).error(function(data, status){
-			//$rootScope.addAlert("Manager List is not available","danger");
-			
-			//Code used for local testing and it should be removed finally
-			
-			$scope.employeeList =  $rootScope.employeeData.data;
-			  $scope.managers = [];
-			  angular.forEach($scope.employeeList,function(data,key){
-				  if(!data.deleted && !data.isInactive)
-				  {
-					  if(data.firstName != null && data.lastName != null)
-					  {
-						   var manName = data.firstName+" "+data.lastName;
-						   $scope.managers.push({"name":manName,"id":data.id});
-					  }
-					  else if(data.lastName != null)
-					  {
-						  var manName = data.lastName;
-						  $scope.managers.push({"name":manName,"id":data.id});
-					  }
-				  }
-			  });	
-			  $scope.managerList  = $scope.managers;
-				 $rootScope.localCache.managers = $scope.managerList;
-				 $rootScope.peopleTableData = $scope.managerList; 
-				 $scope.nickNames = $scope.managers;
-		 });
-	 }
-	 else
-	 {
-		 $scope.managerList =  $rootScope.localCache.managers;
-		 $rootScope.peopleTableData = $scope.managerList;
-		 $scope.nickNames = $rootScope.localCache.managers;
-	 }
-	 
-	 
-	 
-	 
+	
 	 /**
 	  * ===================================================================
 	  * Function used to set the changed date to the contractdetail key.
@@ -767,8 +807,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	  * ========================================================================
 	  */
 	 $scope.setPeopleData = function(manager)
-	 {	
-	
+	 {
 			
 		 	 if($scope.peopleMangers.length == 1)
 		 	 {
@@ -816,20 +855,20 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 				 $scope.currencySymbol = currencyObj.symbol;
 			 else
 				 $scope.currencySymbol = currencyObj.code;
-			 
+			 $scope.currencyCode =  currencyObj.code;
 			 $scope.contractDetail.data.currency = currencyObj.code;
 		 }
 		 else
 		 {
 			 $scope.currencySymbol = '$';
 			 $scope.contractDetail.data.currency = 'USD';
+			 $scope.currencyCode =  'USD';
 		 }
 		 for(var i=0;i<$scope.activitiesTableData.length;i++){
 		 	$scope.activitiesTableData[i].rateCur = $scope.contractDetail.data.currency;
 		 	$scope.fixedFeeCurrency[i] = $scope.contractDetail.data.currency;
 		 }
 	 }
-	 
 	 
 	 /**
 	  * ===================================================================
@@ -870,20 +909,27 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	 	 	var filterPeopleList   = [];
 	 	 	var filterActivityList = [];
 	 	 	
+	 	 	console.log($scope.peopleMangers);
+	 	 	console.log($scope.activitiesTableData);
+	 	 	//For loop for converting the data type of rate amt
 			for(var i=0;i<$scope.peopleMangers.length;i++){
 				if($scope.peopleMangers[i].rateAmt != "" || $scope.peopleMangers[i].rateAmt != null)
 		 	 		$scope.peopleMangers[i].rateAmt = parseFloat($scope.peopleMangers[i].rateAmt);
 	 	 	}
+			
+			//For mapping the employee id in the people managers array
 	 	 	angular.forEach($scope.peopleMangers,function(peopleData,key){
 				if (peopleData.employeeName != "" && peopleData.employeeName != null){
 					angular.forEach($scope.nickNames, function(data, key) {
 						if (peopleData.employeeName == data.name){
 							peopleData.employeeId = data.id;
+							
 						}
 					});
 				}
 			});
-			console.log($scope.peopleMangers)
+			console.log($scope.peopleMangers);
+			//For pushing the valid people managers into the filtered list
 			for (var i=0;i<$scope.peopleMangers.length;i++){
 				if($scope.peopleMangers[i].employeeId != undefined){
 					filterPeopleList.push($scope.peopleMangers[i])
@@ -895,24 +941,44 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 					filterActivityList.push($scope.activitiesTableData[i])
 				}
 			}
-			angular.forEach(filterPeopleList,function(data,key){ 
-				data.rateCur =  $scope.currencyCode;
+			angular.forEach(filterPeopleList,function(peopleData,key){
+				peopleData.rateCur =  $scope.currencyCode;
+                    if(($scope.contractDetail.data.type == "fixed") ||($scope.contractDetail.data.type ==  'activity'))
+                    {
+                        delete peopleData.rateCur;
+                        peopleData.rateAmt = 0;
+                    }
 				
 			});
 
-			
 			angular.forEach(filterActivityList,function(data,key){ 
 				data.rateCur =  $scope.currencyCode;
 				data.feeCur  =  $scope.currencyCode;
 				data.feeAmt  = parseFloat(data.feeAmt)
 				data.rateAmt  = parseFloat(data.rateAmt)
+				data.isFixedFee  = false;
+				//Deleting the rate amount and currencies for fixed type in activity table
 				if ($scope.contractDetail.data.type == "fixed"){
 					data.isFixedFee  = true;
+					delete data.rateCur;
+					data.rateAmt = 0;
 				}
+				if($scope.contractDetail.data.type ==  'activity'){
+					delete data.feeCur;
+					data.feeAmt = 0;
+				}
+                if($scope.contractDetail.data.type ==  'person'){
+                    delete data.feeCur;
+                    data.feeAmt = 0;
+                    delete data.rateCur;
+                    data.rateAmt =0;
+                }
+                            
 			});
 			
+
 			console.log(">", filterActivityList)
-		    if ($scope.contractDetail.data.type == "activity" || $scope.contractDetail.data.type == "fixed") {
+		   /* if ($scope.contractDetail.data.type == "activity" || $scope.contractDetail.data.type == "fixed") {
 		           // $scope.contractDetail.data.assignedData = $scope.clonedPeopleData;
 		            $scope.contractDetail.data.activityData = filterActivityList;
 		            $scope.contractDetail.data.assignedData  = [];
@@ -921,7 +987,7 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 		         //$scope.contractDetail.data.activityData = $scope.clonedActivityData;
 		         $scope.contractDetail.data.assignedData = filterPeopleList;
 		         $scope.contractDetail.data.activityData = [];
-		    }
+		    } */
 	 }
 	 
 	 /**
@@ -1057,9 +1123,6 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
 	       });
 	 }
 	 
-	 
-	 
-	 
 	 /**
 	  * ==================================================================================
 	  * Function used to save the contract details when save button is clicked
@@ -1093,6 +1156,12 @@ function contractDetailController($scope,$rootScope,$modal,$http,$location,$cook
          $scope.needToSave = false;
          console.log($scope.contractDetail.data)
          angular.forEach($scope.contractDetail.data,function(data,key){
+        	 console.log(key);
+        	 console.log(data);
+        	console.log($scope.ClonedcontractDetail.data[key]);
+        	console.log("*******************"+angular.equals(data,$scope.ClonedcontractDetail.data[key]));
+        	
+        
         	if(!angular.equals(data,$scope.ClonedcontractDetail.data[key]))
         		$scope.needToSave = true;
          });

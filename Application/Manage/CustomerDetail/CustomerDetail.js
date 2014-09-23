@@ -724,7 +724,6 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
                     "content-type": "application/json"
                 }
             }).success(function(data) {
-                $scope.addAlert("Updated successfully", "success");
                 $scope.CustomerDetail = data;
                 $rootScope.localCache.isCustomerAPINeeded = true;
                 $rootScope.localCache.isFindCustomerAPINeeded = true;
@@ -906,7 +905,7 @@ function customerDetailController($scope, USDateFormat, $rootScope, $timeout, $m
  * @param fileReader
  */
 //======================================================================================================//
-function ContactModalController($scope, $rootScope, $route, $http, $modalInstance, CurrentTimeStamp, $cookieStore, fileReader) {
+function ContactModalController($scope,$window,$rootScope, $route, $http, $modalInstance, CurrentTimeStamp, $cookieStore, fileReader) {
 
     $scope.noContactSelected = false;
     $scope.invalidEmail = false;
@@ -931,6 +930,7 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
     $scope.contactTypeDetails = [];
     $scope.isInfoRequired = [];
     $scope.custContactList = {};
+    $scope.contactalerts= [];
     $scope.contactObj = {
         "id": "",
         "type": "",
@@ -943,6 +943,27 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
         "deleted": ""
     }
 
+    /**
+     * Function used to add alerts in the contact table
+     */
+    $scope.addAlert = function(message,type,header)
+    {
+    	$scope.contactalerts = [];
+        $scope.contactalerts.push({
+            "message": message,
+            "type": type,
+            "header": header
+        });
+        $window.scrollTo(0, 0);
+    }
+    
+    /**
+     * Function used to close alerts in the close alert
+     */
+    $scope.closeAlert = function() {
+    	$scope.contactalerts = [];
+    }
+    
     /**
      * =====================================================================================================
      *	Populating the table data in the contact popup
@@ -1258,8 +1279,7 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
         fileReader.readAsDataUrl($scope.file, $scope)
             .then(function(result) {
                 $scope.imageSrc = result;
-                if ($('.PersonImage').width() > 120)
-                    $scope.containImg = true;
+                $scope.UploadImage();
                 $scope.disabledSave = false;
                 $scope.isImageuploaded = true;
             });
@@ -1358,23 +1378,22 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
      * Function used to upload image
      * @param isCreate
      */
-    $scope.UploadImage = function(isCreate) {
-        var contactID = "";
-        if (isCreate != null)
-            contactID = isCreate;
-        else
-            contactID = $cookieStore.get("contactID");
+    $scope.UploadImage = function() {
+        
         var fd = new FormData();
         fd.append('file', $scope.file);
-        fd.append('contactId', contactID);
+        if ($cookieStore.get("contactID") != "create")
+        	fd.append('contactId', $cookieStore.get("contactID"));
         $http.post('/api/upload/photo', fd, {
             transformRequest: angular.identity,
             headers: {
                 'Content-Type': undefined
             }
         }).success(function(data, status) {
-
-            $scope.addAlert("Image Updated Successfully", "success");
+            console.log(data);
+            $scope.contactDetail.data.photoId = data.data.resourceId;
+            $scope.contactDetail.data.photoUrl = data.data.contentUrl;
+            $scope.contactDetail.data.thumbUrl = data.data.thumbUrl;
             $scope.isImageuploaded = false;
         }).error(function(data, status) {
             $scope.isImageuploaded = false;
@@ -1390,6 +1409,8 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
         });
     }
 
+    
+    
     /**
      * ==================================================================================
      * Function is called when the done button is clicked in the contact modal
@@ -1419,9 +1440,9 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
             return;
         }
          else{
-                if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
+                /*if ($scope.isImageuploaded && $cookieStore.get("contactID") != "create") {
                         $scope.UploadImage();
-                }
+                }*/
 
                 if ($scope.contactDetail.data.nickname == "" || $scope.contactDetail.data.nickname == null) {
                     $scope.isRequired = true;
@@ -1519,10 +1540,10 @@ function ContactModalController($scope, $rootScope, $route, $http, $modalInstanc
                     }).success(function(data) {
                         $scope.custContactList = data.data;
                         $scope.newContact = false;
-                        if ($scope.isImageuploaded && $cookieStore.get("contactID") == "create") {
+                        /*if ($scope.isImageuploaded && $cookieStore.get("contactID") == "create") {
                             //$cookieStore.put("contactID",$scope.custContactList.id);
                             $scope.UploadImage($scope.custContactList.id);
-                        }
+                        }*/
                         if ($cookieStore.get("contactID") == "create") {
                             $modalInstance.close(formatContactData($scope.custContactList));
                         } else {

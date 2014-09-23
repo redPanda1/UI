@@ -1237,13 +1237,17 @@ redPanda.service('FilterDeleted', function() {
 
 /**
  * Conversion of mm-dd-yyy format to ISO format
+ * Uses moment.js - Since new date() is not supported in some major browsers, library called moment.js is 
+ * used.
  */
 redPanda.service('IsoDateFormat', function() {
     this.convert = function(value) {
-        var selectedDate = new Date(value);
-        var year = selectedDate.getFullYear();
-        var month = (selectedDate.getMonth() + 1).toString().length == 1 ? "0" + (selectedDate.getMonth() + 1) : (selectedDate.getMonth() + 1);
-        var date = selectedDate.getDate().toString().length == 1 ? "0" + (selectedDate.getDate()) : (selectedDate.getDate());
+    	console.log(value);
+        var selectedDate = moment(value,"MM-DD-YY");
+        console.log(selectedDate);
+        var year = selectedDate.year();
+        var month = (selectedDate.month() + 1).toString().length == 1 ? "0" + (selectedDate.month() + 1) : (selectedDate.month() + 1);
+        var date = selectedDate.date().toString().length == 1 ? "0" + (selectedDate.date()) : (selectedDate.date());
         var ISODate = year + "-" + month + "-" + date;
         return ISODate;
     }
@@ -1258,10 +1262,10 @@ redPanda.service('USDateFormat', function() {
      * @param {{boolean}} isSlash - Whether slash format is needed
      */
     this.convert = function(value, isSlash) {
-        var newDate = new Date(value);
-        var month = (newDate.getMonth() + 1).toString().length == 1 ? "0" + (newDate.getMonth() + 1) : newDate.getMonth() + 1;
-        var date = (newDate.getDate().toString().length) == 1 ? "0" + (newDate.getDate()) : newDate.getDate();
-        var year = newDate.getFullYear().toString().substring(2,4);
+        var newDate = moment(value);
+        var month = (newDate.month() + 1).toString().length == 1 ? "0" + (newDate.month() + 1) : newDate.month() + 1;
+        var date = (newDate.date().toString().length) == 1 ? "0" + (newDate.date()) : newDate.date();
+        var year = newDate.year().toString().substring(2,4);
         if (isSlash != null)
             var USDate = month + "/" + date + "/" + year;
         else

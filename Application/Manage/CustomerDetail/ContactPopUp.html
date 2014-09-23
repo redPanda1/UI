@@ -1,5 +1,6 @@
 <!-- CONTACT POPUP MODAL STARTS  -->
 <link href="../Manage/CustomerDetail/ContactPopUp.css" type="text/css" rel="stylesheet"></link>
+ <alert ng-repeat="alert in contactalerts" type="{{alert.type}}" close="closeAlert()"><span ng-bind="alert.message"></span></alert>
 <div class="modal-header">
     <h3 class="modal-title">Contacts
         <span ng-show="newContact"> > New</span>
@@ -12,9 +13,9 @@
     <div class="row customerInfo"><!-- PHOTO UPLOAD AND BASIC INFO STARTS -->
         <div class="col-sm-3 col-md-3 col-lg-3 contact-img">
             <input type="file" name="file" class="imageUploader" ng-file-select="onFileSelect($files)" />
-            <span ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl != null"><img ng-src="{{contactDetail.data.photoUrl}}" class="img-circle img-responsive" ng-class="{'imgContain':containImg}" ></span>
-            <span ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl == null"><img ng-src="img/redPanda50.jpg" class="img-circle img-responsive"></span>
-            <span ng-show="imageSrc"><img ng-src="{{imageSrc}}" class="img-circle img-responsive PersonImage"  ng-class="{'imgContain':containImg}"></span>
+            <div style="width:80px;height:80px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius: 50%;" ng-style="{'background-image':'url('+contactDetail.data.photoUrl+')'}" ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl != null"></div>
+            <div ng-style="{'background-image':'url(\'img/redPanda50.jpg\')'}" style="width:80px;height:80px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius: 50%;" ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl == null"></div>
+            <div ng-show="imageSrc" style="width:80px;height:80px;background-image:url({{imageSrc}});background-size:cover;background-position:center;background-repeat:no-repeat;border-radius: 50%;"></div>
         </div>
         <div class="col-sm-4 col-md-4 col-lg-4">
             <form  class="form-horizontal" role="form">            
