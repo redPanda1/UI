@@ -4,6 +4,12 @@ body
   	font-weight: 400;
   	font-size: 1.4em;
   	background: #E9EBEC;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
   	
 }
 @font-face {
@@ -684,8 +690,8 @@ body {
 }
 #push,
 #footer {
-  height: 40px;
-  width: 100%;
+	height: 40px;
+	width: 100%;
 }
 
 /*ng-cloak*/
@@ -785,7 +791,18 @@ body {
 {
 	height: 28px;
 	border-radius: 0px;
-	padding: 3px 10px 3px 10px;
+	padding: 3px 10px 3px 16px;
+	width: 60px;
+	font-size: 12px;
+	border-right-color: transparent;
+	background-color: #eee;
+	border-bottom-left-radius: 4px !important;
+	border-top-left-radius: 4px !important;
+}
+.currency-select .dropdown ul li a{
+	height: 17px;
+	font-size: 12px;
+	padding: 0px !important;
 }
 .currency-select .dropdown
 {
@@ -803,4 +820,32 @@ body {
 {
 	min-width: 41px;
 	margin: 0px;
+	background-color: #eee;
+}
+.text-center{
+	display: inline-block !important;
+	width: 100%;
+	text-align: center;
+}
+
+.cell-container
+{
+	display: inline-block !important;
+	width: 100%;
+}
+.gridStyle .colt0
+{
+	text-indent: 10px
+}
+.inputtext
+{
+	width: 90% !important;
+}
+.default-detail-image{
+background-image: url('../images/noPhoto_Icon120.png');
+}
+.setPosition
+{
+	position:relative;
+	z-index:2;
 }

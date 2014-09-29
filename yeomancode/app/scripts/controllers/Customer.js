@@ -23,6 +23,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
     $scope.selectedData = [];
     $scope.displayWarning = false;
     $scope.alerts = [];
+    $('.simplecolorpicker').hide();
     $scope.previousSortIndex = '';
     $scope.sortInfo = {
         fields: ['', '', '', '', '', '', ''],
@@ -31,7 +32,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
     $scope.formattedCustomerList = [];
     $scope.isJsonFormattingNeeded = true;
     $rootScope.closeAlert();
-    $('.simplecolorpicker').hide();
+
     //Used to maintain the same filter when navigating from different page  and corresponding detail page
     if (!$rootScope.calledFromCustomerDetail)
         $rootScope.searchData = false;
@@ -121,9 +122,9 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
         }, {
             field: '',
             displayName: '',
-            width: '20%',
+            width: '18%',
             sortable: false,
-            cellTemplate: '<div class="customer-icons-container ngCellText"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}" style="margin-right:5px;"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
+            cellTemplate: '<div class="customer-icons-container ngCellText text-center"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}" style="margin-right:5px;"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'
         }]
     }
     /**
@@ -141,12 +142,13 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
                 //$scope.tableOptions.sortBy('customerId');
 
             }).error(function(data, status) {
+                console.log("No data found for customer list");
             	//Local stub data for local testing
-                $scope.customerList = $rootScope.customerData.data;
+                /*$scope.customerList = $rootScope.customerData.data;
                 $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid
                 $rootScope.localCache.customerList = $scope.customerList;
                 //$scope.tableOptions.sortBy('customerId');
-                if (status == 304) {}
+                if (status == 304) {}*/
             });
         } else {
             $scope.customerList = $rootScope.localCache.customerList;

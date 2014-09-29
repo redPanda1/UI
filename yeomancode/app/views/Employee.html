@@ -22,7 +22,8 @@
 	<!-- TABLE CONTAINER STARTS -->
 	<div class="row">		
 		<div class="col-sm-12 col-md-12 col-lg-12 emp-row-list" >	
-			<div data-ng-include="'views/table.html'"></div>	
+			<!--<div data-ng-include="'/dist/views/table.html'"></div>-->
+			<div data-ng-include="'views/table.html'"></div>
 		</div>			
 	</div><!-- TABLE CONTAINER ENDS  -->
 	<!-- TABLE USED FOR GENERATING EXCEL SHEET-->
@@ -44,7 +45,7 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="emp in formattedEmpList | orderBy:orderByField:reverseSort" >
-					<td ng-bind="emp.employeeId"></td>
+					<td ng-bind="emp.employeeNumber"></td>
 					<td></td>
 					<td ng-bind="emp.firstName"></td>
 					<td ng-bind="emp.lastName"></td>

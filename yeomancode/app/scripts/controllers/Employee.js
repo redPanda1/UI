@@ -11,8 +11,8 @@
  */
 
 
-angular.module('redPandaApp').controller('employeeController', ['$scope','$rootScope','$location','$http','$filter','$cookieStore','$timeout','$window', 
-	function($scope,$rootScope,$location,$http,$filter,$cookieStore,$timeout,$window){
+angular.module('redPandaApp').controller('employeeController', ['$scope','$rootScope','$location','$http','$filter','$cookieStore','$timeout','$window', 'CurrentTimeStamp',
+	function($scope,$rootScope,$location,$http,$filter,$cookieStore,$timeout,$window,CurrentTimeStamp){
 	 //Rootscope variables used to select the Accordion menus.
 	 $rootScope.manage = true;
 	 $rootScope.selectedMenu = 'Employee';
@@ -81,7 +81,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 			 			  "listData":null,
 			 			   "rowHeight": 60,
 			 			  "rowTemplate":'<div ng-dblclick="navigateToDetail(row)" ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}"><div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div><div ng-cell></div></div>',
-			 			  "columnDefs":	[{field:'employeeId', displayName:'ID'}, {field:'', displayName:'',sortable:false,cellTemplate:'<div class ="ngCellText"><span ng-if="row.entity.thumbUrl == null"><span class="img-circle default-image"></span></span><span ng-if="row.entity.thumbUrl !=null"><img ng-src="{{row.entity.thumbUrl}}" class="img-circle"/></span></div>'},{field:'firstName', displayName:'First'},{field:'lastName', displayName:'Last'},{field:'job', displayName:'Job'},{field:'departmentName', displayName:'Department'},{field:'managerName', displayName:'Manager', width:'150px'},{field:'isContractor', displayName:'Type',cellTemplate:'<label class="label label-success" ng-show="!row.entity.isContractor">Employee</label><label ng-show="row.entity.isContractor" class="label label-info">Contractor</label>'},{field:'isInactive', displayName:'Status',cellTemplate:'<label ng-show="row.entity[col.field]" class="label label-important">Terminated</label><label ng-show="!row.entity[col.field]" class="label label-success">Active</label>'},{field:'', displayName:'',sortable:false,cellTemplate:'<div class="ngCellText employee-Button-container"><button class="btn" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}" style="margin-right:5px;"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'}],
+			 			  "columnDefs":	[{field:'employeeNumber', displayName:'ID'}, {field:'', displayName:'',sortable:false,cellTemplate:'<div class = "ngCellText"><span ng-if="row.entity.thumbUrl == null" class ="default-image"></span><span ng-if="row.entity.thumbUrl !=null"><img ng-src="{{row.entity.thumbUrl}}" class="img-circle"/></span></div>'},{field:'firstName', displayName:'First'},{field:'lastName', displayName:'Last'},{field:'job', displayName:'Job'},{field:'departmentName', displayName:'Department'},{field:'managerName', displayName:'Manager', width:'150px'},{field:'isContractor', displayName:'Type',cellTemplate:'<div class ="ngCellText cell-container"><label class="label label-success" ng-show="!row.entity.isContractor">Employee</label><label ng-show="row.entity.isContractor" class="label label-info">Contractor</label></div>'},{field:'isInactive', displayName:'Status',cellTemplate:'<div class="ngCellText cell-container"><label ng-show="row.entity[col.field]" class="label label-important">Terminated</label><label ng-show="!row.entity[col.field]" class="label label-success">Active</label></div>'},{field:'', displayName:'',sortable:false,cellTemplate:'<div class="ngCellText employee-Button-container"><button class="btn" style="margin-right:5px;" ng-class="{\'label-success\':row.entity.commentsExist,\'label-grey\':!row.entity.commentsExist}"><i class="fa fa-comment"></i></button><button class="btn" ng-class="{\'label-info\':row.entity.attachmentsExist,\'label-grey\':!row.entity.attachmentsExist}"> <i class="fa fa-folder-open"></i> </button></div>'}],
 			 			  "useExternalSorting":true,
 			 			  "filterOptions":$scope.filterOptions,
 			 			  "pageOptions":$scope.pagingOptions,
@@ -104,6 +104,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 	  else
 		  $cookieStore.put("detailId","create");
 	  
+	  $rootScope.selectedEmpType = $cookieStore.get("detailId");
 	  $rootScope.closeAlert();
 	  $location.path('/EmployeeDetail');
    }
@@ -252,24 +253,27 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 	    
 	 var  callEmployeeListAPI = function()
 	 {
-		 if($rootScope.localCache.empList == null || $rootScope.localCache.isEmpAPINeeded == true)
+		 if($rootScope.localCache.empList == null)
 		 {
+			 console.log("In request call");
 			 $http.get('/api/employeeList').success(function (data) {	
 				 $scope.employeeList = data.data;
 				 $rootScope.localCache.empList =  $scope.employeeList;	//employee List is stored in local cache.For avoiding unwanted API calls
 				 $scope.truncateurl();  								//Function call used to truncate the photo-url path. 	
 				 $scope.storeManagerNames(); 							//storing all the employee names for the manager list to use it in detail page.
 				 $scope.tableOptions.listData = $scope.employeeList;    //Input for the ngGrid
+				 $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
 				  
 			 }).error(function(data, status){
 				 
+				 console.log("No data found for employee list");
 				 /**
 				  * ==========================================================================
 				  * Codes used for local testing. Finally it should be removed
 				  * ==========================================================================
 				  */
 				 
-				   $scope.employeeList =  $rootScope.employeeData.data;
+				   /*$scope.employeeList =  $rootScope.employeeData.data;
 			 	   $rootScope.localCache.empList =  $scope.employeeList;
 			 	   $scope.truncateurl();
 			 	   $scope.storeManagerNames();	 	  	
@@ -277,14 +281,98 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 				   if(status == 304)
 				   {
 					   //.
-				   }    		
+				   }   */ 		
 			 });
 		 }
 		 else
 		 {
-			
-			 $scope.employeeList = $rootScope.localCache.empList;
-			 $scope.tableOptions.listData = $scope.employeeList;
+			 console.log('In else part');
+			 //For getting the employee list after some particular time 
+			 if($rootScope.localCache.empList != null && $rootScope.localCache.isEmpAPINeeded == true)
+			 {
+				 console.log('In timestamp');
+				 console.log($rootScope.getTime);
+				 $http.get('/api/employeeList?timestamp='+ $rootScope.getTime).success(function (data) {	
+					 $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
+					
+					 if($rootScope.selectedEmpType == 'create')
+					 {
+						 console.log('In create');
+						//For Create
+						 for(var i=0; i<data.data.length;i++)
+						 {
+							 $rootScope.localCache.empList.push(data.data[i]);
+							 $scope.employeeList = $rootScope.localCache.empList;
+							 
+						 }
+					 }
+					 else
+					 {
+						 //For Looping through the data coming from the server.If more than one data is coming from the 
+						 //timestamp api.
+						 
+						 for(var j=0; j< data.data.length; j++)
+						 {
+							 //For looping through the local cache value
+							 for(var i=0; i<$rootScope.localCache.empList.length; i++)
+							 {
+								 if($rootScope.localCache.empList[i].id == data.data[j].id)
+								 {
+									 if(data.data[j].deleted)
+									 {
+										 $rootScope.localCache.empList.splice(i,1);
+										 $scope.employeeList = $rootScope.localCache.empList;
+									 }
+									 else
+									 {
+										 $rootScope.localCache.empList[i] = data.data[j];
+										 $scope.employeeList = $rootScope.localCache.empList;
+									 }
+									 
+								 }
+							 }
+						 }
+						
+					 }
+					 $rootScope.selectedEmpType = null;
+					 
+					 
+					 $scope.truncateurl();  								 		//Function call used to truncate the photo-url path. 	
+					 $scope.storeManagerNames(); 									//storing all the employee names for the manager list to use it in detail page.
+					 $scope.tableOptions.listData = $rootScope.localCache.empList;  //Input for the ngGrid
+					  
+				 }).error(function(data, status){
+					   if(status == 304)
+					   {
+						   $scope.employeeList = $rootScope.localCache.empList;
+						   $scope.tableOptions.listData = $scope.employeeList;
+					   }   
+					   else
+					   {
+
+						   /**
+							* ==========================================================================
+							* Codes used for local testing. Finally it should be removed
+							* ==========================================================================
+							*/
+						   /*angular.forEach(data.data,function(value,key){
+								 $scope.employeeList.push(value);
+								 $rootScope.localCache.empList.push(value);
+						   });
+					 	   $scope.truncateurl();
+					 	   $scope.storeManagerNames();	 	  	
+					 	   $scope.tableOptions.listData = $scope.employeeList;*/
+					   }
+				 });
+				 $rootScope.localCache.isEmpAPINeeded = false;
+			 }
+			 else
+			 {
+				 console.log('In local cache');
+				 $scope.employeeList = $rootScope.localCache.empList;
+				 $scope.tableOptions.listData = $scope.employeeList;
+			 }
+			 
 		 }
 
 	 }

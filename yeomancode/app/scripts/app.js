@@ -9,12 +9,18 @@
 
 angular
   .module('redPandaApp', ['ngRoute','ui.bootstrap','ngGrid','ngCookies','google-maps'])
-  .config(function ($routeProvider) {
+  .config(function ($routeProvider,$locationProvider) {
     $routeProvider
-      .when('/',{
-         templateUrl:'views/HomePage.html'
-       }).when('/Employee',{
+        .when('/login',{
+         templateUrl:'views/Login.html'})
+         .when('/Registration',{
+         templateUrl:'views/Registration.html'})
+         .when('/ResetPassword',{
+         templateUrl:'views/ResetPassword.html'})
+        .when('/Employee',{
          templateUrl:'views/Employee.html'})
+        .when('/Home',{
+         templateUrl:'views/HomePage.html'})
        .when('/Customer',{
          templateUrl:'views/Customer.html'})
        .when('/Contract',{
@@ -25,14 +31,31 @@ angular
          templateUrl:'views/EmployeeDetail.html'})
         .when('/CustomerDetail',{
          templateUrl:'views/CustomerDetail.html'})
-
-
+         /***
+         // For local testing =======================//
+         .when('/',{
+         templateUrl:'/dist/views/HomePage.html'
+       }).when('/Employee',{
+         templateUrl:'/dist/views/Employee.html'})
+     .when('/Home',{
+         templateUrl:'/dist/views/HomePage.html'})
+       .when('/Customer',{
+         templateUrl:'/dist/views/Customer.html'})
+       .when('/Contract',{
+         templateUrl:'/dist/views/Contract.html'})
+       .when('/ContractDetail',{
+         templateUrl:'/dist/views/ContractDetail.html'})
+        .when('/EmployeeDetail',{
+         templateUrl:'/dist/views/EmployeeDetail.html'})
+        .when('/CustomerDetail',{
+         templateUrl:'/dist/views/CustomerDetail.html'})
+		// End of local testing block =======================//
+		**/
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/login'
       });
+      $locationProvider.html5Mode(true);
   });
-
-
 
 /**
  * Main Controller.
@@ -47,7 +70,8 @@ angular
  */
 angular.module('redPandaApp').controller('maincontroller', ['$scope','$location','$rootScope', '$cookieStore', '$window','$modal','$http', function($scope,$location,$rootScope, $cookieStore, $window,$modal,$http) 
 {
-
+	console.log("Current Path");
+	console.log($location.path())
     $rootScope.selectedMenu = 'home'; //Selecting the Home Accordion by default
     $rootScope.localCache = {};
     $rootScope.fromCustomer = false;
@@ -58,13 +82,25 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
     $rootScope.calledFromEmployeeDetail = false;
     $rootScope.calledFromCustomerDetail = false;
     $rootScope.calledFromContractDetail = false;
+    $rootScope.empDetailCache = {};
+    loginSucccess                 = false;
+    
+	if ($cookieStore.get("enableApplication") == null)
+	{
+		$cookieStore.put("enableApplication",false);
+		$rootScope.showApplication    = $cookieStore.get("enableApplication");
 
+	}
+	else{
+		$rootScope.showApplication    = $cookieStore.get("enableApplication");
+	}
+	
     /**
      * Function used to navigate to the home page.
      * @param $rootScope
      */
     $scope.navHome = function($rootScope) {
-        $location.path('/');
+        $location.path('/Home');
     }
 
     /**
@@ -80,10 +116,9 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
         if (field.is('span.simplecolorpicker')) {
             $('span.picker').hide();
         }
-        /*if (field[0].id="daterange") {
-            console.log("****");
-            $('#daterange').daterangepicker();
-        }*/
+        if (field[0].id="daterange") {
+            $(".daterangepicker").hide()
+        }
     });
 
     /**
@@ -126,6 +161,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
     	$rootScope.confirmbtn    = confirmbtn;
     	
         $rootScope.dialogModal = $modal.open({
+            //templateUrl: '/dist/views/ConfirmDialog.html'
             templateUrl: 'views/ConfirmDialog.html'
 
         });
@@ -301,7 +337,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
             "total": 1,
             "data": {
                 "id": "53ac275ee4b03340b6de4947",
-                "employeeId": "PER00003",
+                "employeeNumber": "PER00003",
                 "photoUrl": "/data/resources/53b2fd2de4b0123558f41fe5.jpeg",
                 "thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
                 "firstName": "Peter",
@@ -309,7 +345,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
                 "termDate": "2014-09-26",
                 "lastName": "Blake",
                 "fullName": "Peter Blake",
-                "nickname": "Peter Blake",
+                "nickName": "Peter Blake",
                 "isPartTime": false,
                 "isContractor": false,
                 "addressStreet": "23 Ridge Road",
@@ -346,13 +382,13 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
             "total": 1,
             "data": {
                 "id": "53ac2791e4b03340b6de4948",
-                "employeeId": "PER00005",
+                "employeeNumber": "PER00005",
                 "photoUrl": "/data/resources/53b2fd39e4b0123558f41fe6.jpeg",
                 "thumbUrl": "/data/resources/thumbnail.53b2fd39e4b0123558f41fe6.jpeg",
                 "firstName": "Jennifer",
                 "lastName": "Harvey",
                 "fullName": "Jennifer Harvey",
-                "nickname": "Jennifer Harvey",
+                "nickName": "Jennifer Harvey",
                 "isPartTime": false,
                 "isContractor": false,
                 "contactNumbers": [
@@ -429,11 +465,11 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
             "total": 1,
             "data": {
                 "id": "53b435aa3c01cbf76dd3d796",
-                "employeeId": "PER00035",
+                "employeeNumber": "PER00035",
                 "firstName": "Ellie",
                 "lastName": "Clarke",
                 "fullName": "Elenor Amy Clarke",
-                "nickname": "Ellie clarke",
+                "nickName": "Ellie clarke",
                 "isPartTime": false,
                 "isContractor": false,
                 "addressStreet": "23 Ridge Road",
@@ -523,7 +559,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
         "dataType": "employeeList",
         "data": [{
             "id": "53ac275ee4b03340b6de4947",
-            "employeeId": "PER00003",
+            "employeeNumber": "PER00003PER00003PER00003PER00003PER00003PER00003",
             "thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
             "firstName": "Peter",
             "lastName": "Blake",
@@ -533,7 +569,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
             "attachmentsExist": false
         }, {
             "id": "53ac2791e4b03340b6de4948",
-            "employeeId": "PER00005",
+            "employeeNumber": "PER00005",
             "thumbUrl": "/data/resources/thumbnail.53b2fd39e4b0123558f41fe6.jpeg",
             "firstName": "Jennifer",
             "lastName": "Harvey",
@@ -546,7 +582,7 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
             "attachmentsExist": false
         }, {
             "id": "53ac27b0e4b03340b6de4949",
-            "employeeId": "PER00099",
+            "employeeNumber": "PER00099",
             "thumbUrl": "/data/resources/thumbnail.53b2fc31e4b0123558f41fe2.jpeg",
             "firstName": "Richard",
             "lastName": "Minney",
@@ -672,22 +708,68 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
     }
 
     $rootScope.ContractDetailData = {
-        "success": true,
-        "total": 1,
-        "data": {
-            "id": "53d80b2313a2e63528ae5378",
-            "poNumber": "PO 887664",
-            "title": "Double Shot",
-            "customerId": "53b41103353f736efcab467d",
-            "startDate": "2014-09-05",
-            "endDate": "2014-09-06",
-            "customerName": "Small World",
-            "type": "fee",
-            "value": 0,
-            "budgetedHours": 67
-        }
+    "success": true,
+    "total": 1,
+    "data": {
+        "id": "53d80b2313a2e63528ae5378",
+        "poNumber": "PO 887664",
+        "title": "Double Shot",
+        "customerId": "53b41103353f736efcab467d",
+        "startDate": "2014-09-05",
+        "endDate": "2014-09-06",
+        "customerName": "Small World",
+        "type": "fee",
+        "value": 0,
+        "managerName":"Peter Blake",
+        "budgetedHours": 67,
+        "assignedData": [
+  //          {"employeeId": "53ff7a9ae4b07d7a503a6b28",
+//"employeeName": "Ginsberg Allen",
+///"isBlocked": false,
+//"rateAmt": 22,
+//"rateCur": "EUR",
+//"thumbUrl": "/resources/redpanda/thumbnail.540aa340e4b0edb4867bedd9.jpg"
+//}
+        ],
+        "activityData": [
+            
+        ]
     }
+}
 
+	$rootScope.newContractActivityData =
+	{
+    "success": true,
+    "total": 1,
+    "data": {
+        "id": "54197b2ce4b084e5935f2f72",
+        "isStandard": false,
+        "isInternal": false,
+        "title": "Test to show correct creation of an activity",
+        "status": 0,
+        "start": "2014-07-23",
+        "end": "2014-09-30",
+        "isBillable": false,
+        "isFixedFee": false,
+        "rateAmt": 0,
+        "feeAmt": 0,
+        "customerId": "5406ed16e4b0544656725bdc",
+        "customerName": "TestName",
+        "customerColor": "#fbd75b",
+        "contractId": "5406ecf5e4b0544656725bdb",
+        "contractName": "Example T&M with activity pricing",
+        "deleted": false
+    	}
+	}
+	/*
+	* For navigating to the application, once login is done, remove the below function
+	*/
+	$rootScope.temporaryNavigation = function(){
+		//$rootScope.showApplication = true;
+		$window.scrollTo(0, 0);		
+		$location.path('/Home');
+	}
+	
 }]);
 
 /**
@@ -945,6 +1027,58 @@ angular.module('redPandaApp').directive('isValue', function() {
         }
     };
 });
+
+
+/**
+ * For handling 2dp value for budgeted hours
+ */
+angular.module('redPandaApp').directive('twoDecimalPoints', function() {
+    return {
+        require: 'ngModel',
+        link: function(scope, element) {
+            scope.$watch('contractDetail.data.budgetedHours', function(newValue, oldValue) {
+                if (newValue == '' || newValue == null)
+                    return;
+                var data = String(newValue).split("");
+                if (data.length === 0) return;
+                if (data.length === 1 && data[0] === '.') return;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] === '.' && data.length - 1 - i > 2) {
+                        scope.contractDetail.data.budgetedHours = oldValue;
+                    }
+                }
+                if (isNaN(newValue)) {
+                    if (scope.contractDetail == null)
+                        return;
+                    scope.contractDetail.data.budgetedHours = oldValue;
+                }
+            });
+            element.bind('blur', function(event) {
+                var val = event.target.value;
+                if (val == '')
+                    return;
+                var isdotPresent = false;
+                for (var i = 0; i < event.target.value.length; i++) {
+                    if (event.target.value[i] === '.') {
+                        isdotPresent = true;
+
+                        //If current position plus 2 is not equal to length of the value append 0 at the end.
+                        //To add 0 at the end for 2dp numbers
+                        if ((i + 2) != (event.target.value.length + 1)) {
+                            scope.contractDetail.data.budgetedHours = event.target.value + "0";
+                            scope.$apply();
+                        }
+                    }
+                }
+                if (!isdotPresent) {
+                    scope.contractDetail.data.budgetedHours = event.target.value + ".00";
+                    scope.$apply();
+                }
+            });
+        }
+    };
+});
+
 /**
  * For handling 2dp value for overtime cost
  */
@@ -1010,6 +1144,11 @@ angular.module('redPandaApp').directive("ngFileSelect", function() {
                         $scope.$apply();
                         return;
                     }
+                    if (($scope.file.size/1024) > 1000) {
+                        $scope.addAlert("Image file exceeds maximum area.Please choose a file under 1MB.", "danger");
+                        $scope.$apply();
+                        return;
+                    }
                     $scope.closeAlert();
                     $scope.getFile($scope.file);
                 }
@@ -1017,6 +1156,7 @@ angular.module('redPandaApp').directive("ngFileSelect", function() {
         }
     }
 });
+
 
 /**
  * Directive for accpting only numbers in the text box.
@@ -1140,13 +1280,17 @@ angular.module('redPandaApp').service('FilterDeleted', function() {
 
 /**
  * Conversion of mm-dd-yyy format to ISO format
+ * Uses moment.js - Since new date() is not supported in some major browsers, library called moment.js is 
+ * used.
  */
 angular.module('redPandaApp').service('IsoDateFormat', function() {
     this.convert = function(value) {
-        var selectedDate = new Date(value);
-        var year = selectedDate.getFullYear();
-        var month = (selectedDate.getMonth() + 1).toString().length == 1 ? "0" + (selectedDate.getMonth() + 1) : (selectedDate.getMonth() + 1);
-        var date = selectedDate.getDate().toString().length == 1 ? "0" + (selectedDate.getDate()) : (selectedDate.getDate());
+    	console.log(value);
+        var selectedDate = moment(value,"MM-DD-YY");
+        console.log(selectedDate);
+        var year = selectedDate.year();
+        var month = (selectedDate.month() + 1).toString().length == 1 ? "0" + (selectedDate.month() + 1) : (selectedDate.month() + 1);
+        var date = selectedDate.date().toString().length == 1 ? "0" + (selectedDate.date()) : (selectedDate.date());
         var ISODate = year + "-" + month + "-" + date;
         return ISODate;
     }
@@ -1161,10 +1305,10 @@ angular.module('redPandaApp').service('USDateFormat', function() {
      * @param {{boolean}} isSlash - Whether slash format is needed
      */
     this.convert = function(value, isSlash) {
-        var newDate = new Date(value);
-        var month = (newDate.getMonth() + 1).toString().length == 1 ? "0" + (newDate.getMonth() + 1) : newDate.getMonth() + 1;
-        var date = (newDate.getDate().toString().length) == 1 ? "0" + (newDate.getDate()) : newDate.getDate();
-        var year = newDate.getFullYear();
+        var newDate = moment(value);
+        var month = (newDate.month() + 1).toString().length == 1 ? "0" + (newDate.month() + 1) : newDate.month() + 1;
+        var date = (newDate.date().toString().length) == 1 ? "0" + (newDate.date()) : newDate.date();
+        var year = newDate.year().toString().substring(2,4);
         if (isSlash != null)
             var USDate = month + "/" + date + "/" + year;
         else

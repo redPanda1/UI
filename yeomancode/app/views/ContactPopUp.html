@@ -1,4 +1,5 @@
 <div ng-controller ="ContactModalController">
+<alert ng-repeat="alert in contactalerts" type="{{alert.type}}" close="closeAlert()"><span ng-bind="alert.message"></span></alert>
 <div class="modal-header">
     <h3 class="modal-title">Contacts
         <span ng-show="newContact"> > New</span>
@@ -11,9 +12,9 @@
     <div class="row customerInfo"><!-- PHOTO UPLOAD AND BASIC INFO STARTS -->
         <div class="col-sm-3 col-md-3 col-lg-3 contact-img">
             <input type="file" name="file" class="imageUploader" ng-file-select="onFileSelect($files)" />
-            <span ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl != null"><img ng-src="{{contactDetail.data.photoUrl}}" class="img-circle img-responsive" ng-class="{'imgContain':containImg}" ></span>
-            <span ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl == null"><img src="images/redPanda50.jpg" class="img-circle img-responsive"></span>
-            <span ng-show="imageSrc"><img ng-src="{{imageSrc}}" class="img-circle img-responsive PersonImage"  ng-class="{'imgContain':containImg}"></span>
+            <div style="width:80px;height:80px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius: 50%;" ng-style="{'background-image':'url('+contactDetail.data.photoUrl+')'}" ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl != null"></div>
+            <div class="default-detail-image" style="width:80px;height:80px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius: 50%;" ng-hide="imageSrc" ng-if="contactDetail.data.photoUrl == null"></div>
+            <div ng-show="imageSrc" style="width:80px;height:80px;background-image:url({{imageSrc}});background-size:cover;background-position:center;background-repeat:no-repeat;border-radius: 50%;"></div>
         </div>
         <div class="col-sm-4 col-md-4 col-lg-4">
             <form  class="form-horizontal" role="form">            
@@ -81,6 +82,7 @@
             <button class="btn btn-sm btn-default" ng-click="needMapCall.callMap = true" ng-disabled="(contactDetail.data.addressStreet == '' || contactDetail.data.addressStreet == null)&&(contactDetail.data.addressCity == '' || contactDetail.data.addressCity == null)&&(contactDetail.data.addressStateCode == '' || contactDetail.data.addressStateCode == null)&&(contactDetail.data.addressPostZip == '' || contactDetail.data.addressPostZip == null)&&(contactDetail.data.addressISOCountry == '' || contactDetail.data.addressISOCountry == null)">Update Map</button>
         </div>
         <div class="col-sm-7 col-md-7 col-lg-7 contact-map">
+             <!--<div data-ng-include="'/dist/views/map.html'"></div>-->
              <div data-ng-include="'views/map.html'"></div>
         </div>        
     </div><!-- CONTACT MAP ENDS -->

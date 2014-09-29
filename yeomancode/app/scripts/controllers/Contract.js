@@ -95,6 +95,39 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
             return;
         $scope.formattedContractList = angular.copy($scope.ContractList);
     }
+    
+    /**
+     * =========================================================================
+     * Function used to set the currency
+     * @param rowObj
+     * =========================================================================
+     */
+    $scope.setCurrency = function(rowObj)
+    {
+    	if(rowObj != null)
+    	{
+    		if(rowObj.currency != null)
+    		{
+    			 angular.forEach($scope.currencies,function(data,key){
+					 if(rowObj.currency == data.code)
+					 {
+						
+						 if(data.symbol != null && data.symbol != '')
+							 rowObj.currency = data.symbol;
+						 else
+							 rowObj.currency =data.code;
+						 
+					 }
+				 });
+    			 return rowObj.currency;
+    		}
+    		else
+    			return '$';
+    		
+    	}
+    }
+    
+    
 
     /**
      * ==============================================================================================================
@@ -137,7 +170,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         }, {
             field: 'value',
             displayName: 'Value',
-            cellTemplate: '<div class = "ngCellText" style="display:inline-block;width:75%;text-align:right;height:50px;line-height:40px;"> <span ng-if="row.entity.currency==\'USD\' || row.entity.currency == null">{{\'&#36;\'}}</span><span ng-if="row.entity.currency==\'GBP\'">{{\'&#xa3;\'}}</span><span ng-if="row.entity.currency==\'EUR\'">{{\'&#x80;\'}}</span><span ng-if="row.entity.currency==\'JPY\'">{{\'&#xa5;\'}}</span><span ng-bind = "row.entity.value"></span> </div>',
+            cellTemplate: '<div class = "ngCellText" style="display:inline-block;width:75%;text-align:right;height:50px;line-height:40px;"> <span ng-bind="setCurrency(row.entity)"></span><span ng-bind = "row.entity.value"></span> </div>',
             sortable: true,
             width: "10%"
         }, {
@@ -191,9 +224,10 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
                 $scope.tableOptions.listData = activeContractList;
                
             }).error(function(data, status) {
+                console.log("No data found for the contract list");
                 //Stub data used for local testing
                 
-			   $scope.ContractList  = $rootScope.ContractData.data;
+			   /*$scope.ContractList  = $rootScope.ContractData.data;
 			   $scope.convertDatetoUSFormat();
    			   activeContractList = FilterDeleted.filter($scope.ContractList);
    			 angular.forEach(activeContractList,function(data,key){
@@ -204,7 +238,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
               $scope.tableOptions.listData     = activeContractList;
 		 	 
 		 	   $rootScope.localCache.ContractList =  $scope.ContractList;
-                if (status == 304) {}
+                if (status == 304) {}*/
             });
         } else {
             $scope.ContractList = $rootScope.localCache.ContractList;
@@ -220,7 +254,28 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         }
     }
 
-    ContractListApiCall();
+    /**
+     * ===============================================================================================
+     * API Call for Currencies
+     * ===============================================================================================
+     */
+     if ($rootScope.localCache.currencies == null) {
+        $http.get('/api/listData/currencies').success(function(data) {
+            $scope.currencies = data.data;
+            $rootScope.localCache.currencies = $scope.currencies;
+            ContractListApiCall();
+        }).error(function(data, status) {
+            console.log("No data found for the contract currencies");
+            //Code used for local testing and it should be removed finally.
+            /*$scope.localcurrencies       = {"success":true,"total":1,"data":[{"code":"USD","name":"US Dollar","symbol":"$","decimals":2.0},{"code":"CAD","name":"Canadian Dollar","symbol":"C$","decimals":2.0},{"code":"MXD","name":"Mexican Dollar","symbol":"MX$","decimals":2.0},{"code":"JPY","name":"Japanese Yen","symbol":"Â¥","decimals":0.0},{"code":"GBP","name":"British Pound","symbol":"Â£","decimals":2.0},{"code":"EUR","name":"Euro","symbol":"â‚¬","decimals":2.0},{"code":"ZAR","name":"Rand","symbol":"R","decimals":2.0},{"code":"INR","name":"Rupee","symbol":"â‚¹","decimals":2.0}]}		
+			$scope.currencies            = $scope.localcurrencies.data;
+			$rootScope.localCache.currencies = $scope.currencies;
+			ContractListApiCall();*/
+        });
+    } else {
+        $scope.currencies = $rootScope.localCache.currencies;
+        ContractListApiCall();
+    }
 
     /**
      * =================================================================================

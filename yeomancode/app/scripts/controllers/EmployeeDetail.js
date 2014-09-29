@@ -44,12 +44,24 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     var timeInterval = "";
     $scope.isHireDateSetinServer = false;
     $scope.isTermDateSetinServer = false;
+    $scope.isUpdateError = false;
 
     /** 
      * Date validation for start and end date, start date should not be greater than end date
      */
-    $('#hireDate').datepicker({
-        dateFormat: 'mm-dd-yy',
+    $('#hireDate').on("keydown", function(e){
+        if (e.which == 13) {
+        	if($('#hireDate').val() == "")
+        		$scope.isempstartEmpty = true;
+        	else
+        		$scope.isempstartEmpty = false;
+        	e.stopPropagation();
+            e.preventDefault();
+            return false;
+       	
+       }
+   }).datepicker({
+        dateFormat: 'mm-dd-y',
         onSelect: function(dateStr) {
             var date = $(this).datepicker('getDate');
             if (date) {
@@ -63,8 +75,19 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     /** 
      * Date validation for start and end date, start date should not be greater than end date
      */
-    $('#endDate').datepicker({
-        dateFormat: 'mm-dd-yy',
+    $('#endDate').on("keydown", function(e){
+        if (e.which == 13) {
+        	if($('#endDate').val() == "")
+        		$scope.isempendEmpty = true;
+        	else
+        		$scope.isempendEmpty = false;
+        	e.stopPropagation();
+            e.preventDefault();
+            return false;
+       	
+       }
+   }).datepicker({
+        dateFormat: 'mm-dd-y',
         onSelect: function(dateStr) {
             var date = $(this).datepicker('getDate');
             if (date) {
@@ -76,6 +99,25 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         }
     });
     
+    $scope.isEnterKey = function(event,ishire)
+    {
+    	if(event.keyCode == 13)
+    	{
+    		if(ishire)
+    		{
+    			$('#endDate').focus();
+    			if($scope.isempstartEmpty)
+    				$('#hireDate').val('');
+    		}
+    		else
+    		{
+    			$('#hireDate').focus();
+    			if($scope.isempendEmpty)
+    				$('#endDate').val('');
+    		}
+    	}
+    }
+   
    
     /**
      * ==================================================================================================
@@ -156,7 +198,9 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 if ($scope.countries != null) {
                     angular.forEach($scope.countries, function(data, key) {
                         if (data.code == $scope.EmployeeDetail.data.addressCountryISO)
-                            $scope.EmployeeDetail.data.addressCountryISO = data;
+                        {
+                        	$scope.EmployeeDetail.data.addressCountryISO = data;
+                        }
                     });
                 }
             }
@@ -166,14 +210,16 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 if ($scope.states != null) {
                     angular.forEach($scope.states, function(data, key) {
                         if (data.code == $scope.EmployeeDetail.data.addressStateCode)
-                            $scope.EmployeeDetail.data.addressStateCode = data;
+                        {
+                        	$scope.EmployeeDetail.data.addressStateCode = data;
+                        }
                     });
                 }
             }
 
         }
         if ($scope.EmployeeDetail != null) {
-	        if ($scope.EmployeeDetail.data.hireDate != null) {
+	        if ($scope.EmployeeDetail.data.hireDate != null && $scope.EmployeeDetail.data.hireDate != "") {
 	            $scope.isHireDateSetinServer = true;
 	            $scope.EmployeeDetail.data.hireDate = USDateFormat.convert($scope.EmployeeDetail.data.hireDate);
 	            $scope.tempStartDate = $scope.EmployeeDetail.data.hireDate;
@@ -181,7 +227,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	        else
 	        	$scope.tempStartDate = "";
 	
-	        if ($scope.EmployeeDetail.data.termDate != null) {
+	        if ($scope.EmployeeDetail.data.termDate != null && $scope.EmployeeDetail.data.termDate != "") {
 	            $scope.isTermDateSetinServer = true;
 	            $scope.EmployeeDetail.data.termDate = USDateFormat.convert($scope.EmployeeDetail.data.termDate);
 	            $scope.tempEndDate = $scope.EmployeeDetail.data.termDate;
@@ -220,7 +266,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     $scope.formatCostamt = function() {
         if ($scope.EmployeeDetail.data.otCostAmt == '' || $scope.EmployeeDetail.data.otCostAmt == null)
             return;
-        $scope.EmployeeDetail.data.otCostAmt = $scope.EmployeeDetail.data.otCostAmt.toFixed(2);
+        
+        $scope.EmployeeDetail.data.otCostAmt = Number($scope.EmployeeDetail.data.otCostAmt).toFixed(2);
     }
 
     /**
@@ -228,11 +275,134 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
      * Function used to format the stdamt
      * =======================================================================================================
      */
-    $scope.formatStdamt = function() {
+     $scope.formatStdamt = function() {
         if ($scope.EmployeeDetail.data.stdCostAmt == '' || $scope.EmployeeDetail.data.stdCostAmt == null)
             return;
-        $scope.EmployeeDetail.data.stdCostAmt = $scope.EmployeeDetail.data.stdCostAmt.toFixed(2);
+        $scope.EmployeeDetail.data.stdCostAmt = Number($scope.EmployeeDetail.data.stdCostAmt).toFixed(2);
+     }
+    
+    /**
+     * =======================================================
+     * API call to get the State names
+     * =======================================================
+     */
+    if ($rootScope.localCache.states == null) {
+        $http.get('/api/listData/states').success(function(data) {
+            $scope.states = data.data;
+            $rootScope.localCache.states = $scope.states;
+            $scope.formatInputData();
+            $scope.formatMapData();
+        }).error(function(data, status) {
+            console.log("No data found for states");
+            /**
+             * ===========================================================================
+             * Codes used for local testing and it should be removed finally.
+             * ============================================================================
+             */
+        /*    $scope.state_namesJson = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
+				$scope.states = $scope.state_namesJson.data;
+				$rootScope.localCache.states = $scope.states;
+				$scope.formatInputData();*/
+        });
+    } else {
+        $scope.states = $rootScope.localCache.states;
+        $scope.formatInputData();
+        $scope.formatMapData();
     }
+    
+    /**
+     * ======================================================
+     *  API call to get the Country names
+     *  =====================================================
+     */
+    if ($rootScope.localCache.countries == null) {
+        $http.get('/api/listData/countries').success(function(data) {
+            $scope.countries = data.data;
+            $rootScope.localCache.countries = $scope.countries;
+            $scope.formatInputData();
+            $scope.formatMapData();
+        }).error(function(data, status) {
+            console.log("No data found for countries");
+        	 /**
+              * ===========================================================================
+              * Codes used for local testing and it should be removed finally.
+              * ============================================================================
+              */
+           /*$scope.countriesJson = {
+                "success": true,
+                "total": 1,
+                "data": [{"name":"Ascension Island","code":"AC"},{"name":"Andorra","code":"AD"},{"name":"United Arab Emirates","code":"AE"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Bonaire, Saint Eustatius And Saba","code":"BQ"},{"name":"Brazil","code":"BR"},{"name":"Bahamas","code":"BS"},{"name":"Bhutan","code":"BT"},{"name":"Bouvet Island","code":"BV"},{"name":"Botswana","code":"BW"},{"name":"Belarus","code":"BY"},{"name":"Belize","code":"BZ"},{"name":"Canada","code":"CA"},{"name":"Cocos (Keeling) Islands","code":"CC"},{"name":"Democratic Republic Of Congo","code":"CD"},{"name":"Central African Republic","code":"CF"},{"name":"Republic Of Congo","code":"CG"},{"name":"Switzerland","code":"CH"},{"name":"Cote d'Ivoire","code":"CI"},{"name":"Cook Islands","code":"CK"},{"name":"Chile","code":"CL"},{"name":"Cameroon","code":"CM"},{"name":"China","code":"CN"},{"name":"Colombia","code":"CO"},{"name":"Clipperton Island","code":"CP"},{"name":"Costa Rica","code":"CR"},{"name":"Cuba","code":"CU"},{"name":"Cape Verde","code":"CV"},{"name":"Curacao","code":"CW"},{"name":"Christmas Island","code":"CX"},{"name":"Cyprus","code":"CY"},{"name":"Czech Republic","code":"CZ"},{"name":"Germany","code":"DE"},{"name":"Diego Garcia","code":"DG"},{"name":"Djibouti","code":"DJ"},{"name":"Denmark","code":"DK"},{"name":"Dominica","code":"DM"},{"name":"Dominican Republic","code":"DO"},{"name":"Algeria","code":"DZ"},{"name":"Ceuta, Mulilla","code":"EA"},{"name":"Ecuador","code":"EC"},{"name":"Estonia","code":"EE"},{"name":"Egypt","code":"EG"},{"name":"Western Sahara","code":"EH"},{"name":"Eritrea","code":"ER"},{"name":"Spain","code":"ES"},{"name":"Ethiopia","code":"ET"},{"name":"European Union","code":"EU"},{"name":"Finland","code":"FI"},{"name":"Fiji","code":"FJ"},{"name":"Falkland Islands","code":"FK"},{"name":"Micronesia, Federated States Of","code":"FM"},{"name":"Faroe Islands","code":"FO"},{"name":"France","code":"FR"},{"name":"France, Metropolitan","code":"FX"},{"name":"Gabon","code":"GA"},{"name":"United Kingdom","code":"GB"},{"name":"Grenada","code":"GD"},{"name":"Georgia","code":"GE"},{"name":"French Guiana","code":"GF"},{"name":"Guernsey","code":"GG"},{"name":"Ghana","code":"GH"},{"name":"Gibraltar","code":"GI"},{"name":"Greenland","code":"GL"},{"name":"Gambia","code":"GM"},{"name":"Great Britain","code":"GB"},{"name":"Guinea","code":"GN"},{"name":"Guadeloupe","code":"GP"},{"name":"Equatorial Guinea","code":"GQ"},{"name":"Greece","code":"GR"},{"name":"South Georgia And The South Sandwich Islands","code":"GS"},{"name":"Guatemala","code":"GT"},{"name":"Guam","code":"GU"},{"name":"Guinea-bissau","code":"GW"},{"name":"Guyana","code":"GY"},{"name":"Hong Kong","code":"HK"},{"name":"Heard Island And McDonald Islands","code":"HM"},{"name":"Honduras","code":"HN"},{"name":"Croatia","code":"HR"},{"name":"Haiti","code":"HT"},{"name":"Hungary","code":"HU"},{"name":"Canary Islands","code":"IC"},{"name":"Indonesia","code":"ID"},{"name":"Ireland","code":"IE"},{"name":"Israel","code":"IL"},{"name":"Isle Of Man","code":"IM"},{"name":"India","code":"IN"},{"name":"British Indian Ocean Territory","code":"IO"},{"name":"Iraq","code":"IQ"},{"name":"Iran, Islamic Republic Of","code":"IR"},{"name":"Iceland","code":"IS"},{"name":"Italy","code":"IT"},{"name":"Jersey","code":"JE"},{"name":"Jamaica","code":"JM"},{"name":"Jordan","code":"JO"},{"name":"Japan","code":"JP"},{"name":"Kenya","code":"KE"},{"name":"Kyrgyzstan","code":"KG"},{"name":"Cambodia","code":"KH"},{"name":"Kiribati","code":"KI"},{"name":"Comoros","code":"KM"},{"name":"Saint Kitts And Nevis","code":"KN"},{"name":"Korea, Democratic People's Republic Of","code":"KP"},{"name":"Korea, Republic Of","code":"KR"},{"name":"Kuwait","code":"KW"},{"name":"Cayman Islands","code":"KY"},{"name":"Kazakhstan","code":"KZ"},{"name":"Lao People's Democratic Republic","code":"LA"},{"name":"Lebanon","code":"LB"},{"name":"Saint Lucia","code":"LC"},{"name":"Liechtenstein","code":"LI"},{"name":"Sri Lanka","code":"LK"},{"name":"Liberia","code":"LR"},{"name":"Lesotho","code":"LS"},{"name":"Lithuania","code":"LT"},{"name":"Luxembourg","code":"LU"},{"name":"Latvia","code":"LV"},{"name":"Libya","code":"LY"},{"name":"Morocco","code":"MA"},{"name":"Monaco","code":"MC"},{"name":"Moldova","code":"MD"},{"name":"Montenegro","code":"ME"},{"name":"Saint Martin","code":"MF"},{"name":"Madagascar","code":"MG"},{"name":"Marshall Islands","code":"MH"},{"name":"Macedonia, The Former Yugoslav Republic Of","code":"MK"},{"name":"Mali","code":"ML"},{"name":"Myanmar","code":"MM"},{"name":"Mongolia","code":"MN"},{"name":"Macao","code":"MO"},{"name":"Northern Mariana Islands","code":"MP"},{"name":"Martinique","code":"MQ"},{"name":"Mauritania","code":"MR"},{"name":"Montserrat","code":"MS"},{"name":"Malta","code":"MT"},{"name":"Mauritius","code":"MU"},{"name":"Maldives","code":"MV"},{"name":"Malawi","code":"MW"},{"name":"Mexico","code":"MX"},{"name":"Malaysia","code":"MY"},{"name":"Mozambique","code":"MZ"},{"name":"Namibia","code":"NA"},{"name":"New Caledonia","code":"NC"},{"name":"Niger","code":"NE"},{"name":"Norfolk Island","code":"NF"},{"name":"Nigeria","code":"NG"},{"name":"Nicaragua","code":"NI"},{"name":"Netherlands","code":"NL"},{"name":"Norway","code":"NO"},{"name":"Nepal","code":"NP"},{"name":"Nauru","code":"NR"},{"name":"Niue","code":"NU"},{"name":"New Zealand","code":"NZ"},{"name":"Oman","code":"OM"},{"name":"Panama","code":"PA"},{"name":"Peru","code":"PE"},{"name":"French Polynesia","code":"PF"},{"name":"Papua New Guinea","code":"PG"},{"name":"Philippines","code":"PH"},{"name":"Pakistan","code":"PK"},{"name":"Poland","code":"PL"},{"name":"Saint Pierre And Miquelon","code":"PM"},{"name":"Pitcairn","code":"PN"},{"name":"Puerto Rico","code":"PR"},{"name":"Palestinian Territory, Occupied","code":"PS"},{"name":"Portugal","code":"PT"},{"name":"Palau","code":"PW"},{"name":"Paraguay","code":"PY"},{"name":"Qatar","code":"QA"},{"name":"Reunion","code":"RE"},{"name":"Romania","code":"RO"},{"name":"Serbia","code":"RS"},{"name":"Russian Federation","code":"RU"},{"name":"Rwanda","code":"RW"},{"name":"Saudi Arabia","code":"SA"},{"name":"Solomon Islands","code":"SB"},{"name":"Seychelles","code":"SC"},{"name":"Sudan","code":"SD"},{"name":"Sweden","code":"SE"},{"name":"Singapore","code":"SG"},{"name":"Saint Helena, Ascension And Tristan Da Cunha","code":"SH"},{"name":"Slovenia","code":"SI"},{"name":"Svalbard And Jan Mayen","code":"SJ"},{"name":"Slovakia","code":"SK"},{"name":"Sierra Leone","code":"SL"},{"name":"San Marino","code":"SM"},{"name":"Senegal","code":"SN"},{"name":"Somalia","code":"SO"},{"name":"Suriname","code":"SR"},{"name":"South Sudan","code":"SS"},{"name":"SÃŒÂ£o TomÃŒÂ© and PrÃŒ_ncipe","code":"ST"},{"name":"USSR","code":"SU"},{"name":"El Salvador","code":"SV"},{"name":"Sint Maarten","code":"SX"},{"name":"Syrian Arab Republic","code":"SY"},{"name":"Swaziland","code":"SZ"},{"name":"Tristan de Cunha","code":"TA"},{"name":"Turks And Caicos Islands","code":"TC"},{"name":"Chad","code":"TD"},{"name":"French Southern Territories","code":"TF"},{"name":"Togo","code":"TG"},{"name":"Thailand","code":"TH"},{"name":"Tajikistan","code":"TJ"},{"name":"Tokelau","code":"TK"},{"name":"East Timor","code":"TL"},{"name":"Turkmenistan","code":"TM"},{"name":"Tunisia","code":"TN"},{"name":"Tonga","code":"TO"},{"name":"Turkey","code":"TR"},{"name":"Trinidad And Tobago","code":"TT"},{"name":"Tuvalu","code":"TV"},{"name":"Taiwan, Province Of China","code":"TW"},{"name":"Tanzania, United Republic Of","code":"TZ"},{"name":"Ukraine","code":"UA"},{"name":"Uganda","code":"UG"},{"name":"United Kingdom","code":"GB"},{"name":"United States Minor Outlying Islands","code":"UM"},{"name":"United States","code":"US"},{"name":"Uruguay","code":"UY"},{"name":"Uzbekistan","code":"UZ"},{"name":"Vatican City State","code":"VA"},{"name":"Saint Vincent And The Grenadines","code":"VC"},{"name":"Venezuela, Bolivarian Republic Of","code":"VE"},{"name":"Virgin Islands (British)","code":"VG"},{"name":"Virgin Islands (US)","code":"VI"},{"name":"Viet Nam","code":"VN"},{"name":"Vanuatu","code":"VU"},{"name":"Wallis And Futuna","code":"WF"},{"name":"Samoa","code":"WS"},{"name":"Yemen","code":"YE"},{"name":"Mayotte","code":"YT"},{"name":"South Africa","code":"ZA"},{"name":"Zambia","code":"ZM"},{"name":"Zimbabwe","code":"ZW"}]
+            };
+            $scope.countries = $scope.countriesJson.data;
+            $rootScope.localCache.countries = $scope.countries;
+            $scope.formatInputData();*/
+        });
+    } else {
+        $scope.countries = $rootScope.localCache.countries;
+        $scope.formatInputData();
+        $scope.formatMapData();
+    }
+    
+    /**
+     * ======================================================================================================
+     * Function used for calling the necessary functions after the successs
+     * ======================================================================================================
+     */
+    $scope.successCalls = function()
+    {
+    	console.log($scope.EmployeeDetail);
+    	$scope.truncateurl();
+        $scope.mapOptions = $scope.EmployeeDetail;
+        $scope.needMapCall.callMap = true;
+        if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
+            $scope.EmployeeDetail.data.contactNumbers = [];                  
+        }
+        if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0) {
+            $scope.EmployeeDetail.data.timeOff = [{
+                'type': 'Vacation',
+                'allowance': 0,
+                'taken': 0
+            }, {
+                'type': 'Sick',
+                'allowance': 0,
+                'taken': 0
+            }];
+
+        }
+        for (var i = 0; i < $scope.EmployeeDetail.data.timeOff.length; i++) {
+            $scope.timeOff.push({
+                'type': $scope.EmployeeDetail.data.timeOff[i].type,
+                'allowance': $scope.EmployeeDetail.data.timeOff[i].allowance,
+                'taken': $scope.EmployeeDetail.data.timeOff[i].taken,
+                'balance': $scope.EmployeeDetail.data.timeOff[i].allowance - $scope.EmployeeDetail.data.timeOff[i].taken
+            });
+        }
+        $scope.formatCostamt();
+        $scope.formatStdamt();
+        $scope.formatInputData();
+        //if($scope.EmployeeDetail.data.stdCostCur == null)
+	    $scope.EmployeeDetail.data.stdCostCur = 'USD';
+        //if($scope.EmployeeDetail.data.otCostCur == null)
+		$scope.EmployeeDetail.data.otCostCur = 'USD';
+        
+        //Clone the object before pre-processing the input data.
+        $scope.formatMapData();
+        angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
+        if ($scope.EmployeeDetail.data.contactNumbers.length === 0) {
+            $scope.EmployeeDetail.data.contactNumbers = [];
+            $scope.EmployeeDetail.data.contactNumbers.push({});
+            $scope.contactTypeValue[0] = "email";
+            $scope.contactTypeDetails[0] = "";
+        }
+        $scope.isError = false;
+    }
+    
+    
+    
+    
+    
+    
+    
     /**
      * =====================================================================================================
      * API Call to get the Employee Detail based on the employee id.
@@ -244,11 +414,11 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             "success": true,
             "total": 0,
             "data": {
-                "employeeId": "",
+                "employeeNumber": "",
                 "firstName": "",
                 "lastName": "",
                 "fullName": "",
-                "nickname": "",
+                "nickName": "",
                 "isPartTime": false,
                 "isContractor": false,
                 "departmentId": "",
@@ -286,101 +456,91 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
         $scope.inCreateMode = true;
     } else {
-        if ($cookieStore.get("detailId") != null) {
-            $http.get('/api/employeeDetail/' + $cookieStore.get("detailId")).success(function(data) {
-                $scope.EmployeeDetail = data;
-                $scope.truncateurl();
-                $scope.mapOptions = $scope.EmployeeDetail;
-                $scope.needMapCall.callMap = true;
-                if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
-                    $scope.EmployeeDetail.data.contactNumbers = [];                  
-                }
-                if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0) {
-                    $scope.EmployeeDetail.data.timeOff = [{
-                        'type': 'Vacation',
-                        'allowance': 0,
-                        'taken': 0
-                    }, {
-                        'type': 'Sick',
-                        'allowance': 0,
-                        'taken': 0
-                    }];
-
-                }
-                for (var i = 0; i < $scope.EmployeeDetail.data.timeOff.length; i++) {
-                    $scope.timeOff.push({
-                        'type': $scope.EmployeeDetail.data.timeOff[i].type,
-                        'allowance': $scope.EmployeeDetail.data.timeOff[i].allowance,
-                        'taken': $scope.EmployeeDetail.data.timeOff[i].taken,
-                        'balance': $scope.EmployeeDetail.data.timeOff[i].allowance - $scope.EmployeeDetail.data.timeOff[i].taken
-                    });
-                }
-                $scope.formatCostamt();
-                $scope.formatStdamt();
-                $scope.formatInputData();
-                if($scope.EmployeeDetail.data.stdCostCur == null)
-					 $scope.EmployeeDetail.data.stdCostCur = 'USD';
-                if($scope.EmployeeDetail.data.otCostCur == null)
-					 $scope.EmployeeDetail.data.otCostCur = 'USD';
-                //Clone the object before pre-processing the input data.
-                $scope.formatMapData();
-                angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
-                if ($scope.EmployeeDetail.data.contactNumbers.length === 0) {
-                    $scope.EmployeeDetail.data.contactNumbers = [];
-                    $scope.EmployeeDetail.data.contactNumbers.push({});
-                    $scope.contactTypeValue[0] = "email";
-                    $scope.contactTypeDetails[0] = "";
-                }
-                
-                console.log($scope.ClonedEmployeeDetail);
-                console.log($scope.EmployeeDetail);
-                $scope.isError = false;
-            }).error(function(data, status) {
-
-                $scope.addAlert("Employee Detail not available.", "danger");
-               // $scope.isError = true;
-
-                /**
-                 * ===========================================================
-                 * Code Used for Local Testing. Finally It should be removed
-                 * ============================================================
-                 */
-
-                 $scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
-				 $scope.truncateurl();
-                 $scope.mapOptions = $scope.EmployeeDetail;
-                 $scope.needMapCall.callMap = true;
-				 //$scope.geocoding();
-                 if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
-                	$scope.EmployeeDetail.data.contactNumbers =[];					
-				 }
-				if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0)	{
-				 $scope.EmployeeDetail.data.timeOff = [{'type' : 'Vacation', 'allowance': 0, 'taken': 0},{'type' : 'Sick', 'allowance': 0, 'taken': 0}];
-				 
-				}		
-				for (var i = 0; i < $scope.EmployeeDetail.data.timeOff.length; i++ ) {			
-					$scope.timeOff.push({'type': $scope.EmployeeDetail.data.timeOff[i].type, 'allowance': $scope.EmployeeDetail.data.timeOff[i].allowance, 'taken': $scope.EmployeeDetail.data.timeOff[i].taken, 'balance': $scope.EmployeeDetail.data.timeOff[i].allowance - $scope.EmployeeDetail.data.timeOff[i].taken});			
-				}	
-				$scope.formatCostamt();
-				$scope.formatStdamt();
-				$scope.formatInputData();
-				if($scope.EmployeeDetail.data.stdCostCur == null)
-					 $scope.EmployeeDetail.data.stdCostCur = 'USD';
-               if($scope.EmployeeDetail.data.otCostCur == null)
-					 $scope.EmployeeDetail.data.otCostCur = 'USD';
-				angular.copy($scope.EmployeeDetail,$scope.ClonedEmployeeDetail,true);
-				if ($scope.EmployeeDetail.data.contactNumbers.length === 0) {
-                    $scope.EmployeeDetail.data.contactNumbers = [];
-                    $scope.EmployeeDetail.data.contactNumbers.push({});
-                    $scope.contactTypeValue[0] = "email";
-                    $scope.contactTypeDetails[0] = "";
-                }
-				console.log($scope.ClonedEmployeeDetail);
-		        console.log($scope.EmployeeDetail);
-				$scope.formatMapData();
-	           
-            });
-        }
+    	if($rootScope.empDetailCache.id != $cookieStore.get("detailId"))
+    	{
+	    	if ($cookieStore.get("detailId") != null) {
+	            $http.get('/api/employeeDetail/' + $cookieStore.get("detailId")).success(function(data) {
+	                $scope.EmployeeDetail = data;
+	                $rootScope.empDetailCache.id = data.data.id;
+	                
+	                //Cloned Object for usin in 304 modified scenario
+	                $scope.rootscopeobj = {};
+	                angular.copy($scope.EmployeeDetail,$scope.rootscopeobj,true);
+	                $rootScope.empDetailCache.data = $scope.rootscopeobj;
+	                
+	                $rootScope.empgetTime = CurrentTimeStamp.postTimeStamp();
+	                $scope.successCalls();
+	            }).error(function(data, status) {
+	
+	                $scope.addAlert("Employee Detail not available.", "danger");
+	                $scope.isError = true;
+	
+	                /**
+	                 * ===========================================================
+	                 * Code Used for Local Testing. Finally It should be removed
+	                 * ============================================================
+	                 */
+	
+	                 /*$scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
+		             $rootScope.empDetailCache[$cookieStore.get("detailId")] = $scope.EmployeeDetail;
+					 $scope.truncateurl();
+	                 $scope.mapOptions = $scope.EmployeeDetail;
+	                 $scope.needMapCall.callMap = true;
+	                 if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
+	                	$scope.EmployeeDetail.data.contactNumbers =[];					
+					 }
+					if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0)	{
+					 $scope.EmployeeDetail.data.timeOff = [{'type' : 'Vacation', 'allowance': 0, 'taken': 0},{'type' : 'Sick', 'allowance': 0, 'taken': 0}];
+					 
+					}		
+					for (var i = 0; i < $scope.EmployeeDetail.data.timeOff.length; i++ ) {			
+						$scope.timeOff.push({'type': $scope.EmployeeDetail.data.timeOff[i].type, 'allowance': $scope.EmployeeDetail.data.timeOff[i].allowance, 'taken': $scope.EmployeeDetail.data.timeOff[i].taken, 'balance': $scope.EmployeeDetail.data.timeOff[i].allowance - $scope.EmployeeDetail.data.timeOff[i].taken});			
+					}	
+					$scope.formatCostamt();
+					$scope.formatStdamt();
+					$scope.formatInputData();
+					//if($scope.EmployeeDetail.data.stdCostCur == null)
+					$scope.EmployeeDetail.data.stdCostCur = 'USD';
+	               //if($scope.EmployeeDetail.data.otCostCur == null)
+					$scope.EmployeeDetail.data.otCostCur = 'USD';
+					angular.copy($scope.EmployeeDetail,$scope.ClonedEmployeeDetail,true);
+					if ($scope.EmployeeDetail.data.contactNumbers.length === 0) {
+	                    $scope.EmployeeDetail.data.contactNumbers = [];
+	                    $scope.EmployeeDetail.data.contactNumbers.push({});
+	                    $scope.contactTypeValue[0] = "email";
+	                    $scope.contactTypeDetails[0] = "";
+	                }
+					$scope.formatMapData();*/
+		           
+	            });
+	    	}
+        
+    	}
+    	else
+    	{
+    		if($rootScope.empDetailCache.id == $cookieStore.get("detailId"))
+    		{
+    		    $http.get('/api/employeeDetail/' + $cookieStore.get("detailId")+'?timestamp='+$rootScope.empgetTime).success(function(data,status) {
+    		    		$scope.EmployeeDetail = data;
+    		    		$scope.rootscopeobj = {};
+    		    		angular.copy($scope.EmployeeDetail,$scope.rootscopeobj,true);
+    		    		$rootScope.empDetailCache.data = $scope.rootscopeobj;
+    	                $scope.successCalls();
+	            }).error(function(data, status) {
+	            	if(status == 304)
+	            	{
+	            		$scope.localcacheValue = {};
+	            		$scope.localcacheValuefordetail = {};
+	            		$scope.localcacheValue =$rootScope.empDetailCache.data;
+	            		angular.copy($scope.localcacheValue,$scope.localcacheValuefordetail,true);
+	            		$scope.EmployeeDetail = $scope.localcacheValuefordetail;
+	            		$scope.successCalls();
+	            	}
+	            });
+    		}
+    	}
+    	
+        
     }
 
 
@@ -394,13 +554,13 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             $scope.departments = data.data;
             $rootScope.localCache.department = $scope.departments;
         }).error(function(data, status) {
-
+            console.log("No data found for department");
             /**
              * =============================================================
              * Code Used for Local Testing. It should be removed finally.
              * =============================================================
              */
-            $scope.departmentJson = {
+            /*$scope.departmentJson = {
 						    "success": true,
 						    "total": 4,
 						    "dataType": "department",
@@ -424,7 +584,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 						    ]
 						}
 				 $scope.departments = $scope.departmentJson.data;
-				 $rootScope.localCache.department = $scope.departments;
+				 $rootScope.localCache.department = $scope.departments;*/
         });
     } else {
         //For eliminating the API Calls when the data is available in local cache
@@ -443,79 +603,19 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             $scope.jobs = data.data;
             $rootScope.localCache.jobs = $scope.jobs;
         }).error(function(data, status) {
+          console.log("No data found for the jobs");
             /**
              * ==================================================================
              * Code used for Local Testing. It should be removed finally.
              * ==================================================================
              */
-             $scope.jobsJson = {"success":true,"total":1,"data":["Manager","Consultant","Tea Boy"]};
+       /*$scope.jobsJson = {"success":true,"total":1,"data":["Manager","Consultant","Tea Boy"]};
 			 $scope.jobs = $scope.jobsJson.data;	
-			 $rootScope.localCache.jobs = $scope.jobs;
+			 $rootScope.localCache.jobs = $scope.jobs;*/
         });
     } else {
         //For eliminating the API Calls when the data is available in local cache
         $scope.jobs = $rootScope.localCache.jobs;
-    }
-
-
-    /**
-     * =======================================================
-     * API call to get the State names
-     * =======================================================
-     */
-    if ($rootScope.localCache.states == null) {
-        $http.get('/api/listData/states').success(function(data) {
-            $scope.states = data.data;
-            $rootScope.localCache.states = $scope.states;
-            $scope.formatInputData();
-            $scope.formatMapData();
-        }).error(function(data, status) {
-            /**
-             * ===========================================================================
-             * Codes used for local testing and it should be removed finally.
-             * ============================================================================
-             */
-            $scope.state_namesJson = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
-				$scope.states = $scope.state_namesJson.data;
-				$rootScope.localCache.states = $scope.states;
-				$scope.formatInputData();
-        });
-    } else {
-        $scope.states = $rootScope.localCache.states;
-        $scope.formatInputData();
-        $scope.formatMapData();
-    }
-
-    /**
-     * ======================================================
-     *  API call to get the Country names
-     *  =====================================================
-     */
-    if ($rootScope.localCache.countries == null) {
-        $http.get('/api/listData/countries').success(function(data) {
-            $scope.countries = data.data;
-            $rootScope.localCache.countries = $scope.countries;
-            $scope.formatInputData();
-            $scope.formatMapData();
-        }).error(function(data, status) {
-        	 /**
-              * ===========================================================================
-              * Codes used for local testing and it should be removed finally.
-              * ============================================================================
-              */
-           $scope.countriesJson = {
-                "success": true,
-                "total": 1,
-                "data": [{"name":"Ascension Island","code":"AC"},{"name":"Andorra","code":"AD"},{"name":"United Arab Emirates","code":"AE"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Bonaire, Saint Eustatius And Saba","code":"BQ"},{"name":"Brazil","code":"BR"},{"name":"Bahamas","code":"BS"},{"name":"Bhutan","code":"BT"},{"name":"Bouvet Island","code":"BV"},{"name":"Botswana","code":"BW"},{"name":"Belarus","code":"BY"},{"name":"Belize","code":"BZ"},{"name":"Canada","code":"CA"},{"name":"Cocos (Keeling) Islands","code":"CC"},{"name":"Democratic Republic Of Congo","code":"CD"},{"name":"Central African Republic","code":"CF"},{"name":"Republic Of Congo","code":"CG"},{"name":"Switzerland","code":"CH"},{"name":"Cote d'Ivoire","code":"CI"},{"name":"Cook Islands","code":"CK"},{"name":"Chile","code":"CL"},{"name":"Cameroon","code":"CM"},{"name":"China","code":"CN"},{"name":"Colombia","code":"CO"},{"name":"Clipperton Island","code":"CP"},{"name":"Costa Rica","code":"CR"},{"name":"Cuba","code":"CU"},{"name":"Cape Verde","code":"CV"},{"name":"Curacao","code":"CW"},{"name":"Christmas Island","code":"CX"},{"name":"Cyprus","code":"CY"},{"name":"Czech Republic","code":"CZ"},{"name":"Germany","code":"DE"},{"name":"Diego Garcia","code":"DG"},{"name":"Djibouti","code":"DJ"},{"name":"Denmark","code":"DK"},{"name":"Dominica","code":"DM"},{"name":"Dominican Republic","code":"DO"},{"name":"Algeria","code":"DZ"},{"name":"Ceuta, Mulilla","code":"EA"},{"name":"Ecuador","code":"EC"},{"name":"Estonia","code":"EE"},{"name":"Egypt","code":"EG"},{"name":"Western Sahara","code":"EH"},{"name":"Eritrea","code":"ER"},{"name":"Spain","code":"ES"},{"name":"Ethiopia","code":"ET"},{"name":"European Union","code":"EU"},{"name":"Finland","code":"FI"},{"name":"Fiji","code":"FJ"},{"name":"Falkland Islands","code":"FK"},{"name":"Micronesia, Federated States Of","code":"FM"},{"name":"Faroe Islands","code":"FO"},{"name":"France","code":"FR"},{"name":"France, Metropolitan","code":"FX"},{"name":"Gabon","code":"GA"},{"name":"United Kingdom","code":"GB"},{"name":"Grenada","code":"GD"},{"name":"Georgia","code":"GE"},{"name":"French Guiana","code":"GF"},{"name":"Guernsey","code":"GG"},{"name":"Ghana","code":"GH"},{"name":"Gibraltar","code":"GI"},{"name":"Greenland","code":"GL"},{"name":"Gambia","code":"GM"},{"name":"Great Britain","code":"GB"},{"name":"Guinea","code":"GN"},{"name":"Guadeloupe","code":"GP"},{"name":"Equatorial Guinea","code":"GQ"},{"name":"Greece","code":"GR"},{"name":"South Georgia And The South Sandwich Islands","code":"GS"},{"name":"Guatemala","code":"GT"},{"name":"Guam","code":"GU"},{"name":"Guinea-bissau","code":"GW"},{"name":"Guyana","code":"GY"},{"name":"Hong Kong","code":"HK"},{"name":"Heard Island And McDonald Islands","code":"HM"},{"name":"Honduras","code":"HN"},{"name":"Croatia","code":"HR"},{"name":"Haiti","code":"HT"},{"name":"Hungary","code":"HU"},{"name":"Canary Islands","code":"IC"},{"name":"Indonesia","code":"ID"},{"name":"Ireland","code":"IE"},{"name":"Israel","code":"IL"},{"name":"Isle Of Man","code":"IM"},{"name":"India","code":"IN"},{"name":"British Indian Ocean Territory","code":"IO"},{"name":"Iraq","code":"IQ"},{"name":"Iran, Islamic Republic Of","code":"IR"},{"name":"Iceland","code":"IS"},{"name":"Italy","code":"IT"},{"name":"Jersey","code":"JE"},{"name":"Jamaica","code":"JM"},{"name":"Jordan","code":"JO"},{"name":"Japan","code":"JP"},{"name":"Kenya","code":"KE"},{"name":"Kyrgyzstan","code":"KG"},{"name":"Cambodia","code":"KH"},{"name":"Kiribati","code":"KI"},{"name":"Comoros","code":"KM"},{"name":"Saint Kitts And Nevis","code":"KN"},{"name":"Korea, Democratic People's Republic Of","code":"KP"},{"name":"Korea, Republic Of","code":"KR"},{"name":"Kuwait","code":"KW"},{"name":"Cayman Islands","code":"KY"},{"name":"Kazakhstan","code":"KZ"},{"name":"Lao People's Democratic Republic","code":"LA"},{"name":"Lebanon","code":"LB"},{"name":"Saint Lucia","code":"LC"},{"name":"Liechtenstein","code":"LI"},{"name":"Sri Lanka","code":"LK"},{"name":"Liberia","code":"LR"},{"name":"Lesotho","code":"LS"},{"name":"Lithuania","code":"LT"},{"name":"Luxembourg","code":"LU"},{"name":"Latvia","code":"LV"},{"name":"Libya","code":"LY"},{"name":"Morocco","code":"MA"},{"name":"Monaco","code":"MC"},{"name":"Moldova","code":"MD"},{"name":"Montenegro","code":"ME"},{"name":"Saint Martin","code":"MF"},{"name":"Madagascar","code":"MG"},{"name":"Marshall Islands","code":"MH"},{"name":"Macedonia, The Former Yugoslav Republic Of","code":"MK"},{"name":"Mali","code":"ML"},{"name":"Myanmar","code":"MM"},{"name":"Mongolia","code":"MN"},{"name":"Macao","code":"MO"},{"name":"Northern Mariana Islands","code":"MP"},{"name":"Martinique","code":"MQ"},{"name":"Mauritania","code":"MR"},{"name":"Montserrat","code":"MS"},{"name":"Malta","code":"MT"},{"name":"Mauritius","code":"MU"},{"name":"Maldives","code":"MV"},{"name":"Malawi","code":"MW"},{"name":"Mexico","code":"MX"},{"name":"Malaysia","code":"MY"},{"name":"Mozambique","code":"MZ"},{"name":"Namibia","code":"NA"},{"name":"New Caledonia","code":"NC"},{"name":"Niger","code":"NE"},{"name":"Norfolk Island","code":"NF"},{"name":"Nigeria","code":"NG"},{"name":"Nicaragua","code":"NI"},{"name":"Netherlands","code":"NL"},{"name":"Norway","code":"NO"},{"name":"Nepal","code":"NP"},{"name":"Nauru","code":"NR"},{"name":"Niue","code":"NU"},{"name":"New Zealand","code":"NZ"},{"name":"Oman","code":"OM"},{"name":"Panama","code":"PA"},{"name":"Peru","code":"PE"},{"name":"French Polynesia","code":"PF"},{"name":"Papua New Guinea","code":"PG"},{"name":"Philippines","code":"PH"},{"name":"Pakistan","code":"PK"},{"name":"Poland","code":"PL"},{"name":"Saint Pierre And Miquelon","code":"PM"},{"name":"Pitcairn","code":"PN"},{"name":"Puerto Rico","code":"PR"},{"name":"Palestinian Territory, Occupied","code":"PS"},{"name":"Portugal","code":"PT"},{"name":"Palau","code":"PW"},{"name":"Paraguay","code":"PY"},{"name":"Qatar","code":"QA"},{"name":"Reunion","code":"RE"},{"name":"Romania","code":"RO"},{"name":"Serbia","code":"RS"},{"name":"Russian Federation","code":"RU"},{"name":"Rwanda","code":"RW"},{"name":"Saudi Arabia","code":"SA"},{"name":"Solomon Islands","code":"SB"},{"name":"Seychelles","code":"SC"},{"name":"Sudan","code":"SD"},{"name":"Sweden","code":"SE"},{"name":"Singapore","code":"SG"},{"name":"Saint Helena, Ascension And Tristan Da Cunha","code":"SH"},{"name":"Slovenia","code":"SI"},{"name":"Svalbard And Jan Mayen","code":"SJ"},{"name":"Slovakia","code":"SK"},{"name":"Sierra Leone","code":"SL"},{"name":"San Marino","code":"SM"},{"name":"Senegal","code":"SN"},{"name":"Somalia","code":"SO"},{"name":"Suriname","code":"SR"},{"name":"South Sudan","code":"SS"},{"name":"SÃŒÂ£o TomÃŒÂ© and PrÃŒ_ncipe","code":"ST"},{"name":"USSR","code":"SU"},{"name":"El Salvador","code":"SV"},{"name":"Sint Maarten","code":"SX"},{"name":"Syrian Arab Republic","code":"SY"},{"name":"Swaziland","code":"SZ"},{"name":"Tristan de Cunha","code":"TA"},{"name":"Turks And Caicos Islands","code":"TC"},{"name":"Chad","code":"TD"},{"name":"French Southern Territories","code":"TF"},{"name":"Togo","code":"TG"},{"name":"Thailand","code":"TH"},{"name":"Tajikistan","code":"TJ"},{"name":"Tokelau","code":"TK"},{"name":"East Timor","code":"TL"},{"name":"Turkmenistan","code":"TM"},{"name":"Tunisia","code":"TN"},{"name":"Tonga","code":"TO"},{"name":"Turkey","code":"TR"},{"name":"Trinidad And Tobago","code":"TT"},{"name":"Tuvalu","code":"TV"},{"name":"Taiwan, Province Of China","code":"TW"},{"name":"Tanzania, United Republic Of","code":"TZ"},{"name":"Ukraine","code":"UA"},{"name":"Uganda","code":"UG"},{"name":"United Kingdom","code":"GB"},{"name":"United States Minor Outlying Islands","code":"UM"},{"name":"United States","code":"US"},{"name":"Uruguay","code":"UY"},{"name":"Uzbekistan","code":"UZ"},{"name":"Vatican City State","code":"VA"},{"name":"Saint Vincent And The Grenadines","code":"VC"},{"name":"Venezuela, Bolivarian Republic Of","code":"VE"},{"name":"Virgin Islands (British)","code":"VG"},{"name":"Virgin Islands (US)","code":"VI"},{"name":"Viet Nam","code":"VN"},{"name":"Vanuatu","code":"VU"},{"name":"Wallis And Futuna","code":"WF"},{"name":"Samoa","code":"WS"},{"name":"Yemen","code":"YE"},{"name":"Mayotte","code":"YT"},{"name":"South Africa","code":"ZA"},{"name":"Zambia","code":"ZM"},{"name":"Zimbabwe","code":"ZW"}]
-            };
-            $scope.countries = $scope.countriesJson.data;
-            $rootScope.localCache.countries = $scope.countries;
-            $scope.formatInputData();
-        });
-    } else {
-        $scope.countries = $rootScope.localCache.countries;
-        $scope.formatInputData();
-        $scope.formatMapData();
     }
 
 
@@ -529,18 +629,19 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             $scope.contactNumberTypes = data.data;
             $rootScope.localCache.contactNumTypes = $scope.contactNumberTypes;
         }).error(function(data, status) {
+            console.log("No data found for contact number types");
         	 /**
               * ===========================================================================
               * Codes used for local testing and it should be removed finally.
               * ============================================================================
               */
-            $scope.contactNumberTypesJson = {
+            /*$scope.contactNumberTypesJson = {
                 "success": true,
                 "total": 1,
                 "data": ["Phone", "email", "Skype", "LinkedIn"]
             };
             $scope.contactNumberTypes = $scope.contactNumberTypesJson.data;
-            $rootScope.localCache.contactNumTypes = $scope.contactNumberTypes;
+            $rootScope.localCache.contactNumTypes = $scope.contactNumberTypes;*/
         });
     } else {
         $scope.contactNumberTypes = $rootScope.localCache.contactNumTypes;
@@ -576,7 +677,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         }, {
             dispalyName: '',
             cellTemplate: '<a href= "javascript:void(0);">details</a>',
-            width: '20%'
+            width: '18%'
         }]
     };
 
@@ -731,10 +832,10 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
      */
     $scope.assignNames = function() {
         var nameArray = [];
-        nameArray = $scope.EmployeeDetail.data.nickname.split(" ");
+        nameArray = $scope.EmployeeDetail.data.nickName.split(" ");
         switch (nameArray.length) {
             case 1:
-                $scope.EmployeeDetail.data.lastName = $scope.EmployeeDetail.data.nickname;
+                $scope.EmployeeDetail.data.lastName = $scope.EmployeeDetail.data.nickName;
                 break;
             case 2:
                 $scope.EmployeeDetail.data.lastName = nameArray[1];
@@ -772,8 +873,9 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 $scope.imageSrc = result;
                 if ($('.PersonImage').width() > 120)
                     $scope.containImg = true;
+                $scope.imageUpload();
                 $scope.disabledSave = false;
-                $scope.isImageuploaded = true;
+                
             });
     };
 
@@ -787,17 +889,23 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
      * ===================================================================================
      */
     $scope.backtoEmp = function() {
-        //To Skip saving during create
-        if (!($cookieStore.get("detailId") == 'create')) {
-            if ($scope.isError) {
-                $rootScope.localCache.isEmpAPINeeded = false;
-                $location.path('/Employee');
-                return;
-            }
+    	  if ($scope.isError || $scope.isUpdateError) {
+              $rootScope.localCache.isEmpAPINeeded = false;
+              $rootScope.closeAlert();
+              $location.path('/Employee');
+              return;
+          } // if error return to list screen. 
+    	  /* Changes done to return to list page without saving any records edited*/
+    	  $rootScope.localCache.isEmpAPINeeded = false;
+    	  $rootScope.closeAlert();
+          $location.path('/Employee');
+        /*if (!($cookieStore.get("detailId") == 'create')) {
+          
             if ($scope.saveContactNumbers()) {
                 $scope.addAlert("Enter valid email address.", "danger");
                 $scope.inSave = false;
                 $scope.needFormat = false;
+                $scope.isUpdateError = true; // set error flag true
                 return;
             }
             
@@ -819,8 +927,9 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             	$scope.needToSave = true;
             
             if ($scope.needToSave) {
-                if ($scope.EmployeeDetail.data.nickname == "") {
+                if ($scope.EmployeeDetail.data.nickName == "") {
                     $scope.addAlert("Enter Employee Name.", "danger");
+                    $scope.isUpdateError = true; // set error flag true
                     return;
                 }
                 $scope.closeAlert();
@@ -828,11 +937,14 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             } else {
                 if (!$rootScope.localCache.isEmpAPINeeded)
                     $rootScope.localCache.isEmpAPINeeded = false;
+                $location.path('/Employee');
             }
         } else {
+        	//In create mode
             $rootScope.localCache.isEmpAPINeeded = false;
-        }
-        $location.path('/Employee');
+            $location.path('/Employee');
+           
+        }*/
     }
 
     /**
@@ -841,7 +953,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
      * =========================================================================================
      */
     $scope.formatPostData = function() {
-        //For Converting String to Integer
+        //For Converting String to Float
         if ($scope.EmployeeDetail.data.otCostAmt != null && $scope.EmployeeDetail.data.otCostAmt != "")
             $scope.EmployeeDetail.data.otCostAmt = parseFloat($scope.EmployeeDetail.data.otCostAmt);
         else
@@ -858,22 +970,24 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         		delete $scope.EmployeeDetail.data.stdCostCur;
         }
 
-        $scope.EmployeeDetail.data.fullName = $scope.EmployeeDetail.data.nickname;
+        $scope.EmployeeDetail.data.fullName = $scope.EmployeeDetail.data.nickName;
 
         if ($scope.EmployeeDetail.data.addressStateCode != null)
             $scope.EmployeeDetail.data.addressStateCode = $scope.EmployeeDetail.data.addressStateCode.code;
         if ($scope.EmployeeDetail.data.addressCountryISO != null)
             $scope.EmployeeDetail.data.addressCountryISO = $scope.EmployeeDetail.data.addressCountryISO.code;
 
+        
+        //For deleting and clearing the value of hireDate and termination Date
         if ($scope.EmployeeDetail.data.hireDate == "" && !$scope.isHireDateSetinServer)
             delete $scope.EmployeeDetail.data.hireDate;
         else if($scope.EmployeeDetail.data.hireDate == "" && $scope.isHireDateSetinServer)
-            $scope.EmployeeDetail.data.hireDate = null;
+            $scope.EmployeeDetail.data.hireDate = "";
                                        
         if ($scope.EmployeeDetail.data.termDate == "" && !$scope.isTermDateSetinServer)
             delete $scope.EmployeeDetail.data.termDate;
         else if($scope.EmployeeDetail.data.termDate == "" && $scope.isTermDateSetinServer)
-            $scope.EmployeeDetail.data.termDate = null;
+            $scope.EmployeeDetail.data.termDate = "";
         
         angular.forEach($scope.ManagerList,function(data,key){
         	if(data.id == $scope.EmployeeDetail.data.managerId)
@@ -896,7 +1010,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 
         var fd = new FormData();
         fd.append('file', $scope.file);
-        fd.append('contactId', $cookieStore.get("detailId"));
+        if(!($cookieStore.get("detailId") == 'create'))
+            fd.append('contactId', $cookieStore.get("detailId"));
         $http.post('/api/upload/photo', fd, {
             transformRequest: angular.identity,
             headers: {
@@ -904,8 +1019,9 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             }
         }).success(function(data, status) {
             console.log("Image Updated Successfully");
-            $scope.addAlert("Image Updated Successfully", "success");
             $scope.isImageuploaded = false;
+            console.log(data);
+            $scope.EmployeeDetail.data.photoId = data.data.resourceId;
             $rootScope.localCache.isEmpAPINeeded = true;
         }).error(function(data, status) {
             console.log("Imaged Update Failed");
@@ -978,6 +1094,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             $scope.addAlert("Enter valid email address.", "danger");
             $scope.inSave = false;
             $scope.needFormat = false;
+            $scope.isUpdateError = true; // enable flag if there is error 
             return;
         }
         
@@ -1009,7 +1126,9 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         if($scope.dateChanged)
         	$scope.needToSave = true;
         
-        //Call Image Upload Function
+        $scope.closeAlert();
+        
+       /* //Call Image Upload Function
         if ($scope.isImageuploaded) {
             if ($cookieStore.get("detailId") != 'create') {
               //To Navigate to list page if there is no change in the detail object
@@ -1028,21 +1147,25 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             	  $scope.imageUpload();
               }
             }
-        }
-        
+        }*/
+       
         if ($scope.needToSave) {
-        	$scope.checkDateisChanged();
-            //For Alerting the mandatory field Nickname
-            if ($scope.EmployeeDetail.data.nickname == "") {
+        	
+        	
+            
+        	//For Alerting the mandatory field Nickname
+            if ($scope.EmployeeDetail.data.nickName == "") {
                 $scope.addAlert("Enter Employee Name.", "danger");
                 $scope.inSave = false;
                 $scope.needFormat = false;
+                $scope.isUpdateError = true; // set error flag true
                 return;
             } else {
                 $scope.assignNames(); //For assigning the first,last name to the post object
             }
-            
+           
             $scope.closeAlert(); //Used to close the alert message before proceeding.
+            
             //For Mapping the departmentName based on the selected departmentID
             angular.forEach($scope.departments, function(data, key) {
                 if (data.id == $scope.EmployeeDetail.data.departmentId)
@@ -1053,17 +1176,24 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             if (($scope.EmployeeDetail.data.addressCountryISO != '') && ($scope.EmployeeDetail.data.addressCountryISO != null))
                 if ($scope.Validatetypeahead($scope.countries, $scope.EmployeeDetail.data.addressCountryISO.name, "name", "Enter a valid Country Code", "danger") == false) {
                     $scope.inSave = false;
+                    $scope.isUpdateError = true; // set error flag true
                     return;
                 }
             if (($scope.EmployeeDetail.data.addressStateCode != '') && ($scope.EmployeeDetail.data.addressStateCode != null))
                 if ($scope.Validatetypeahead($scope.states, $scope.EmployeeDetail.data.addressStateCode.name, "name", "Enter a valid State Code", "danger") == false) {
                     $scope.inSave = false;
+                    $scope.isUpdateError = true; // set error flag true
                     return;
                 }
 
             $scope.needMapCall.callMap = true;
-
+            $scope.checkDateisChanged();
             $scope.formatPostData();
+       	    
+            if($scope.EmployeeDetail.data.hireDate == "NaN-NaN-NaN")
+			 delete $scope.EmployeeDetail.data.hireDate;
+		   if($scope.EmployeeDetail.data.termDate == "NaN-NaN-NaN")
+			 delete $scope.EmployeeDetail.data.termDate;
 
             var postData = $scope.EmployeeDetail.data;
             var postTime = CurrentTimeStamp.postTimeStamp();
@@ -1077,11 +1207,15 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             }).success(function(data) {
                 $scope.addAlert("Updated successfully", "success");
                 $scope.EmployeeDetail = data;
-                if ($cookieStore.get("detailId") == 'create') {
+                //Cloned Object for usin in 304 modified scenario
+                $scope.rootscopeobj = {};
+	    		angular.copy($scope.EmployeeDetail,$scope.rootscopeobj,true);
+	    		$rootScope.empDetailCache.data = $scope.rootscopeobj;
+                /*if ($cookieStore.get("detailId") == 'create') {
                     $cookieStore.put("detailId", data.data.id);
                     if ($scope.isImageuploaded)
                         $scope.imageUpload();
-                }
+                }*/
                 $scope.formatCostamt();
                 $scope.formatStdamt();
                 $scope.formatInputData();
@@ -1092,6 +1226,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
                 $scope.inCreateMode = false;
                 $scope.disabledSave = true;
+                $scope.isError = false; // reset error flag true
+                $scope.isUpdateError = false;
                 timeInterval = $timeout(function() {
                     $location.path('/Employee');
                 }, 1000);
@@ -1104,6 +1240,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 $scope.formatInputData();*/
                 $scope.isImageuploaded = false;
                 $scope.inSave = false;
+                $scope.isUpdateError = true;
                 $rootScope.localCache.isEmpAPINeeded = false;
                 //In Error Case where we need to need to display the default one row to the table.
                 if($scope.EmployeeDetail.data.contactNumbers != null && $scope.EmployeeDetail.data.contactNumbers.length == 0)
@@ -1126,7 +1263,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
      */
     $scope.confirmDelete = function(size) {
 
-        $rootScope.showModal('/api/delete/contact/' + $cookieStore.get("detailId"), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.EmployeeDetail.data.nickname + ' ? This action can not be undone.', 'Cancel', 'Confirm');
+        $rootScope.showModal('/api/delete/contact/' + $cookieStore.get("detailId"), 'Confirm Delete', 'Are you sure you would like to delete ' + $scope.EmployeeDetail.data.nickName + '? This action can not be undone.', 'Cancel', 'Confirm');
         $scope.$watch('isPostSuccess', function(nValue, oValue) {
             if (nValue == null || (nValue == oValue))
                 return;

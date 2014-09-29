@@ -4,6 +4,10 @@
 	height: 115px;
 	border: 1px solid #DBDEE0;
 }
+.employee-img
+{
+	padding-bottom:10px;
+}
 .imgContain
 {
 	background-size:contain;	
@@ -16,7 +20,10 @@
 {
 	margin-bottom: 10px !important;
 }
-
+.Overtime
+{
+	margin-top:-5px;
+}
 .contact-address-map
 {
 	padding-left: 25px;
@@ -71,7 +78,7 @@
 {
 	margin:10%;	
 }
-.unit-position
+.content-align .unit-position
 {
 	margin-left: 6px;
 	display: inline-table;
@@ -199,3 +206,4 @@ ul[id^="typeahead"] {
 	top: 0px;
 	opacity:0;
 }
+

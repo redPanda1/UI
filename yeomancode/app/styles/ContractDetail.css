@@ -50,11 +50,12 @@
 }
 .calender-flex
 {
-	display: -webkit-inline-flex;
-	display: -ms-inline-flexbox;
-	display: inline-flex;	
+	display: inline-block;
 }	
-
+.collapse-container .progress
+{
+	width:92%;
+}
 .right_justify
 {
 	text-align:right;
@@ -107,4 +108,33 @@
 {
 	line-height: 25px;
 }
-
+.currency-select select.form-control
+{
+	border-right: transparent;
+	height: 28px;
+	border-right-color: transparent;
+	background-color: #eee;
+	text-align: center;
+	padding: 5px 5px 5px 17px;
+	border-bottom-left-radius: 4px !important;
+	border-top-left-radius: 4px !important;
+}
+.contact-info-type .progress{
+width:93% !important;
+}
+.progress-value {
+	width:74%;
+	float:right;
+}
+.progress-bar{
+	display: inline-block;
+	width: 100% !important;
+	background-color: #f5f5f5;
+	text-align: center;
+	color:black;
+}
+.currencyselectionBox
+{
+	width: 46% !important;
+	padding:0px;
+}
