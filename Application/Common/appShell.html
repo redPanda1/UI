@@ -188,7 +188,7 @@
 								<li>
 									<a ng-click="time = !time"><i class="fa fa-clock-o"></i><span class="hidden-sm"> Time</span><i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': (time && !shiftNav) || shiftNav , 'glyphicon-chevron-left': !time && !shiftNav}"></i></a>						
 									<ul collapse="!time && !shiftNav" class="nav">
-										<li><a ng-class="{'selected':(selectedMenu == 'Timesheets')}" ng-click="selectedMenu = 'Timesheets';xscollapse = false" href="#"><i class="fa fa-clock-o"></i><span class="hidden-sm"> Timesheets</span></a></li>
+										<li><a ng-class="{'selected':(selectedMenu == 'Timesheets')}" ng-click="selectedMenu = 'Timesheets';xscollapse = false" ng-href="appShell.html#/Time"><i class="fa fa-clock-o"></i><span class="hidden-sm"> Timesheets</span></a></li>
 									</ul>	
 								</li>	
 														
@@ -198,7 +198,7 @@
 										<li><a  href="appShell.html#/Customer" ng-class="{'selected':(selectedMenu == 'Customer')}" ng-click="selectedMenu = 'Customer';xscollapse = false"><i class="fa fa-users"></i><span class="hidden-sm"> Customers</span></a></li>
 										<li><a  href="appShell.html#/Employee" ng-class="{'selected':(selectedMenu == 'Employee')}" ng-click="selectedMenu = 'Employee';xscollapse = false"><i class="fa fa-user"></i><span class="hidden-sm"> Employees</span></a></li>
 										<li><a  href="appShell.html#/Contract" ng-class="{'selected':(selectedMenu == 'Contract')}" ng-click="selectedMenu = 'Contract';xscollapse = false"><i class="fa fa-list-alt"></i><span class="hidden-sm"> Contracts</span></a></li>																		
-										<li><a  href="#" ng-class="{'selected':(selectedMenu == 'TimesheetAdmin')}" ng-click="selectedMenu = 'TimesheetAdmin'; xscollapse = false"><i class="fa fa-clock-o"></i><span class="hidden-sm"> Timesheet Admin</span></a></li>
+										<li><a ng-href="appShell.html#/TimeAdmin" ng-class="{'selected':(selectedMenu == 'TimesheetAdmin')}" ng-click="selectedMenu = 'TimesheetAdmin'; xscollapse = false"><i class="fa fa-clock-o"></i><span class="hidden-sm"> Timesheet Admin</span></a></li>
 										<li><a ng-click="reporting = !reporting"  class="subContent"><i class="fa fa-bar-chart-o"></i><span class="hidden-sm"> Reporting</span><i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': reporting, 'glyphicon-chevron-left': !reporting}"></i></a>
 											<ul collapse="!reporting" class="nav">
 												<li><a href="#" ng-class="{'selected':(selectedMenu == 'ItemData')}" ng-click="selectedMenu = 'ItemData';xscollapse = false"><i class="fa fa-bar-chart-o"></i><span class="hidden-sm"> Item Data</span></a></li>

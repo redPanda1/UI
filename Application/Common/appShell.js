@@ -18,7 +18,9 @@ function routeconfig($routeProvider) {
     $routeProvider.when('/', {
         templateUrl: '../Home/HomePage.html'
     }).when('/Time', {
-        templateUrl: '../Time/TimePage/TimePage.html'
+        templateUrl: '../Time/TimeSheet/TimeSheet.html'
+    }).when('/TimeAdmin', {
+        templateUrl: '../Time/TimeSheet/TimeSheet.html'
     }).when('/Employee', {
         templateUrl: '../Manage/Employee/Employee.html'
     }).when('/EmployeeDetail', {

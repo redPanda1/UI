@@ -1,0 +1,55 @@
+.ngRow:hover,.ngRow.even:hover,.ngRow.odd:hover
+{
+	background: #E8F3FD;
+}
+.selected
+{
+	background-color:#CED1D4!important;
+}
+.searchbox
+{
+	margin-bottom:10px;
+}
+.timesheet_cl .gridStyle .ngCanvas button.btn
+{
+	margin-right: 10px;
+	margin-top: 0px !important;
+}
+/*===========Styles for the labels in timesheet list======= */
+
+.label
+{
+	font-weight: 300;
+	font-size: 10px;
+	padding: 4px 6px;
+	border: none;
+	text-shadow: none;
+}
+.label-important{
+	background: #ff5454;
+}
+.label-grey
+{
+	border: none;
+	text-shadow: none;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;	
+	background: #e9ebec;
+	color: #7c848d;	
+}
+.label-mid
+{
+	font-size:15px;
+}
+
+/*===============Style for the buttons "New" and "Download" ================*/
+
+.timesheet_cl .searchbox select
+{
+	width: 70px;
+}
+.emp-icons-container button
+{
+	margin-top: 0px !important;
+}

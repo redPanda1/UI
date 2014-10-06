@@ -25,6 +25,17 @@ function tableController($scope, $timeout, $window, $rootScope) {
         $scope.getTableData($scope.ngGridTableOptions.pageOptions.pageSize, $scope.ngGridTableOptions.pageOptions.currentPage, $scope.ngGridTableOptions.filterOptions.filterText);
     }, true);
 
+
+
+    $("#searchDateRange").daterangepicker({
+             format: 'MM/DD/YY',
+             opens:'left',
+           }, function(start, end, label) {
+            $scope.TimesheetListApiCall(start.format("YYYY-MM-DD"),end.format("YYYY-MM-DD"));
+           });
+
+
+
     /**
      * ===================================================================================================
      * Function used for rebuilding the ng-grid table
