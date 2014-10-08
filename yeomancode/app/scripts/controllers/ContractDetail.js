@@ -12,9 +12,10 @@
  * @param USDateFormat
  * @param $window
  * @param $interval
+ * @param CommentDate
  */
-angular.module('redPandaApp').controller('contractDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','CurrentTimeStamp','IsoDateFormat','USDateFormat','$window','$timeout', 
-	function($scope,$rootScope,$modal,$http,$location,$cookieStore,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$timeout){
+angular.module('redPandaApp').controller('contractDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','CurrentTimeStamp','IsoDateFormat','USDateFormat','$window','$timeout','CommentDate',
+	function($scope,$rootScope,$modal,$http,$location,$cookieStore,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$timeout,CommentDate){
 
 	$window.scrollTo(0,0);
 	$rootScope.manage             = true;
@@ -55,6 +56,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	$scope.rateCurrency = [];
 	$scope.clonedPeopleData = [];
 	$scope.clonedActivityData = [];
+	$scope.commentText = "";
+	$rootScope.deleteCustomerContract = false;
+	$scope.disabledSave = false;
 	
 	//Create mode from customer
 	if ($cookieStore.get("contractId") == "create"){
@@ -141,7 +145,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
  	        			  {field:'isBillable', displayName:'Billable', width:'10%',cellTemplate:'<div class="ngCellText cell-container" style="padding: 12px 0px 0px 20px !important;"><input type="checkbox" ng-model="row.entity.isBillable" /></div>'},                
  	        			  {field:'rateAmt', displayName:'Hourly Rate', width:'19%', cellTemplate:'<div class="ngCellText cell-container"><div class="input-group"><span class="input-group-addon" ng-bind ="row.entity.rateCur"></span><input type="text" hourly-Rate  placeholder="Rate"  class="form-control inputtext right_justify" ng-model="row.entity.rateAmt" ng-disabled="contractDetail.data.type != invoicemethods[0].value"/></div></div>'},
  	        			  {field:'feeAmt', displayName:'Fixed Fee', width:'18%', cellTemplate:'<div class="ngCellText cell-container"><div class="input-group"><span class="input-group-addon" ng-bind ="row.entity.feeCur"></span><input type="text" hourly-Rate placeholder="Fixed Fee" class="form-control inputtext right_justify" ng-model="row.entity.feeAmt" ng-disabled="contractDetail.data.type != invoicemethods[2].value"/></div></div>'},
- 	        			  {field:'', displayName:'', width:'5%',headerCellTemplate:plusHeaderCellTemplates,cellTemplate:'<div class="ngCellText button-container-align text-center"><button class="btn btn-default btn-sm" ng-click="deleteActivity(row,row.rowIndex,activitiesTableData)"><i class="fa fa-times"></i></button></div>'},
+ 	        			  {field:'', displayName:'', width:'8%',headerCellTemplate:plusHeaderCellTemplates,cellTemplate:'<div class="ngCellText button-container-align text-center"><button class="btn btn-default btn-sm" ng-click="deleteActivity(row,row.rowIndex,activitiesTableData)"><i class="fa fa-times"></i></button></div>'},
  	        			]
 	 }
 	 $scope.peopleTableOptions = {
@@ -170,7 +174,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
         }, {
             field: '',
             displayName: '',
-            width: '5%',
+            width: '8%',
             headerCellTemplate: plusHeaderCellTemplate,
             cellTemplate: '<div class="ngCellText button-container-align text-center"><button class="btn btn-default btn-sm" ng-click="deleteSelectedRow(row.rowIndex,peopleMangers)"><i class="fa fa-times"></i></button></div>'
         } ]
@@ -178,25 +182,69 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 
 	 $scope.initiateDatePicker = function(row,index)
 	 {
-		 row.entity.start= USDateFormat.convert(row.entity.start,true);
-		 row.entity.end= USDateFormat.convert(row.entity.end,true);
+	 	 if($scope.activitiesTableData[index].start != null)
+		 {
+		 	row.entity.start = $scope.activitiesTableData[index].start;
+		 	$scope.startrange = row.entity.start;			   
+		 }	
+		 else
+		 {
+		 	$scope.startrange = moment().format("MM/DD/YY");
+		 	row.entity.start = $scope.startrange;
+		 	$scope.activitiesTableData[index].start = row.entity.start;
+		 }
+		 if($scope.activitiesTableData[index].end != null)
+		 {
+		 	row.entity.end= $scope.activitiesTableData[index].end;
+		 	$scope.endrange = row.entity.end;		 			 	
+		 }	
+		 else
+		 {
+		 	$scope.endrange = moment((moment().month()+1)+"/"+(moment().date()+1)+"/"+(moment().year())).format("MM/DD/YY");
+		 	row.entity.end = $scope.endrange;
+		 	$scope.activitiesTableData[index].end = $scope.endrange;	
+		 }		
 		 var elementId = '#start_'+index;
 		 $(elementId).daterangepicker({
 	         format: 'MM/DD/YY',
 	         opens:'left',
-	         startDate:row.entity.start,
-	         endDate:row.entity.end
-	       }, function(start, end, label) {
-	       var dateValue = $(elementId).val();
-    	   var startDate = dateValue.split('-')[0];
-		   var endDate = dateValue.split('-')[1];
-		   $scope.activitiesTableData[index].start = IsoDateFormat.convert(startDate);
-		   $scope.activitiesTableData[index].end = IsoDateFormat.convert(endDate);
-		   row.entity.start = IsoDateFormat.convert(startDate);
-		   row.entity.end  = IsoDateFormat.convert(endDate);
+	         startDate:$scope.startrange,
+	         endDate:$scope.endrange
+	       }, function(start, end, label) {	       	
+		       var dateValue = $(elementId).val();
+	    	   var startDate = dateValue.split('-')[0];
+			   var endDate = dateValue.split('-')[1];
+			   $scope.activitiesTableData[index].start = startDate;
+			   $scope.activitiesTableData[index].end = endDate;
+			   row.entity.start = startDate;
+			   row.entity.end  = endDate;
 	       });
 	 }
 	
+	 /**
+	  * ====================================================================================================
+	  * Function used to convert the date to US Date format mm/dd/yyyy Activity data
+	  * ====================================================================================================
+	  */
+	 $scope.convertDateActivities = function()
+	 {
+		 for(var i=0;i<$scope.contractDetail.data.activityData.length;i++){
+	 		 var DateString = "";
+
+	 		if($scope.contractDetail.data.activityData[i].start != null)
+			{
+
+				 DateString += USDateFormat.convert($scope.contractDetail.data.activityData[i].start,true);
+				 $scope.contractDetail.data.activityData[i].start = USDateFormat.convert($scope.contractDetail.data.activityData[i].start,true);
+			}	
+		    if($scope.contractDetail.data.activityData[i].end != null)
+			{
+				DateString += "-"+USDateFormat.convert($scope.contractDetail.data.activityData[i].end,true);
+				$scope.contractDetail.data.activityData[i].end = USDateFormat.convert($scope.contractDetail.data.activityData[i].end,true);
+			}
+		 	$scope.activityDuration[i] = DateString;		 	
+		 }
+	 }
 	 
 	 //Function used to set dollar symbol if there is not currency.
 	 $scope.setDollar = function(obj)
@@ -309,38 +357,6 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	  }
 	 
 	 /**
-	  * ==============================================================
-	  * Watcher used to clear the fields when it is disabled
-	  * ==============================================================
-	  *//*
-	 $scope.$watch('contractDetail.data.type',function(nValue,oValue){
-		 if(nValue == oValue || nValue == null )
-			 return;
-		 
-		 if(nValue != $scope.invoicemethods[1].value)
-		 {
-			 for(var i=0;i< $scope.personHourlyRate.length;i++)
-			 {
-				 $scope.personHourlyRate[i] = "";
-			 }
-		 }	 
-		 if(nValue != $scope.invoicemethods[0].value)
-		 {
-			 for(var i=0;i< $scope.activeHourlyRate.length;i++)
-			 {
-				 $scope.activeHourlyRate[i] = "";
-			 }
-		 }
-		 if(nValue != $scope.invoicemethods[2].value)
-		 {
-			 for(var i=0;i< $scope.mileStone.length;i++)
-			 {
-				 $scope.mileStone[i] = "";
-			 }
-		 }
-	 });*/
-	 
-	 /**
 	  * ====================================================================================================
 	  * Function used to convert the date to US Date format mm/dd/yyyy
 	  * ====================================================================================================
@@ -353,11 +369,23 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 $scope.startDateRange = USDateFormat.convert($scope.contractDetail.data.startDate,true);
 			 DateString += USDateFormat.convert($scope.contractDetail.data.startDate,true);
 		 }
+		 else
+		 {
+		 	$scope.startDateRange = moment().format("MM/DD/YY");
+		 	$scope.contractDetail.data.startDate = IsoDateFormat.convert($scope.startDateRange);
+		 }
+
 		 if($scope.contractDetail.data.endDate != null)
 		 {
 			 $scope.endDateRange = USDateFormat.convert($scope.contractDetail.data.endDate,true);
 			 DateString += "-"+USDateFormat.convert($scope.contractDetail.data.endDate,true);
 		 }
+		 else
+		 {		 	
+		 	 $scope.endDateRange = moment((moment().month()+1)+"/"+(moment().date()+1)+"/"+(moment().year())).format("MM/DD/YY");
+			 $scope.contractDetail.data.endDate = IsoDateFormat.convert($scope.endDateRange);
+		 }
+
 		 $('#dateRange').val(DateString);
 		 $('#dateRange').daterangepicker({
 	         format: 'MM/DD/YY',
@@ -372,23 +400,45 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
 	       });
 	 }
-	  /**
-	  * ====================================================================================================
-	  * Function used to convert the date to US Date format mm/dd/yyyy Activity data
-	  * ====================================================================================================
-	  */
-	 $scope.convertDateActivities = function()
-	 {
-		 for(var i=0;i<$scope.contractDetail.data.activityData.length;i++){
-	 		 var DateString = "";
+	 /**
+     * For saving live comments
+     */
+     $scope.saveCommentMessage = function() {
+		 if ($scope.commentText === "")
+			return;
+		var currentdate = new Date();
+		var currentISO = currentdate.toISOString();
+		var commnetsTime = CommentDate.convertCommentDate(currentISO)
 
-	 		if($scope.contractDetail.data.activityData[i].start != null)
-				 DateString += USDateFormat.convert($scope.contractDetail.data.activityData[i].start,true);
-		    if($scope.contractDetail.data.activityData[i].end != null)
-				 DateString += "-"+USDateFormat.convert($scope.contractDetail.data.activityData[i].end,true);
-		 	$scope.activityDuration[i] = DateString;		 	
-		 }
+		var text = $scope.commentText;
+		$scope.commentText = "";
+		var seq = 0, len = $scope.contractDetail.data.comments.length;
+		if (len === 0) {
+			seq = 0;
+		}
+		else {
+			seq = len; 
+		}
+		 $scope.contractDetail.data.comments.push({
+				"seqNo": seq,
+				"postedBy": {
+					"thumbUrl": $rootScope.defaultUserImage,
+					"name"	  : $rootScope.currentUserName,
+					"id"  	  : $rootScope.currentUserId
+				},
+				"postedOn":currentISO,
+				"replyTo": 0,
+				"docRef": 0,
+				"text": text
+		});
+		console.log($scope.contractDetail.data.comments);
+				angular.forEach($scope.contractDetail.data.comments, function(data, key) {
+					if (data.postedOn != null)
+					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+				});
+
 	 }
+	 
 	 
 	 /**
 	  * ===========================================================
@@ -551,13 +601,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				    "success": true,
 				    "total": 1,
 				    "data": {
-				        "poNumber": null,
-				        "title": null,
-				        "customerId": null,
-				        "customerName": null,
+				        "title": '',
 				        "type": "",
-				        "value": null,
-				        "budgetedHours": null
+				        "comments": []
 				    }
 				}
 		 $scope.isNew = true;
@@ -570,7 +616,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
 		 $scope.convertToUSDateFormat();
 		 $scope.contractDetail.data.activityData.push({"title": "","isBillable": false,"isFixedFee": false,"rateAmt":"0.00","feeAmt": '0.00',"feeCur" : $scope.currencySymbol,"rateCur" : $scope.currencySymbol});
-		 $scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":"0.00"});
+		 $scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":"0.00","employeeName":""});
 		 $scope.currencyCode = "USD";
 		 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
 		 $scope.peopleMangers       = $scope.contractDetail.data.assignedData;
@@ -592,7 +638,20 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);
 				 if($scope.contractDetail.data.budgetedHours != null)
 					 $scope.contractDetail.data.budgetedHours = $scope.contractDetail.data.budgetedHours.toFixed(2);
+				 //Condition used for initialising the comments
+				 if ($scope.contractDetail.data.comments == null)
+			  		$scope.contractDetail.data.comments = [];
+			  	else{
+			  		angular.forEach($scope.contractDetail.data.comments, function(data, key) {
+			  		if (data.postedOn != null)
+					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+					if (data.postedBy != null){
+						if (data.postedBy['thumbUrl'] == null || data.postedBy['thumbUrl'] == "")
+								data.postedBy['thumbUrl'] = $rootScope.defaultUserImage;
+					}
 
+				});
+			  	}
 				 //Condition used for initialising the assigned and activity data
 				 if ($scope.contractDetail.data.assignedData == null)
 			  			$scope.contractDetail.data.assignedData = [];
@@ -664,14 +723,15 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		  		});
 		  		if($scope.contractDetail.data.managerName != null)
 		  		{
+		  			
 					if ($scope.contractDetail.data.assignedData != null){
 							$scope.contractDetail.data.assignedData[0].employeeName = $scope.contractDetail.data.managerName;
 					}
-                                                                    
                     else
                     {
-                            $scope.contractDetail.data.assignedData = [{"employeeName":""}];
-                             $scope.contractDetail.data.assignedData[0].employeeName = $scope.contractDetail.data.managerName;
+                    	$scope.contractDetail.data.assignedData =[];
+                    	$scope.contractDetail.data.assignedData = [{"employeeName":""}];
+						$scope.contractDetail.data.assignedData[0].employeeName = $scope.contractDetail.data.managerName;
                     }
                   }
 				 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
@@ -679,7 +739,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 
 			 }).error(function(data, status){
 			 	 $scope.isError = true;
-			 	 $scope.disabledSave = true;
+				 $scope.disabledSave = true;
 
 			 	  if($location.path() == '/ContractDetail')
 			 		  $rootScope.addAlert("No contract details available.","danger");
@@ -687,6 +747,14 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 	//Code used for local testing and it should be removed finally
 			 	 
 				/*$scope.contractDetail  = $rootScope.ContractDetailData;
+				//Condition used for initialising the comments
+				 if ($scope.contractDetail.data.comments == null)
+			  		$scope.contractDetail.data.comments = [];
+			  	else{
+			  		angular.forEach($scope.contractDetail.data.comments, function(data, key) {
+				    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+				});
+			  	}
 				
 				if ($scope.contractDetail.data != null)
 					$scope.convertToUSDateFormat();
@@ -707,11 +775,11 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 }
 				 if($scope.contractDetail.data.value != null)
 				 {
-					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);
+					 $scope.contractDetail.data.value = Number($scope.contractDetail.data.value).toFixed(2);
 				 }
 				 
 				 if($scope.contractDetail.data.budgetedHours != null)
-					 $scope.contractDetail.data.budgetedHours = $scope.contractDetail.data.budgetedHours.toFixed(2);
+					 $scope.contractDetail.data.budgetedHours = Number($scope.contractDetail.data.budgetedHours).toFixed(2);
 				
 				 $scope.initializeCurrencies();
 				 console.log($scope.contractDetail.data.activityData)
@@ -748,9 +816,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 	 				$scope.contractDetail.data.activityData[i].rateCur = ''
 		 	 			}
 		 	 		}
-				}*/
-				//$scope.convertDateActivities();
-				//$scope.activitiesTableData =  $scope.contractDetail.data.activityData;
+				}
+				$scope.convertDateActivities();
+				$scope.activitiesTableData =  $scope.contractDetail.data.activityData;*/
 			 });
 		 }
 				 
@@ -873,17 +941,30 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 if($scope.contractDetail.data.budgetedHours != null)
 			 $scope.contractDetail.data.budgetedHours = parseFloat($scope.contractDetail.data.budgetedHours);
 		
-		//Formatting the activity table data.
+		if ($scope.contractDetail.data.comments.length>0){
+        	angular.forEach($scope.contractDetail.data.comments,function(data,key){
+					if (data.tempTime != null)
+						delete data.tempTime;
+					if(data.postedBy != null)
+					{
+						if (data.postedBy.thumbUrl)
+							delete data.postedBy.thumbUrl;
+						if (data.postedBy.name)
+							delete data.postedBy.name;
+					}
+			});
+        }
 
-		
+	/*
+	*Formating the post object for activity and people
+	*
+	*/
 
 	 } 
 	 var formatActivityPeopleData = function(){
-	 	 	var filterPeopleList   = [];
-	 	 	var filterActivityList = [];
-	 	 	
-	 	 	console.log($scope.peopleMangers);
-	 	 	console.log($scope.activitiesTableData);
+	 	 	$scope.filterPeopleList   = [];
+	 	 	$scope.filterActivityList = [];
+
 	 	 	//For loop for converting the data type of rate amt
 			for(var i=0;i<$scope.peopleMangers.length;i++){
 				if($scope.peopleMangers[i].rateAmt != "" || $scope.peopleMangers[i].rateAmt != null)
@@ -904,27 +985,47 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 
 			//For pushing the valid people managers into the filtered list
 			for (var i=0;i<$scope.peopleMangers.length;i++){
-				if($scope.peopleMangers[i].employeeId != undefined){
-					filterPeopleList.push($scope.peopleMangers[i])
+				if($scope.peopleMangers[i].employeeId != null && $scope.peopleMangers[i].employeeId != ''){
+					$scope.filterPeopleList.push($scope.peopleMangers[i])
 				}
 			}
 			//Removing the empty rows for the activity.
 			for(var i=0; i<$scope.activitiesTableData.length;i++){	
-				if($scope.activitiesTableData[i].title != undefined || $scope.activitiesTableData[i].title != ""){
-					filterActivityList.push($scope.activitiesTableData[i])
+				if($scope.activitiesTableData[i].title != null && $scope.activitiesTableData[i].title != "")
+				{	
+					console.log("Date value in the post");
+					console.log($('#start_'+i).val())				
+					if($('#start_'+i).val())
+					{
+						$scope.activitiesTableData[i].start = $('#start_'+i).val().split('-')[0];
+						$scope.activitiesTableData[i].end = $('#start_'+i).val().split('-')[1];						
+						$scope.activitiesTableData[i].start = IsoDateFormat.convert($scope.activitiesTableData[i].start);
+						$scope.activitiesTableData[i].end = IsoDateFormat.convert($scope.activitiesTableData[i].end);
+						
+						console.log("After");
+						console.log($scope.activitiesTableData[i].start ,$scope.activitiesTableData[i].end);
+
+					}
+					else
+					{
+						delete $scope.activitiesTableData[i].start;
+						delete $scope.activitiesTableData[i].end;
+					}
+
+					$scope.filterActivityList.push($scope.activitiesTableData[i])
 				}
 			}
-			angular.forEach(filterPeopleList,function(peopleData,key){
+			
+			angular.forEach($scope.filterPeopleList,function(peopleData,key){
 				peopleData.rateCur =  $scope.currencyCode;
                     if(($scope.contractDetail.data.type == "fixed") ||($scope.contractDetail.data.type ==  'activity'))
                     {
                         delete peopleData.rateCur;
                         peopleData.rateAmt = 0;
                     }
-				
 			});
-
-			angular.forEach(filterActivityList,function(data,key){ 
+			
+			angular.forEach($scope.filterActivityList,function(data,key){ 
 				data.rateCur =  $scope.currencyCode;
 				data.feeCur  =  $scope.currencyCode;
 				data.feeAmt  = parseFloat(data.feeAmt)
@@ -947,6 +1048,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
                     data.rateAmt =0;
                 }
 			});
+
 	 }
 	 
 	 /**
@@ -962,7 +1064,13 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 	  {
 	 		 $rootScope.localCache.isContractAPINeeded = false; 
 	 		 $rootScope.closeAlert();
-	 	  	 $location.path('/Contract');
+	 	  	 if ($scope.cookContractId){
+				$cookieStore.put("detailId",$scope.customerID);
+				$location.path('/CustomerDetail');
+		 	 }
+			 else{
+			 	$location.path('/Contract');
+			 }
 	 	  	 return;
 	 	  }
 	 	 $rootScope.localCache.isContractAPINeeded = false;
@@ -1054,7 +1162,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 {
 		 $('#dateRange').val('');
 		 $('#dateRange').daterangepicker({
-	         format: 'MM/DD/YYYY',
+	         format: 'MM/DD/YY',
 	         opens:'left'
 	       }, function(start, end, label) {
 	    	   var dateValue = $('#dateRange').val();
@@ -1068,7 +1176,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 $scope.clearActivityDate = function(index){
 	 	$('#start_'+index).val('');
 		 $('#start_'+index).daterangepicker({
-	         format: 'MM/DD/YYYY',
+	         format: 'MM/DD/YY',
 	         opens:'left'
 	       }, function(start, end, label) {
 	    	   var dateValue = $('#start_'+index).val();
@@ -1081,6 +1189,46 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	       });
 	 }
 	 
+
+	 /**
+	  *
+	  */
+
+	 $scope.reformatData = function()
+	 {
+		 	for(var i=0;i<$scope.activitiesTableData.length;i++)
+	   		{
+	   			$scope.activitiesTableData[i].rateCur = $scope.currencySymbol;
+	   			$scope.activitiesTableData[i].feeCur = $scope.currencySymbol;
+	   			if($('#start_'+i).val())
+	   			{
+	   				$scope.activitiesTableData[i].start =  USDateFormat.convert($('#start_'+i).val().split('-')[0],true);
+	   				$scope.activitiesTableData[i].end = USDateFormat.convert($('#start_'+i).val().split('-')[1],true);
+	   			}
+	   		}
+	   		for(var i=0;i<$scope.peopleMangers.length;i++)
+	   		{
+	   			$scope.peopleMangers[i].rateCur = $scope.currencySymbol;
+	   		}
+	   		if($('#dateRange').val())
+	   		{
+	   			$scope.contractDetail.data.startDate = IsoDateFormat.convert($('#dateRange').val().split('-')[0]);
+	   			$scope.contractDetail.data.endDate =  IsoDateFormat.convert($('#dateRange').val().split('-')[1]);
+	   		}
+	   		console.log('After Reformat');
+	   		console.log($scope.activitiesTableData);
+	   		console.log($scope.peopleMangers);
+	   		console.log($scope.contractDetail.data.startDate);
+	   		console.log($scope.contractDetail.data.endDate);
+
+	 }
+
+
+
+
+
+
+
 	 /**
 	  * ==================================================================================
 	  * Function used to save the contract details when save button is clicked
@@ -1099,26 +1247,51 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 return;
 		 }
 		 $scope.inSave = true;
-		 //$scope.disabledSave = true;
-		 console.log("cloned",$scope.ClonedcontractDetail)
-		 console.log("contractDetail",$scope.contractDetail)
+
+		 //console.log("cloned",$scope.ClonedcontractDetail)
+		 //console.log("contractDetail",$scope.contractDetail)
 		 
 		 if($scope.contractDetail.data.value != null && $scope.contractDetail.data.value == 0)
 		 {
 			 if($scope.contractDetail.data.currency != null)
 				 delete $scope.contractDetail.data.currency;
 		 }
+
+		 //console.log("Date value in post");
+		 console.log($('#dateRange').val());
+		 if($('#dateRange').val() == "")
+		 {
+		 	delete $scope.contractDetail.data.endDate;
+		 	delete $scope.contractDetail.data.startDate;
+		 }
+
 		 //Comparing the objects to identify the changes
 		 formatActivityPeopleData();
          $scope.needToSave = false;
-         console.log($scope.contractDetail.data)
+
          angular.forEach($scope.contractDetail.data,function(data,key){
-        	 console.log(key);
-        	 console.log(data);
-        	console.log($scope.ClonedcontractDetail.data[key]);
-        	if(!angular.equals(data,$scope.ClonedcontractDetail.data[key]))
-        		$scope.needToSave = true;
+         	 if(key != 'managerName') 
+         	 {
+	     	 	if(key == 'assignedData'){
+					if($scope.contractDetail.data.assignedData != null)
+		    	 	{
+		    	 		for (var i=0;i<$scope.contractDetail.data.assignedData.length;i++){
+		    	 			delete $scope.contractDetail.data.assignedData[i].employeeName;
+		    	 			if ($scope.ClonedcontractDetail.data.assignedData[i].employeeName != null)
+		        	 			delete $scope.ClonedcontractDetail.data.assignedData[i].employeeName
+		    	 		}
+		    	 	}
+	    	 	}
+	    	 	console.log(key);
+				console.log(data, $scope.ClonedcontractDetail.data[key]);
+	        	if(!angular.equals(data,$scope.ClonedcontractDetail.data[key]))
+	        		$scope.needToSave = true;
+				
+         	 }
+	         	
+        	 
          });
+
         
 		 if($scope.needToSave)
 		 {
@@ -1132,6 +1305,12 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 delete $scope.contractDetail.data.endDate;
 			 var postData = $scope.contractDetail.data;
 			 var postTime =  CurrentTimeStamp.postTimeStamp();
+			 $scope.disabledSave = true;
+			 
+ 			$scope.contractDetail.data.activityData = $scope.filterActivityList;
+			$scope.contractDetail.data.assignedData = $scope.filterPeopleList;
+
+
 			 $http({
 			 		"method" : "post",
 			 	 	"url"    : '/api/contractDetail/update?timestamp='+postTime,"data":postData,
@@ -1178,8 +1357,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			 }).error(function(data, status){
 				 if($location.path() == '/ContractDetail')
 					 $rootScope.addAlert("Update failed","danger");
-				 $scope.disabledSave = false;
+				 $scope.disabledSave = true;
 				 $scope.isUpdateError = true;
+				 $scope.reformatData();
 				 //Code used for local testing and it should be removed finally
 				 
 				/*$scope.contractDetail = $rootScope.newContactDetails;
@@ -1201,8 +1381,17 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 
 			 });
 		   }
+		   else
+		   {
+
+		   		$scope.reformatData();
+		   		
+		   }
 		 }
  
+
+
+
 	 /**
 	  * ===================================================================================
 	  * Function used to Delete the contract Record
@@ -1217,8 +1406,16 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				return;
 			if($rootScope.isPostSuccess)
 			{
-				$rootScope.localCache.isContractAPINeeded = true;
-			 	$location.path('/Contract');			 	
+				
+			 	 if ($scope.cookContractId){
+						$cookieStore.put("detailId",$scope.customerID);
+						$rootScope.deleteCustomerContract = true;
+						$location.path('/CustomerDetail');
+	 			}
+				else{
+					$rootScope.localCache.isContractAPINeeded = true;
+					$location.path('/Contract');
+				 }
 			}
 			else
 			{

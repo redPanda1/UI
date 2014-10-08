@@ -12,11 +12,6 @@
 {
 	width:30%;
 }
-.comments-container .comments .time
-{
-	color: gray;
-}
-
 /*Style for setting the google map's height*/
 .angular-google-map-container
 {

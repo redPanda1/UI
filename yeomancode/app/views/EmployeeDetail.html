@@ -36,11 +36,11 @@
 				</div>
 				
 				<div class="form-group">
-					<label>Contractor</label>  <label><input type="checkbox" ng-model="EmployeeDetail.data.isContractor" /></label>
+					<label>Contractor</label>  <span><input type="checkbox" ng-model="EmployeeDetail.data.isContractor" /></span>
 				</div>
 				
 				<div class="form-group">
-					<label>Part Time</label>   <label><input type="checkbox" ng-model="EmployeeDetail.data.isPartTime" /></label>
+					<label>Part Time</label>   <span><input type="checkbox" ng-model="EmployeeDetail.data.isPartTime" /></span>
 				</div>
 			</form>				
 		</div>			
@@ -282,21 +282,29 @@
 			<!-- TABLE HEADING ENDS -->
 			<!-- TABLE CONTAINER BODY STARS -->
 				<div class="row collapse-container" collapse="CommentscollapseTable">
-					<div class="boxcontainer-body comments-container">
-						<div class="col-xs-3 col-sm-2 col-md-1 col-lg-1">	
-							<span class="avatar">
-								<img src="images/sh_photo50.png" class="img-rounded" alt="contact">
-							</span>
-						</div>	
-						<div class="col-xs-9 col-sm-10 col-md-11 col-lg-11">
-							<span class="comments">
-								<span class="message">
-		                            Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore.Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore. Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore.Lorem ipsum dolor sit amet consectetur adipiscing elit, et al commore.
-		                         </span>
-		                         <span class="time pull-right">
-								    	6 min
-								 </span>
-							</span>
+					<div class="boxcontainer-body">	
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 comments-container">
+								<span class="comments" ng-repeat = "comment in EmployeeDetail.data.comments" ng-show = "EmployeeDetail.data.comments.length > 0">
+									<span class="avatar">
+										<span ng-style = "{'background-image':'url('+comment.postedBy.thumbUrl+')'}" style ="background-repeat:no-repeat;height:50px;width:50px;background-size:100%;display:inline-block" class="img-circle"></span>
+										 
+									</span>
+
+									<span class="name-and-message"> <span ng-bind="comment.postedBy.name" class="name"></span>: 
+									<span class="message" ng-bind="comment.text"></span>							
+									<span class="time pull-right" ng-bind = "comment.tempTime"></span> </span>
+								</span>
+
+								<p class="add-comments">
+									<span class="avatar">
+										<span ng-style = "{'background-image':'url('+defaultUserImage+')'}"
+											  style ="background-repeat:no-repeat;height:50px;width:50px;background-size:100%;display:inline-block" 
+											  class="img-circle">
+										</span>
+									</span>
+									<input type = "text" placeholder = "Write Message" ng-model = "commentText" class="form-control">
+									<span class="add-comments-submit"><button class="btn pull-right" ng-click = "saveCommentMessage();">Save</button></span>
+								</p>									
 						</div>
 					</div><!-- TABLE CONTAINER BODY ENDS -->				
 				</div>	

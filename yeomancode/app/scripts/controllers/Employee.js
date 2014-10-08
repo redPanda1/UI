@@ -272,8 +272,8 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 				  * Codes used for local testing. Finally it should be removed
 				  * ==========================================================================
 				  */
-				 
-				   /*$scope.employeeList =  $rootScope.employeeData.data;
+				
+				   $scope.employeeList =  $rootScope.employeeData.data;
 			 	   $rootScope.localCache.empList =  $scope.employeeList;
 			 	   $scope.truncateurl();
 			 	   $scope.storeManagerNames();	 	  	
@@ -281,7 +281,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 				   if(status == 304)
 				   {
 					   //.
-				   }   */ 		
+				   }   
 			 });
 		 }
 		 else
@@ -291,8 +291,13 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 			 if($rootScope.localCache.empList != null && $rootScope.localCache.isEmpAPINeeded == true)
 			 {
 				 console.log('In timestamp');
-				 console.log($rootScope.getTime);
-				 $http.get('/api/employeeList?timestamp='+ $rootScope.getTime).success(function (data) {	
+				
+				  /**
+				   *==========================================================================================
+				   *  API call for getting newly created and edited employees list
+				   *==========================================================================================
+				   */
+				 $http.get('/api/employeeList?timestamp='+ $rootScope.getTime+'&deleted=true').success(function (data) {	
 					 $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
 					
 					 if($rootScope.selectedEmpType == 'create')
@@ -346,29 +351,14 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 					   {
 						   $scope.employeeList = $rootScope.localCache.empList;
 						   $scope.tableOptions.listData = $scope.employeeList;
-					   }   
-					   else
-					   {
-
-						   /**
-							* ==========================================================================
-							* Codes used for local testing. Finally it should be removed
-							* ==========================================================================
-							*/
-						   /*angular.forEach(data.data,function(value,key){
-								 $scope.employeeList.push(value);
-								 $rootScope.localCache.empList.push(value);
-						   });
-					 	   $scope.truncateurl();
-					 	   $scope.storeManagerNames();	 	  	
-					 	   $scope.tableOptions.listData = $scope.employeeList;*/
-					   }
-				 });
+					   }  
+					   
+				 });				 
 				 $rootScope.localCache.isEmpAPINeeded = false;
 			 }
 			 else
 			 {
-				 console.log('In local cache');
+				 
 				 $scope.employeeList = $rootScope.localCache.empList;
 				 $scope.tableOptions.listData = $scope.employeeList;
 			 }

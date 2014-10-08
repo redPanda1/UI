@@ -13,10 +13,10 @@
  * @param $window
  * @param CurrentTimeStamp
  * @param $timeout
+ * @param CommentDate
  */
-//function employeeDetailController($scope, USDateFormat, IsoDateFormat, $rootScope, $modal, $http, $location, $cookieStore, $filter, fileReader, $window, CurrentTimeStamp, $timeout) {
-angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat','IsoDateFormat', 
- function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat,IsoDateFormat){
+angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat','IsoDateFormat','CommentDate' ,
+ function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat,IsoDateFormat,CommentDate){
     //Rootscope variables used to select the Accordion menus.
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Employee';
@@ -45,7 +45,15 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     $scope.isHireDateSetinServer = false;
     $scope.isTermDateSetinServer = false;
     $scope.isUpdateError = false;
+	$scope.commentText = "";
+	$scope.commentLocalStoreage = [];
+	$scope.isFilterEnabled = true;
 
+	$scope.createModeImage =''
+    
+    $scope.disableFilter =function(){
+    	$scope.isFilterEnabled = false;
+    }
     /** 
      * Date validation for start and end date, start date should not be greater than end date
      */
@@ -357,6 +365,20 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
             $scope.EmployeeDetail.data.contactNumbers = [];                  
         }
+        if ($scope.EmployeeDetail.data.comments == null || $scope.EmployeeDetail.data.comments.length === 0) {
+			$scope.EmployeeDetail.data.comments = [];
+		}else{
+				angular.forEach($scope.EmployeeDetail.data.comments, function(data, key) {
+					if (data.postedOn != null)
+					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+				    if (data.postedBy != null){
+				    	if (data.postedBy['thumbUrl'] == null || data.postedBy['thumbUrl'] == "")
+				    		data.postedBy['thumbUrl'] = $rootScope.defaultUserImage;
+				    }
+				});
+				console.log($scope.EmployeeDetail.data.comments )
+		}
+
         if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0) {
             $scope.EmployeeDetail.data.timeOff = [{
                 'type': 'Vacation',
@@ -397,11 +419,45 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         $scope.isError = false;
     }
     
-    
-    
-    
-    
-    
+    /**
+     * For saving live comments
+     */
+     $scope.saveCommentMessage = function() {
+     	$scope.isFilterEnabled = true;
+     	$scope.clonedComments = ''
+		 if ($scope.commentText === "")
+			return;
+		var currentdate = new Date();
+		var currentISO = currentdate.toISOString();
+		//var commnetsTime = CommentDate.convertCommentDate(currentISO)
+		var text = $scope.commentText;
+		angular.copy($scope.commentText, $scope.clonedComments)
+		console.log( $scope.clonedComments)
+		$scope.commentText = "";
+		var seq = 0, len = $scope.EmployeeDetail.data.comments.length;
+		if (len === 0) {
+			seq = 0;
+		}
+		else {
+			seq = len; 
+		}
+		 $scope.EmployeeDetail.data.comments.push({
+				"seqNo": seq,
+				"postedBy": {
+					"thumbUrl": $rootScope.defaultUserImage,
+					"name":     $rootScope.currentUserName,
+					"id"  :     $rootScope.currentUserId
+				},
+				"postedOn":currentISO,
+				"replyTo": 0,
+				"docRef": 0,
+				"text": text
+		});
+		angular.forEach($scope.EmployeeDetail.data.comments, function(data, key) {
+					if (data.postedOn != null)
+					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+				});
+	 }
     
     /**
      * =====================================================================================================
@@ -423,6 +479,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                 "isContractor": false,
                 "departmentId": "",
                 "job": "",
+                "comments":[],
                 "timeOff": []
             }
         }
@@ -464,7 +521,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	                $rootScope.empDetailCache.id = data.data.id;
 	                
 	                //Cloned Object for usin in 304 modified scenario
-	                $scope.rootscopeobj = {};
+	                $scope.rootscopeobj = {};	                
 	                angular.copy($scope.EmployeeDetail,$scope.rootscopeobj,true);
 	                $rootScope.empDetailCache.data = $scope.rootscopeobj;
 	                
@@ -480,8 +537,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	                 * Code Used for Local Testing. Finally It should be removed
 	                 * ============================================================
 	                 */
-	
-	                 /*$scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
+					
+	                 $scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
 		             $rootScope.empDetailCache[$cookieStore.get("detailId")] = $scope.EmployeeDetail;
 					 $scope.truncateurl();
 	                 $scope.mapOptions = $scope.EmployeeDetail;
@@ -510,7 +567,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	                    $scope.contactTypeValue[0] = "email";
 	                    $scope.contactTypeDetails[0] = "";
 	                }
-					$scope.formatMapData();*/
+					$scope.formatMapData();
+					$scope.successCalls();
 		           
 	            });
 	    	}
@@ -993,6 +1051,20 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         	if(data.id == $scope.EmployeeDetail.data.managerId)
         		$scope.EmployeeDetail.data.managerName = data.name;
         });
+        if ($scope.EmployeeDetail.data.comments.length>0){
+        	angular.forEach($scope.EmployeeDetail.data.comments,function(data,key){
+				if (data.tempTime != null)
+						delete data.tempTime;
+				if(data.postedBy != null)
+				{
+					if (data.postedBy.thumbUrl)
+						delete data.postedBy.thumbUrl;
+					if (data.postedBy.name)
+						delete data.postedBy.name;
+				}
+        });
+        }
+        
 
     }
 
@@ -1022,6 +1094,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             $scope.isImageuploaded = false;
             console.log(data);
             $scope.EmployeeDetail.data.photoId = data.data.resourceId;
+            $scope.EmployeeDetail.data.thumbUrl = data.data.thumbUrl;
+            $scope.EmployeeDetail.data.photoUrl = data.data.contentUrl;
             $rootScope.localCache.isEmpAPINeeded = true;
         }).error(function(data, status) {
             console.log("Imaged Update Failed");

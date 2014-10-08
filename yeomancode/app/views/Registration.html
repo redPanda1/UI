@@ -1,0 +1,72 @@
+<div ng-controller="LoginRegistrationController">
+	<div class="container-fluid registration login-style">
+			<div class="row">			
+				<div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+					<!-- <div class="logo-container">
+						<span class="logo"></span> 
+						<span class="logo-caption">Red Panda</span>
+					</div> -->
+					<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert()"><span ng-bind="alert.message"></span></alert>
+					<div class="registrationHeading">
+						<!--<p class="logo-container"><span class="logo"></span> </p>
+						<p>Dont't have't Account?</p>
+						<p class="reg-now">Register Now</p>-->
+					</div>
+
+					<div class="login-container">
+						<div class="register-header">CREATE YOUR ACCOUNT </div>
+						<div class="register-body">
+							<form novalidate class="form-horizontal" role="form">
+								<div class="form-group">
+									<input type="text" placeholder="Your Name" ng-model="regName" class="form-control" />
+								</div>
+								
+								<div class="form-group">
+									<input type="text" placeholder="E-mail" ng-model="regEmail" class="form-control" />
+								</div>
+								
+								<div class="form-group">
+									<input type="text" placeholder="Company Name" ng-model="regCompName" class="form-control" />
+								</div>
+								<div class="form-group">
+									<div class="input-group">	
+								      <input class="form-control" ng-model="regPreUrl" placeholder="Preferred url">
+								      <div class="input-group-addon">.redPandaApp.com</div>
+								    </div>
+								</div>
+								<div class="form-group agree">
+									<input type="checkbox" class="form-control" ng-model="termsConditions"/><div>I agree to Terms of Use</div> 
+								</div>
+								<div class="form-group">
+									<button type="submit" class="create-account" ng-click = "createAccount()">Create Account</button>
+								</div>
+								<div class="form-group existing-account">
+									<span class="username-label"> or use your existing credentials </span>
+									<span class="line"></span>
+								</div>
+								<div class="form-group gplus">
+									<a ng-click="createAccount('googleplus')"><i class="fa fa-google-plus"></i> 
+									<span class="credentials"> Register via Google </span></a>
+								</div>
+								<div class="form-group ln">
+									<a ng-click="createAccount('linkedin')">
+									<i class="fa fa-linkedin"></i>
+									<span class="credentials">Register via LinkedIn </span></a>
+								</div>
+								<div class="form-group fb">
+									<a ng-click="createAccount('facebook')">
+									<i class="fa fa-facebook"></i>
+									<span class="credentials"> Register via Facebook </span></a>
+								</div>
+								<div class="form-group">
+									<span class="forget-pw" ng-click="forgetPassword()">Forgot Password?</span>
+									<span class="login pull-right" ng-click="login()">Login</span>
+								</div>
+
+							</form>	
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>				
+</div>

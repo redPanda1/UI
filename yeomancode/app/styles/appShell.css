@@ -632,7 +632,7 @@ ul
 }
 .inputAddon
 {
-	width: 80% !important;
+	width: 78% !important;
 }
 
 /* box container layout common style ends */
@@ -763,13 +763,10 @@ body {
 	background-color: white;
 	border: 1px solid #DBDEE0;
 }
-.comments-container
-{
-	height: 80px;
-}
+
 .attachementContainer
 {
-	padding: 0px 10px 10px 10px !important;
+	padding: 0px 15px 10px 15px !important;
 }
 @media (max-width: 767px)
 {
@@ -781,7 +778,10 @@ body {
 {
 	margin-right:29px!important;
 }
-
+.fa-times
+{
+	cursor: pointer;
+}
 .labelcaption
 {
 	text-align: right;
@@ -803,6 +803,8 @@ body {
 	height: 17px;
 	font-size: 12px;
 	padding: 0px !important;
+	text-align:center;
+	
 }
 .currency-select .dropdown
 {
@@ -848,4 +850,12 @@ background-image: url('../images/noPhoto_Icon120.png');
 {
 	position:relative;
 	z-index:2;
+}
+.default-comments-image{
+	background-image: url('../images/noPhoto_Icon40.png');
+	height:50px;
+	width:50px;
+	background-repeat:no-repeat;
+	display:inline-block;
+	
 }

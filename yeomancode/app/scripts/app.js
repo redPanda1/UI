@@ -84,7 +84,24 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
     $rootScope.calledFromContractDetail = false;
     $rootScope.empDetailCache = {};
     loginSucccess                 = false;
-    
+    $rootScope.deleteCustomerContract = false;
+	$rootScope.defaultUserImage = ""; 
+	$rootScope.currentUserName  = ""; 
+	$rootScope.currentUserId    = ""; 
+	
+	/*if ($rootScope.defaultUserImage  == ""){
+    if($cookieStore.get("defaultUserImage") != null)
+		  $rootScope.defaultUserImage = $cookieStore.get("defaultUserImage");
+	}
+	if ($rootScope.currentUserId  == ""){
+    if($cookieStore.get("currentUserId") != null)
+		  $rootScope.currentUserId = $cookieStore.get("currentUserId");
+	}
+	if ($rootScope.currentUserName  == ""){
+    if($cookieStore.get("currentUserName") != null)
+		  $rootScope.currentUserName = $cookieStore.get("currentUserName");
+	}*/
+	
 	if ($cookieStore.get("enableApplication") == null)
 	{
 		$cookieStore.put("enableApplication",false);
@@ -325,7 +342,42 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
                 "commentsExist": false,
                 "attachmentsExist": false,
                 "deleted": false
-            }]
+            }],
+             "comments": [
+            {
+                "seqNo": 0,
+                "postedBy": {
+                    "thumbUrl": "img/sh_photo50.png",
+                    "name": "ggggg title"
+                },
+                "postedOn": "2014-09-11T22:33:39.212Z",
+                "replyTo": 0,
+                "docRef": 0,
+                "text": "This is another comment"
+            },
+            {
+                "seqNo": 1,
+                "postedBy": {
+                    "thumbUrl": "img/sh_photo50.png",
+                    "name": "ggggg title"
+                },
+                "postedOn": "2014-09-11T21:33:39.212Z",
+                "replyTo": 0,
+                "docRef": 0,
+                "text": "This is a comment"
+            },
+            {
+                "seqNo": 1,
+                "postedBy": {
+                    "thumbUrl": "img/sh_photo50.png",
+                    "name": "Nisha Navlakha"
+                },
+                "postedOn": "2014-09-25T03:33:39.212Z",
+                "replyTo": 0,
+                "docRef": 0,
+                "text": "And This is a third comment with lots and lots of text going on over several lines just to test that we are flexing the box sizes correctly. The test here should appear and the date should be at the end. A comment for teh people by the people and with teh people is the very best way to test this functionality - thank you"
+            }
+        ]
         }
     };
     //For Creating new Employee Detail this Employee Id can be used
@@ -374,7 +426,42 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
                     "type": "vacation",
                     "allowance": 20,
                     "taken": 5
-                }]
+                }],
+				 "comments": [
+					{
+						"seqNo": 0,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-29T14:36:16Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is another comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-11T21:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is a comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "Nisha Navlakha"
+						},
+						"postedOn": "2014-09-28T03:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "And This is a third comment with lots and lots of text going on over several lines just to test that we are flexing the box sizes correctly. The test here should appear and the date should be at the end. A comment for teh people by the people and with teh people is the very best way to test this functionality - thank you"
+					}
+				]
             }
         },
         "53ac2791e4b03340b6de4948": {
@@ -417,7 +504,42 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
                     "type": "vacation",
                     "allowance": 20,
                     "taken": 5
-                }]
+                }],
+                "comments": [
+					{
+						"seqNo": 0,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-29T14:36:16Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is another comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-11T21:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is a comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "Nisha Navlakha"
+						},
+						"postedOn": "2014-09-28T03:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "And This is a third comment with lots and lots of text going on over several lines just to test that we are flexing the box sizes correctly. The test here should appear and the date should be at the end. A comment for teh people by the people and with teh people is the very best way to test this functionality - thank you"
+					}
+				]
             }
         },
         "53ac27b0e4b03340b6de4949": {
@@ -457,7 +579,42 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
                     "type": "vacation",
                     "allowance": 20,
                     "taken": 5
-                }]
+                }],
+                "comments": [
+					{
+						"seqNo": 0,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-29T14:36:16Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is another comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-11T21:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is a comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "Nisha Navlakha"
+						},
+						"postedOn": "2014-09-28T03:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "And This is a third comment with lots and lots of text going on over several lines just to test that we are flexing the box sizes correctly. The test here should appear and the date should be at the end. A comment for teh people by the people and with teh people is the very best way to test this functionality - thank you"
+					}
+				]
             }
         },
         "53b435aa3c01cbf76dd3d796": {
@@ -499,7 +656,42 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
                     "type": "vacation",
                     "allowance": 20,
                     "taken": 5
-                }]
+                }],
+                "comments": [
+					{
+						"seqNo": 0,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-29T14:36:16Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is another comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-11T21:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is a comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+							"thumbUrl": "/data/resources/thumbnail.53b2fd2de4b0123558f41fe5.jpeg",
+							"name": "Nisha Navlakha"
+						},
+						"postedOn": "2014-09-28T03:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "And This is a third comment with lots and lots of text going on over several lines just to test that we are flexing the box sizes correctly. The test here should appear and the date should be at the end. A comment for teh people by the people and with teh people is the very best way to test this functionality - thank you"
+					}
+				]
             }
         }
     };
@@ -706,7 +898,22 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
             "deleted": true
         }]
     }
-
+	$rootScope.login = {
+    "success": true,
+    "total": 1,
+    "data": {
+        "clientUrl": "aswinkumars",
+        "userId": "aswinkumar.s@npcompete.net",
+        "userName": "Aswinkumar S",
+        "companyId": "542f9e62e4b092153ee0970e",
+        "companyName": "aswinkumars",
+        "language": "en",
+        "stdHours": 40,
+        "themeColor": "#a91e22",
+        "themeTextColor": "#ffffff",
+        "themeIconUrl": "http://redpandaalpha.com/resources/rpLogoW120.png"
+    }
+}
     $rootScope.ContractDetailData = {
     "success": true,
     "total": 1,
@@ -722,18 +929,42 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
         "value": 0,
         "managerName":"Peter Blake",
         "budgetedHours": 67,
-        "assignedData": [
-  //          {"employeeId": "53ff7a9ae4b07d7a503a6b28",
-//"employeeName": "Ginsberg Allen",
-///"isBlocked": false,
-//"rateAmt": 22,
-//"rateCur": "EUR",
-//"thumbUrl": "/resources/redpanda/thumbnail.540aa340e4b0edb4867bedd9.jpg"
-//}
-        ],
-        "activityData": [
-            
-        ]
+        "assignedData": [],
+        "activityData": [],
+        "comments": [
+					{
+						"seqNo": 0,
+						"postedBy": {
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-29T14:36:16Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is another comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+
+							"name": "ggggg title"
+						},
+						"postedOn": "2014-09-11T21:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "This is a comment"
+					},
+					{
+						"seqNo": 1,
+						"postedBy": {
+
+							"name": "Nisha Navlakha"
+						},
+						"postedOn": "2014-09-28T03:33:39.212Z",
+						"replyTo": 0,
+						"docRef": 0,
+						"text": "And This is a third comment with lots and lots of text going on over several lines just to test that we are flexing the box sizes correctly. The test here should appear and the date should be at the end. A comment for teh people by the people and with teh people is the very best way to test this functionality - thank you"
+					}
+				]
     }
 }
 
@@ -905,22 +1136,8 @@ angular.module('redPandaApp').directive('isStdtimeTwodp', function() {
                 var val = event.target.value;
                 if (val == '')
                     return;
-                var isdotPresent = false;
-                for (var i = 0; i < event.target.value.length; i++) {
-                    if (event.target.value[i] === '.') {
-                        isdotPresent = true;
-                        //If current position plus 2 is not equal to length of the value append 0 at the end.
-                        //To add 0 at the end for 2dp numbers
-                        if ((i + 2) != (event.target.value.length + 1)) {
-                            scope.EmployeeDetail.data.stdCostAmt = event.target.value + "0";
-                            scope.$apply();
-                        }
-                    }
-                }
-                if (!isdotPresent) {
-                    scope.EmployeeDetail.data.stdCostAmt = event.target.value + ".00";
-                    scope.$apply();
-                }
+                scope.EmployeeDetail.data.stdCostAmt = Number(event.target.value).toFixed(2);
+                scope.$apply();
             });
 
         }
@@ -954,22 +1171,8 @@ angular.module('redPandaApp').directive('hourlyRate', function() {
                 var val = event.target.value;
                 if (val == '')
                     return;
-                var isdotPresent = false;
-                for (var i = 0; i < event.target.value.length; i++) {
-                    if (event.target.value[i] === '.') {
-                        isdotPresent = true;
-                        //If current position plus 2 is not equal to length of the value append 0 at the end.
-                        //To add 0 at the end for 2dp numbers
-                        if ((i + 2) != (event.target.value.length + 1)) {
-                            ctrl.$setViewValue(event.target.value + "0");
-                            ctrl.$render();
-                        }
-                    }
-                }
-                if (!isdotPresent) {
-                    ctrl.$setViewValue(event.target.value + ".00");
-                    ctrl.$render();
-                }
+                ctrl.$setViewValue(Number(event.target.value).toFixed(2));
+                ctrl.$render();
             });
 
         }
@@ -1006,23 +1209,8 @@ angular.module('redPandaApp').directive('isValue', function() {
                 var val = event.target.value;
                 if (val == '')
                     return;
-                var isdotPresent = false;
-                for (var i = 0; i < event.target.value.length; i++) {
-                    if (event.target.value[i] === '.') {
-                        isdotPresent = true;
-
-                        //If current position plus 2 is not equal to length of the value append 0 at the end.
-                        //To add 0 at the end for 2dp numbers
-                        if ((i + 2) != (event.target.value.length + 1)) {
-                            scope.contractDetail.data.value = event.target.value + "0";
-                            scope.$apply();
-                        }
-                    }
-                }
-                if (!isdotPresent) {
-                    scope.contractDetail.data.value = event.target.value + ".00";
-                    scope.$apply();
-                }
+                scope.contractDetail.data.value = Number(event.target.value).toFixed(2);
+                scope.$apply();
             });
         }
     };
@@ -1057,23 +1245,8 @@ angular.module('redPandaApp').directive('twoDecimalPoints', function() {
                 var val = event.target.value;
                 if (val == '')
                     return;
-                var isdotPresent = false;
-                for (var i = 0; i < event.target.value.length; i++) {
-                    if (event.target.value[i] === '.') {
-                        isdotPresent = true;
-
-                        //If current position plus 2 is not equal to length of the value append 0 at the end.
-                        //To add 0 at the end for 2dp numbers
-                        if ((i + 2) != (event.target.value.length + 1)) {
-                            scope.contractDetail.data.budgetedHours = event.target.value + "0";
-                            scope.$apply();
-                        }
-                    }
-                }
-                if (!isdotPresent) {
-                    scope.contractDetail.data.budgetedHours = event.target.value + ".00";
-                    scope.$apply();
-                }
+                scope.contractDetail.data.budgetedHours = Number(event.target.value).toFixed(2);
+                scope.$apply();
             });
         }
     };
@@ -1107,23 +1280,8 @@ angular.module('redPandaApp').directive('isOvertimeTwodp', function() {
                 var val = event.target.value;
                 if (val == '')
                     return;
-                var isdotPresent = false;
-                for (var i = 0; i < event.target.value.length; i++) {
-                    if (event.target.value[i] === '.') {
-                        isdotPresent = true;
-
-                        //If current position plus 2 is not equal to length of the value append 0 at the end.
-                        //To add 0 at the end for 2dp numbers
-                        if ((i + 2) != (event.target.value.length + 1)) {
-                            scope.EmployeeDetail.data.otCostAmt = event.target.value + "0";
-                            scope.$apply();
-                        }
-                    }
-                }
-                if (!isdotPresent) {
-                    scope.EmployeeDetail.data.otCostAmt = event.target.value + ".00";
-                    scope.$apply();
-                }
+                scope.EmployeeDetail.data.otCostAmt = Number(event.target.value).toFixed(2);
+                scope.$apply();
             });
         }
     };
@@ -1316,3 +1474,75 @@ angular.module('redPandaApp').service('USDateFormat', function() {
         return USDate;
     }
 });
+angular.module('redPandaApp').service('CommentDate', function() {
+
+	this.ordinal_suffix_of = function(i) {
+			var j = i % 10,
+				k = i % 100;
+			if (j == 1 && k != 11) {
+				return i + "st";
+			}
+			if (j == 2 && k != 12) {
+				return i + "nd";
+			}
+			if (j == 3 && k != 13) {
+				return i + "rd";
+			}
+			return i + "th";
+		}
+	this.convertCommentDate = function(date){	
+		
+		if (date == '')
+			return;
+		var SecondsPerMinute = 60;
+		var MinutesPerHour = 60;
+		var SecondsPerHour = MinutesPerHour * SecondsPerMinute;
+		var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+		var months = [ "January", "February", "March", "April", "May", "June",
+						"July", "August", "September", "October", "November", "December" ];
+		var comment_date = new Date(date);
+		var hours = comment_date.getHours();
+		var minutes = comment_date.getMinutes();
+		var meridiem = hours >= 12 ? 'pm' : 'am';
+		hours = hours % 12;
+		hours = hours ? hours : 12; // the hour '0' should be '12'
+		hours = hours < 10 ? '0'+ hours : hours;
+		minutes = minutes < 10 ? '0'+ minutes : minutes;
+		var day_date = comment_date.getDate();
+		day_date = this.ordinal_suffix_of(day_date);
+		var comment_time = comment_date.getTime();
+		var current_date = new Date();
+		var current_time = current_date.getTime();
+		var diff = Math.floor((current_time - comment_time)/1000);
+		if (diff < 1 * MinutesPerHour)
+		{
+		  return diff <= 1 ? "one second ago" : diff + " seconds ago";
+		}
+		if (diff < 2 * MinutesPerHour)
+		{
+		  return "a minute ago";
+		}
+		if (diff < 45 * MinutesPerHour)
+		{
+		  return Math.floor(diff/60) + " minutes ago";
+		}
+		if (diff < 90 * MinutesPerHour)
+		{
+		  return "an hour ago";
+		}
+		if (diff < 24 * SecondsPerHour)
+		{
+		  return Math.floor(diff/3600) + " hours ago";
+		}
+		if (diff < 48 * SecondsPerHour)
+		{
+		  return "yesterday";
+		}
+		else 
+		{
+		  return days[comment_date.getDay()]+" "+months[comment_date.getMonth()]+" "+day_date+" at "+hours+":"+minutes+""+meridiem;
+		}
+	}
+	});
+
+

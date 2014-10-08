@@ -15,8 +15,8 @@
  * @param $interval
  * @param FilterDeleted
  */
- angular.module('redPandaApp').controller('customerDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter','$anchorScroll', 'CurrentTimeStamp','$timeout','FilterDeleted','USDateFormat', 
- 	function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter,$anchorScroll,  CurrentTimeStamp,$timeout,FilterDeleted,USDateFormat){ 
+ angular.module('redPandaApp').controller('customerDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter','$anchorScroll', 'CurrentTimeStamp','$timeout','FilterDeleted','USDateFormat','CommentDate',
+ 	function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter,$anchorScroll,  CurrentTimeStamp,$timeout,FilterDeleted,USDateFormat,CommentDate){ 
 
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Customer'; //Rootscope variables used to select the Accordion menus.	
@@ -45,6 +45,7 @@
     var activeContactList = [];
     var activeContractList = [];
     var timeInterval = '';
+    $scope.commentText = "";
     $rootScope.calledFromCustomerDetail = true;
 
     $('select[name="colorpicker"]').simplecolorpicker({
@@ -202,13 +203,13 @@
         rowTemplate: '<div ng-dblclick="openContactInfo(row,row.rowIndex)" ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}"><div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div><div ng-cell></div></div>',
         columnDefs: [{
             field: 'name',
-            width: "89%",
+            width: "82%",
             displayName: 'Contacts'
         }, {
             field: '',
             displayName: '',
             sortable: false,
-            width: "11%",
+            width: "18%",
             cellTemplate: '<div class="ngCellText custDetail-contract-ButContaniner"><button class="btn btn-default btn-sm" ng-click="deleteContactList(row,row.rowIndex)" ><i class="fa fa-times"></i></button></div>',
             headerCellTemplate: contactHeaderCell
         }]
@@ -227,7 +228,7 @@
         }, {
             field: 'title',
             displayName: 'Description',
-            width: "20%"
+            width: "18%"
         }, {
             field: '',
             displayName: 'Dates',
@@ -242,7 +243,7 @@
         }, {
             field: 'managerName',
             displayName: 'Contract Manager',
-            width: "20%"
+            width: "19%"
         }, {
             field: '',
             displayName: '',
@@ -253,12 +254,50 @@
             field: '',
             displayName: '',
             sortable: false,
-            width: "5%",
+            width: "8%",
             cellTemplate: '<div class="ngCellText custDetail-contract-ButContaniner"><button class="btn btn-default btn-sm" ng-click="deleteContractList(row, row.rowIndex)" ><i class="fa fa-times"></i></button></div>',
             headerCellTemplate: myHeaderCellTemplate
         }, ]
     };
+	/**
+     * For saving live comments
+     */
+     $scope.saveCommentMessage = function() {
+		 if ($scope.commentText === "")
+			return;
+		var currentdate = new Date();
+		var currentISO = currentdate.toISOString();
+		var text = $scope.commentText;
+		$scope.commentText = "";
+		console.log($scope.CustomerDetail)
+		if ($scope.CustomerDetail.data.comments == null)
+			$scope.CustomerDetail.data.comments =[]
+		var seq = 0, len = $scope.CustomerDetail.data.comments.length;
+		if (len === 0) {
+			seq = 0;
+		}
+		else {
+			seq = len; 
+		}
+		 $scope.CustomerDetail.data.comments.push({
+				"seqNo": seq,
+				"postedBy": {
+					"thumbUrl": $rootScope.defaultUserImage,
+					"name": $rootScope.currentUserName,
+					"id"  :     $rootScope.currentUserId
+				},
+				"postedOn":currentISO,
+				"replyTo": 0,
+				"docRef": 0,
+				"text": text
+		});
+		//console.log($scope.CustomerDetail.data.comments);
+		angular.forEach($scope.CustomerDetail.data.comments, function(data, key) {
+				if (data.postedOn != null)
+					data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+			});
 
+	 }
     /**
      * ===================================================================================
      * Function used the delete the contract list from the table.
@@ -375,12 +414,12 @@
     	            "success": true,
     	            "total": 1,
     	            "data": {
-    	                "customerId": null,
     	                "customerName": "",
     	                "contactList": [],
     	                "contactIds": [],
     	                "contractList": [],
     	                "contractIds": [],
+    	                "comments": [],
     	                "color": "#009999"
     	            }
     	        }
@@ -390,6 +429,8 @@
     	            $rootScope.fromCustomer = false;
     	            //$scope.CustomerDetail.data.contractList = FilterDeleted.filter($scope.CustomerDetail.data.contractList);
     	            //$scope.contractTableData = $scope.CustomerDetail.data.contractList;
+    	            $scope.ClonedCustomerDetail.data = {}
+    	            $scope.ClonedCustomerDetail.data['customerName'] = $scope.CustomerDetail.data.customerName;
     	            
     	           //In get we need to filter the deleted datas of the contractList
     	            var tempContractList = [];
@@ -400,16 +441,20 @@
     	            $scope.CustomerDetail.data.contractList = tempContractList;
     	            $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
     	            
-    	            
+    	            if ($rootScope.deleteCustomerContract == true){
+    	            	$scope.CustomerDetail.data.contractList.splice($rootScope.rowIndex, 1);
+    	            }
     	            $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
     	            $scope.contactTableData = $scope.CustomerDetail.data.contactList;
     	            $scope.disabledSave = false;
+    	            
 
     	        }
 
     	        $scope.disableDelete = true;
     	        $scope.showEmptyContactDetail = true;
     	        $scope.mapOptions = $scope.CustomerDetail;
+    	        $scope.CustomerDetail.data.comments = []
     	       
 
     	    } else {
@@ -422,6 +467,8 @@
     	                $scope.CustomerDetail = {};
     	                //angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);
     	                $scope.CustomerDetail = $rootScope.cutomerContractCopy;
+          	            $scope.ClonedCustomerDetail.data = {}
+	    	            $scope.ClonedCustomerDetail.data['customerName'] = $scope.CustomerDetail.data.customerName;
     	                $scope.mapOptions = $scope.CustomerDetail;
     	                $scope.needMapCall.callMap = true;
     	                $scope.customerHeading = $scope.CustomerDetail.data.customerName;
@@ -432,7 +479,9 @@
     	                $('select[name="colorpicker"]').simplecolorpicker('selectColor', $scope.CustomerDetail.data.color);
     	                $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
     	                $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-    	                
+    	                if ($rootScope.deleteCustomerContract == true){
+    		            	$scope.CustomerDetail.data.contractList.splice($rootScope.rowIndex, 1);
+	    	            }
     	                //In get we need to filter the deleted datas of the contractList
     	                var tempContractList = [];
     	                angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
@@ -470,7 +519,20 @@
     	                    });
     	                    $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
     	                    $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-    	                    
+    	                    if ($scope.CustomerDetail.data.comments == null || $scope.CustomerDetail.data.comments.length === 0) {
+								$scope.CustomerDetail.data.comments = [];
+							}
+							else{
+						  		angular.forEach($scope.CustomerDetail.data.comments, function(data, key) {
+						  			if (data.postedOn != null)
+										data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+									if (data.postedBy != null){
+										if (data.postedBy['thumbUrl'] == null || data.postedBy['thumbUrl'] == "")
+											data.postedBy['thumbUrl'] = $rootScope.defaultUserImage;
+										}
+								});
+						  	}
+							
     	                   //In get we need to filter the deleted datas of the contractList
     	                    var tempContractList = [];
     	                    angular.forEach($scope.CustomerDetail.data.contractList,function(data,key){
@@ -720,6 +782,21 @@
                 $scope.CustomerDetail.data.addressStateCode = $scope.CustomerDetail.data.addressStateCode.code;
             if ($scope.CustomerDetail.data.addressISOCountry != null)
                 $scope.CustomerDetail.data.addressISOCountry = $scope.CustomerDetail.data.addressISOCountry.code;
+                
+            if ($scope.CustomerDetail.data.comments.length>0){
+				angular.forEach($scope.CustomerDetail.data.comments,function(data,key){
+					if (data.tempTime != null)
+						delete data.tempTime;
+					if(data.postedBy != null)
+					{
+						if (data.postedBy.thumbUrl)
+							delete data.postedBy.thumbUrl;
+						if (data.postedBy.name)
+							delete data.postedBy.name;
+					}
+
+				});
+    	    }
 
             var postData = $scope.CustomerDetail.data;
             var postTime = CurrentTimeStamp.postTimeStamp()
@@ -838,7 +915,7 @@
      * ======================================================================================================
      */
 
-    $scope.openContactInfo = function(obj, index) {
+    $scope.openContactInfo = function(obj,index) {
         $rootScope.contactRowIndex = index;
         angular.copy($scope.CustomerDetail, $rootScope.copyCustomerDetails, true);
         if (obj != null)
