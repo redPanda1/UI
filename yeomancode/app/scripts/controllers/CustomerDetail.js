@@ -47,6 +47,7 @@
     var timeInterval = '';
     $scope.commentText = "";
     $rootScope.calledFromCustomerDetail = true;
+    $rootScope.currentCustomerId = "";
 
     $('select[name="colorpicker"]').simplecolorpicker({
         picker: true
@@ -388,6 +389,7 @@
         angular.copy($scope.CustomerDetail, $rootScope.cutomerContractCopy, true);
         $rootScope.fromCustomer = true;
         if (row != null) {
+             $rootScope.currentCustomerId = $scope.CustomerDetail.data.id;
             $cookieStore.put("contractId", row.entity.id);
             $rootScope.rowIndex = rowIndex;
         } else {

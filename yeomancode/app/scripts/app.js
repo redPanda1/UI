@@ -31,26 +31,6 @@ angular
          templateUrl:'views/EmployeeDetail.html'})
         .when('/CustomerDetail',{
          templateUrl:'views/CustomerDetail.html'})
-         /***
-         // For local testing =======================//
-         .when('/',{
-         templateUrl:'/dist/views/HomePage.html'
-       }).when('/Employee',{
-         templateUrl:'/dist/views/Employee.html'})
-     .when('/Home',{
-         templateUrl:'/dist/views/HomePage.html'})
-       .when('/Customer',{
-         templateUrl:'/dist/views/Customer.html'})
-       .when('/Contract',{
-         templateUrl:'/dist/views/Contract.html'})
-       .when('/ContractDetail',{
-         templateUrl:'/dist/views/ContractDetail.html'})
-        .when('/EmployeeDetail',{
-         templateUrl:'/dist/views/EmployeeDetail.html'})
-        .when('/CustomerDetail',{
-         templateUrl:'/dist/views/CustomerDetail.html'})
-		// End of local testing block =======================//
-		**/
       .otherwise({
         redirectTo: '/login'
       });
@@ -89,18 +69,18 @@ angular.module('redPandaApp').controller('maincontroller', ['$scope','$location'
 	$rootScope.currentUserName  = ""; 
 	$rootScope.currentUserId    = ""; 
 	
-	/*if ($rootScope.defaultUserImage  == ""){
-    if($cookieStore.get("defaultUserImage") != null)
+	if ($rootScope.defaultUserImage  == ""){
+		if($cookieStore.get("defaultUserImage") != null)
 		  $rootScope.defaultUserImage = $cookieStore.get("defaultUserImage");
 	}
 	if ($rootScope.currentUserId  == ""){
-    if($cookieStore.get("currentUserId") != null)
-		  $rootScope.currentUserId = $cookieStore.get("currentUserId");
+		if($cookieStore.get("currentUserId") != null)
+			$rootScope.currentUserId = $cookieStore.get("currentUserId");
 	}
 	if ($rootScope.currentUserName  == ""){
-    if($cookieStore.get("currentUserName") != null)
-		  $rootScope.currentUserName = $cookieStore.get("currentUserName");
-	}*/
+		if($cookieStore.get("currentUserName") != null)
+			$rootScope.currentUserName = $cookieStore.get("currentUserName");
+	}
 	
 	if ($cookieStore.get("enableApplication") == null)
 	{

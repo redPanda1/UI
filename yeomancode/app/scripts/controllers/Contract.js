@@ -93,8 +93,8 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     $scope.formatJSONforDownload = function() {
         if ($scope.ContractList == null)
             return;
-        console.log($scope.ContractList);
-        $scope.formattedContractList = angular.copy($scope.ContractList);
+        
+        $scope.formattedContractList = angular.copy($scope.tableOptions.listData);
     }
     
     /**
@@ -268,10 +268,10 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         }).error(function(data, status) {
             console.log("No data found for the contract currencies");
             //Code used for local testing and it should be removed finally.
-            $scope.localcurrencies       = {"success":true,"total":1,"data":[{"code":"USD","name":"US Dollar","symbol":"$","decimals":2.0},{"code":"CAD","name":"Canadian Dollar","symbol":"C$","decimals":2.0},{"code":"MXD","name":"Mexican Dollar","symbol":"MX$","decimals":2.0},{"code":"JPY","name":"Japanese Yen","symbol":"Â¥","decimals":0.0},{"code":"GBP","name":"British Pound","symbol":"Â£","decimals":2.0},{"code":"EUR","name":"Euro","symbol":"â‚¬","decimals":2.0},{"code":"ZAR","name":"Rand","symbol":"R","decimals":2.0},{"code":"INR","name":"Rupee","symbol":"â‚¹","decimals":2.0}]}		
+            /*$scope.localcurrencies       = {"success":true,"total":1,"data":[{"code":"USD","name":"US Dollar","symbol":"$","decimals":2.0},{"code":"CAD","name":"Canadian Dollar","symbol":"C$","decimals":2.0},{"code":"MXD","name":"Mexican Dollar","symbol":"MX$","decimals":2.0},{"code":"JPY","name":"Japanese Yen","symbol":"Â¥","decimals":0.0},{"code":"GBP","name":"British Pound","symbol":"Â£","decimals":2.0},{"code":"EUR","name":"Euro","symbol":"â‚¬","decimals":2.0},{"code":"ZAR","name":"Rand","symbol":"R","decimals":2.0},{"code":"INR","name":"Rupee","symbol":"â‚¹","decimals":2.0}]}		
 			$scope.currencies            = $scope.localcurrencies.data;
 			$rootScope.localCache.currencies = $scope.currencies;
-			ContractListApiCall();
+			ContractListApiCall();*/
         });
     } else {
         $scope.currencies = $rootScope.localCache.currencies;

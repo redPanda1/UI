@@ -52,7 +52,7 @@ function($scope,$location,$http,$window, $rootScope,$cookieStore)
     {          
           var str = "";
           if($scope.userId != null && $scope.userId != "")
-             str += "userId="+$scope.userId;
+             str += "userID="+$scope.userId;
           if($scope.password != null && $scope.password != "")
              str += "&password="+$scope.password;               
           return str;   
@@ -110,7 +110,7 @@ function($scope,$location,$http,$window, $rootScope,$cookieStore)
                "url": "/api/login?"+formattedData
             }).success(function(data){ 
                //Current user id                
-               $cookieStore.put("currentUserId",data.data.companyId);
+               $cookieStore.put("currentUserId",data.data.contactId);
                $rootScope.currentUserId = $cookieStore.get("currentUserId");
                //current user name 
                $cookieStore.put("currentUserName",data.data.userName);

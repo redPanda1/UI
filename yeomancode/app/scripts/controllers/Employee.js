@@ -273,7 +273,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 				  * ==========================================================================
 				  */
 				
-				   $scope.employeeList =  $rootScope.employeeData.data;
+				   /*$scope.employeeList =  $rootScope.employeeData.data;
 			 	   $rootScope.localCache.empList =  $scope.employeeList;
 			 	   $scope.truncateurl();
 			 	   $scope.storeManagerNames();	 	  	
@@ -281,7 +281,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 				   if(status == 304)
 				   {
 					   //.
-				   }   
+				   }*/   
 			 });
 		 }
 		 else

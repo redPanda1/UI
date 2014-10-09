@@ -21,6 +21,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	$rootScope.manage             = true;
 	$rootScope.selectedMenu       = 'Contract';//Rootscope variables used to select the Accordion menus.
 	$scope.ClonedcontractDetail   = {};//Object used to copy the contract detail object
+	$scope.ClonedcontractDetail.data   = {};
 	$scope.UploadDocumentsOptionVisible = true;
 	$scope.attachmentsContainerVisible  = false;
 	$scope.displayUpload          = true;
@@ -439,6 +440,24 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 
 	 }
 	 
+	  $scope.getCurrencySymbol = function()
+	 {
+	 	angular.forEach($scope.currencies,function(data,key){
+			 if($scope.contractDetail.data.currency == data.code)
+			 {
+				 $scope.contractDetail.data.currency = data.code;
+				 if(data.symbol != null && data.symbol != ''){
+				 	$scope.currencySymbol =data.symbol;
+				 }
+					 
+				 else
+					 $scope.currencySymbol =data.code;
+					 
+				$scope.currencyCode = data.code; 
+			 }
+		});
+	 }
+
 	 
 	 /**
 	  * ===========================================================
@@ -451,34 +470,68 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 {
 			 if($scope.contractDetail.data.currency == null)
 			 {
-			 $scope.contractDetail.data.currency = 'USD';
-			 $scope.currencySymbol ='$';
-			 $scope.currencyCode = 'USD';
-			// $scope.contractDetail.data.currency = currencyObj.code;
+			 	 console.log($scope.contractDetail.data.type);
+			 	 console.log($scope.contractDetail.data.activityData);
+			 	 console.log($scope.contractDetail.data.assignedData);
+			 	 $scope.contractDetail.data.currency = 'USD';
+				 $scope.currencySymbol ='$';
+				 $scope.currencyCode = 'USD';
+			 	 if($scope.contractDetail.data.type == 'fixed' || $scope.contractDetail.data.type == 'activity')
+			 	 {
+			 	 	if($scope.contractDetail.data.activityData != null)
+			 	 	{
+			 	 		if($scope.contractDetail.data.activityData.length != 0)
+			 	 		{
+				 	 		for(var i=0;i<$scope.contractDetail.data.activityData.length;i++)
+				 	 		{
+				 	 			if($scope.contractDetail.data.activityData[i].feeCur != null)
+				 	 			{
+				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.activityData[i].feeCur;								
+									$scope.getCurrencySymbol();		
+				 	 			}
+				 	 			if($scope.contractDetail.data.activityData[i].rateCur != null)
+				 	 			{
+				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.activityData[i].rateCur;								
+									$scope.getCurrencySymbol();
+				 	 			}
+				 	 		}
+			 	 		}
+			 	 	}
+			 	 }			 	 
+			 	 else
+			 	 {
+			 	 	if($scope.contractDetail.data.assignedData != null)
+			 	 	{
+			 	 		if($scope.contractDetail.data.assignedData.length != 0)
+			 	 		{
+				 	 		for(var i=0;i<$scope.contractDetail.data.assignedData.length;i++)
+				 	 		{
+				 	 			
+				 	 			if($scope.contractDetail.data.assignedData[i].rateCur != null)
+				 	 			{
+				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.assignedData[i].rateCur;								
+									$scope.getCurrencySymbol();
+				 	 			}
+				 	 		}
+			 	 		}
+			 	 	}
+			 	 	
+			 	 }
+			 	 
+				 
+				 // $scope.contractDetail.data.currency = currencyObj.code;
 			 }
 			 else
 			 {
 				 if($scope.currencies != null)
 				 {
-					 angular.forEach($scope.currencies,function(data,key){
-						 if($scope.contractDetail.data.currency == data.code)
-						 {
-							 $scope.contractDetail.data.currency = data.code;
-							 if(data.symbol != null && data.symbol != ''){
-							 	$scope.currencySymbol =data.symbol;
-							 }
-								 
-							 else
-								 $scope.currencySymbol =data.code;
-								 
-							$scope.currencyCode = data.code; 
-						 }
-					 });
+					 $scope.getCurrencySymbol();
 				 }
 			 }
 		 }
 	 }
 	 
+	
 	 /**
 	  * ===============================================================================================
 	  * API Call for Currencies
@@ -617,6 +670,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 $scope.convertToUSDateFormat();
 		 $scope.contractDetail.data.activityData.push({"title": "","isBillable": false,"isFixedFee": false,"rateAmt":"0.00","feeAmt": '0.00',"feeCur" : $scope.currencySymbol,"rateCur" : $scope.currencySymbol});
 		 $scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":"0.00","employeeName":""});
+		 $scope.ClonedcontractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":"0.00","employeeName":""});
 		 $scope.currencyCode = "USD";
 		 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
 		 $scope.peopleMangers       = $scope.contractDetail.data.assignedData;
@@ -662,6 +716,10 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			  	 
 			  	 //Clone the object before formatting the data
 				 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
+				 if($scope.ClonedcontractDetail.data.assignedData != null){
+				 	if ($scope.ClonedcontractDetail.data.assignedData.length ===0)
+						 $scope.ClonedcontractDetail.data.assignedData.push({"employeeName":""});
+				 }
 				 $scope.convertToUSDateFormat();
 				 
 				 if ($scope.contractDetail.data.activityData != null)
@@ -678,7 +736,10 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 		
 				// if (contractDetailCookId != "create" && $rootScope.customerName)
 				 if($rootScope.fromCustomer)
-		  				$scope.contractDetail.data.customerName = $rootScope.customerName;	
+		  		{
+		  			$scope.contractDetail.data.customerName = $rootScope.customerName;
+		  			$scope.contractDetail.data.customerId = $rootScope.currentCustomerId;
+		  		}
 
 		  		if ($scope.contractDetail.data.type != null)
 				{
@@ -725,14 +786,17 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		  		{
 		  			
 					if ($scope.contractDetail.data.assignedData != null){
+							if($scope.contractDetail.data.assignedData.length == 0)							
+								$scope.contractDetail.data.assignedData = [{"employeeName":""}];
 							$scope.contractDetail.data.assignedData[0].employeeName = $scope.contractDetail.data.managerName;
+							
 					}
-                    else
+                    /*else
                     {
                     	$scope.contractDetail.data.assignedData =[];
                     	$scope.contractDetail.data.assignedData = [{"employeeName":""}];
 						$scope.contractDetail.data.assignedData[0].employeeName = $scope.contractDetail.data.managerName;
-                    }
+                    }*/
                   }
 				 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
                  $scope.peopleMangers       = $scope.contractDetail.data.assignedData;
@@ -1276,9 +1340,12 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 					if($scope.contractDetail.data.assignedData != null)
 		    	 	{
 		    	 		for (var i=0;i<$scope.contractDetail.data.assignedData.length;i++){
-		    	 			delete $scope.contractDetail.data.assignedData[i].employeeName;
-		    	 			if ($scope.ClonedcontractDetail.data.assignedData[i].employeeName != null)
-		        	 			delete $scope.ClonedcontractDetail.data.assignedData[i].employeeName
+		    	 			if($scope.contractDetail.data.assignedData[i].employeeName != null)
+		    	 				delete $scope.contractDetail.data.assignedData[i].employeeName;
+		    	 			if($scope.ClonedcontractDetail.data.assignedData != null){
+		    	 				if ($scope.ClonedcontractDetail.data.assignedData[i].employeeName != null)
+			        	 			delete $scope.ClonedcontractDetail.data.assignedData[i].employeeName
+		    	 			}
 		    	 		}
 		    	 	}
 	    	 	}
