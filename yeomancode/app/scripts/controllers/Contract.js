@@ -28,6 +28,9 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     $cookieStore.remove("contractId");
     var activeContractList = [];
     $('.daterangepicker').hide();
+    $rootScope.calledFromEmployeeDetail = false;
+    $rootScope.calledFromCustomerDetail = false;
+    $scope.enableContButtons = true;
 
     //Used to maintain the same filter when navigating from different page  and corresponding detail page
     if (!$rootScope.calledFromContractDetail)
@@ -35,7 +38,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     else
         $rootScope.calledFromContractDetail = false;
 
-    // If json formatting needed when sorting the table, we should set this flag.	 
+    // If json formatting needed when sorting the table, we should set this flag.    
     $scope.isJsonFormattingNeeded = true;
     /**
      * =============================================================================================================
@@ -82,7 +85,9 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         } else
             $cookieStore.put("detailId", "create");
 
-        $location.path('/ContractDetail');
+      $rootScope.selectedContractItem = $cookieStore.get("detailId");
+      $rootScope.closeAlert();
+      $location.path('/ContractDetail');
     }
 
     /**
@@ -105,27 +110,27 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
      */
     $scope.setCurrency = function(rowObj)
     {
-    	if(rowObj != null)
-    	{
-    		if(rowObj.currency != null)
-    		{
-    			 angular.forEach($scope.currencies,function(data,key){
-					 if(rowObj.currency == data.code)
-					 {
-						
-						 if(data.symbol != null && data.symbol != '')
-							 rowObj.currency = data.symbol;
-						 else
-							 rowObj.currency =data.code;
-						 
-					 }
-				 });
-    			 return rowObj.currency;
-    		}
-    		else
-    			return '$';
-    		
-    	}
+        if(rowObj != null)
+        {
+            if(rowObj.currency != null)
+            {
+                 angular.forEach($scope.currencies,function(data,key){
+                     if(rowObj.currency == data.code)
+                     {
+                        
+                         if(data.symbol != null && data.symbol != '')
+                             rowObj.currency = data.symbol;
+                         else
+                             rowObj.currency =data.code;
+                         
+                     }
+                 });
+                 return rowObj.currency;
+            }
+            else
+                return '$';
+            
+        }
     }
     
     
@@ -201,6 +206,19 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
                 $scope.ContractList[i].endDate = USDateFormat.convert($scope.ContractList[i].endDate, true);
         }
     }
+    /**
+     *=================================================================================================
+     * Enable Contract List Buttons
+     * @description Function used to enable new, delete and download buttons once the response from the 
+     *              server comes to the page.
+     *=================================================================================================
+     */
+     $scope.enableContractbuttons = function()
+     {
+        $timeout(function(){
+                $scope.enableContButtons = false;
+        },500);            
+     }
 
 
 
@@ -211,48 +229,125 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
      * ================================================================================================
      */
     var ContractListApiCall = function() {
-        if ($rootScope.localCache.ContractList == null || $rootScope.localCache.isContractAPINeeded == true) {
+        if ($rootScope.localCache.ContractList == null) {
             $http.get('/api/contractList').success(function(data) {
                 $scope.ContractList = data.data;
-                $rootScope.localCache.ContractList = $scope.ContractList; //Contract List is stored in local cache.For avoiding unwanted API calls		 
+                $rootScope.localCache.ContractList = $scope.ContractList; //Contract List is stored in local cache.For avoiding unwanted API calls       
                 $scope.convertDatetoUSFormat();
                 activeContractList = FilterDeleted.filter($scope.ContractList);
                 angular.forEach(activeContractList, function(data, key) {
                     if (data.value != null) {
-                        data.value = data.value.toFixed(2);
+                        data.value = Number(data.value).toFixed(2);
                     }
                 });
                 $scope.tableOptions.listData = activeContractList;
+                $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
+                $scope.enableContractbuttons();
                
             }).error(function(data, status) {
                 console.log("No data found for the contract list");
-                //Stub data used for local testing
-                
-			   $scope.ContractList  = $rootScope.ContractData.data;
-			   $scope.convertDatetoUSFormat();
-   			   activeContractList = FilterDeleted.filter($scope.ContractList);
-   			 angular.forEach(activeContractList,function(data,key){
-				 if (data.value != 0 && data.value != null){
-					 data.value =  data.value.toFixed(2); 
-				 }
-			 });
-              $scope.tableOptions.listData     = activeContractList;
-		 	 
-		 	   $rootScope.localCache.ContractList =  $scope.ContractList;
-                if (status == 304) {}
-            });
-        } else {
-            $scope.ContractList = $rootScope.localCache.ContractList;
-            $scope.convertDatetoUSFormat();
-            activeContractList = FilterDeleted.filter($scope.ContractList);
-            angular.forEach(activeContractList, function(data, key) {
-                if (data.value != null) {
-                    data.value = Number(data.value).toFixed(2);
-                }
-            });
-            $scope.tableOptions.listData = activeContractList;
-           
-        }
+                $scope.enableContractbuttons();
+                //Stub data used for local testing                
+               /*$scope.ContractList  = $rootScope.ContractData.data;
+               $scope.convertDatetoUSFormat();
+               activeContractList = FilterDeleted.filter($scope.ContractList);
+             angular.forEach(activeContractList,function(data,key){
+                 if (data.value != 0 && data.value != null){
+                     data.value =  data.value.toFixed(2); 
+                 }*/
+             });
+              $scope.tableOptions.listData     = activeContractList;             
+              $rootScope.localCache.ContractList =  $scope.ContractList;
+              if (status == 304) {};
+            
+        } 
+        else
+         {
+             console.log('In else part');
+             //For getting the contract list after some particular time 
+             if($rootScope.localCache.isContractAPINeeded == true)
+             {
+                 console.log('In timestamp');                
+                  /**
+                   *==========================================================================================
+                   *  API call for getting newly created and edited contract list
+                   *==========================================================================================
+                   */
+                 $http.get('/api/contractList?timestamp='+ $rootScope.getTime+'&deleted=true').success(function (data) {    
+
+                     $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
+                     if($rootScope.selectedContractItem == 'create')
+                     {
+                         console.log('In create');
+                        //For Create
+                         for(var i=0; i<data.data.length;i++)
+                         {
+                             $rootScope.localCache.ContractList.push(data.data[i]);
+                             $scope.ContractList = $rootScope.localCache.ContractList;
+                             
+                         }
+                     }
+                     else
+                     {
+                         //For Looping through the data coming from the server.If more than one data is coming from the 
+                         //timestamp api.                         
+                         for(var j=0; j< data.data.length; j++)
+                         {
+                             //For looping through the local cache value
+                             for(var i=0; i<$rootScope.localCache.ContractList.length; i++)
+                             {
+                                 if($rootScope.localCache.ContractList[i].id == data.data[j].id)
+                                 {
+                                     if(data.data[j].deleted)
+                                     {
+                                         $rootScope.localCache.ContractList.splice(i,1);
+                                         $scope.ContractList = $rootScope.localCache.ContractList;
+                                     }
+                                     else
+                                     {
+                                         $rootScope.localCache.ContractList[i] = data.data[j];
+                                         $scope.ContractList = $rootScope.localCache.ContractList;
+                                     }
+                                     
+                                 }
+                             }
+                         }
+                        
+                     }
+
+                     $rootScope.selectedContractItem = null;                     
+                     $rootScope.localCache.ContractList = $scope.ContractList; //Contract List is stored in local cache.For avoiding unwanted API calls       
+                     $scope.convertDatetoUSFormat();
+                     activeContractList = FilterDeleted.filter($scope.ContractList);
+                     angular.forEach(activeContractList, function(data, key) {
+                        if (data.value != null) {
+                            data.value = Number(data.value).toFixed(2);
+                        }
+                    });
+                    $scope.tableOptions.listData = activeContractList;
+                    $scope.enableContractbuttons();
+                      
+                 }).error(function(data, status){
+                       if(status == 304)
+                       {
+                           $scope.ContractList = $rootScope.localCache.ContractList;
+                           $scope.tableOptions.listData = $scope.ContractList;
+                       }  
+                       $scope.enableContractbuttons();
+                       
+                 });                 
+                 $rootScope.localCache.isContractAPINeeded = false;
+                 
+             }
+             else
+             {
+                 
+                 $scope.ContractList = $rootScope.localCache.ContractList;
+                 $scope.tableOptions.listData = $scope.ContractList;
+                 $scope.enableContractbuttons();
+             }
+             
+         }
     }
 
     /**
@@ -268,10 +363,10 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
         }).error(function(data, status) {
             console.log("No data found for the contract currencies");
             //Code used for local testing and it should be removed finally.
-            /*$scope.localcurrencies       = {"success":true,"total":1,"data":[{"code":"USD","name":"US Dollar","symbol":"$","decimals":2.0},{"code":"CAD","name":"Canadian Dollar","symbol":"C$","decimals":2.0},{"code":"MXD","name":"Mexican Dollar","symbol":"MX$","decimals":2.0},{"code":"JPY","name":"Japanese Yen","symbol":"Â¥","decimals":0.0},{"code":"GBP","name":"British Pound","symbol":"Â£","decimals":2.0},{"code":"EUR","name":"Euro","symbol":"â‚¬","decimals":2.0},{"code":"ZAR","name":"Rand","symbol":"R","decimals":2.0},{"code":"INR","name":"Rupee","symbol":"â‚¹","decimals":2.0}]}		
-			$scope.currencies            = $scope.localcurrencies.data;
-			$rootScope.localCache.currencies = $scope.currencies;
-			ContractListApiCall();*/
+            /*$scope.localcurrencies       = {"success":true,"total":1,"data":[{"code":"USD","name":"US Dollar","symbol":"$","decimals":2.0},{"code":"CAD","name":"Canadian Dollar","symbol":"C$","decimals":2.0},{"code":"MXD","name":"Mexican Dollar","symbol":"MX$","decimals":2.0},{"code":"JPY","name":"Japanese Yen","symbol":"Â¥","decimals":0.0},{"code":"GBP","name":"British Pound","symbol":"Â£","decimals":2.0},{"code":"EUR","name":"Euro","symbol":"â‚¬","decimals":2.0},{"code":"ZAR","name":"Rand","symbol":"R","decimals":2.0},{"code":"INR","name":"Rupee","symbol":"â‚¹","decimals":2.0}]}       
+            $scope.currencies            = $scope.localcurrencies.data;
+            $rootScope.localCache.currencies = $scope.currencies;
+            ContractListApiCall();*/
         });
     } else {
         $scope.currencies = $rootScope.localCache.currencies;
@@ -288,7 +383,7 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
     }
 
 
-    /**	  
+    /**   
      * =============================================================================
      * Function used to Delete the Contract Record
      * @param size - size of the pop up window
@@ -302,7 +397,8 @@ angular.module('redPandaApp').controller('ContractController', ['$scope','$rootS
                 if (nValue == null || (nValue == oValue))
                     return;
                 if ($rootScope.isPostSuccess) {
-                    $rootScope.localCache.ContractList = null
+                    //$rootScope.localCache.ContractList = null
+                    $rootScope.localCache.isContractAPINeeded = true;
                     ContractListApiCall();
                     $scope.selectedData.length = 0;
                 } else {

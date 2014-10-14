@@ -13,11 +13,12 @@
  * @param $window
  * @param CurrentTimeStamp
  * @param $timeout
- * @param CommentDate
+ * @param UserComments
  */
-angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat','IsoDateFormat','CommentDate' ,
- function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat,IsoDateFormat,CommentDate){
+angular.module('redPandaApp').controller('employeeDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter', '$window','CurrentTimeStamp','$timeout','fileReader','USDateFormat','IsoDateFormat','UserComments' ,
+ function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter, $window,CurrentTimeStamp,$timeout,fileReader,USDateFormat,IsoDateFormat,UserComments){
     //Rootscope variables used to select the Accordion menus.
+    $window.scrollTo(0,0);
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Employee';
 
@@ -37,6 +38,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     $scope.needMapCall = {
         "callMap": false
     };
+    $scope.enableEmpDetailButtons = true;
     $scope.inCreateMode = false;
     $scope.addressKeys = ["addressStreet", "addressCity", "addressStateCode", "addressPostZip", "addressCountryISO"];
     $scope.contactTypeValue = [];
@@ -48,6 +50,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	$scope.commentText = "";
 	$scope.commentLocalStoreage = [];
 	$scope.isFilterEnabled = true;
+    $scope.detailComments ={};
 
 	$scope.createModeImage =''
     
@@ -126,6 +129,21 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     	}
     }
    
+    /**
+     *  Enable Buttons
+     *  @description Function used to enable the cancel,delete and done buttons
+     *               once we get the response from the server.
+     *
+     */
+     $scope.EnableDetailButtons = function()
+     {      
+
+        $timeout(function(){
+               $scope.enableEmpDetailButtons = false;
+        },500)
+       
+     }
+
    
     /**
      * ==================================================================================================
@@ -307,10 +325,10 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
              * Codes used for local testing and it should be removed finally.
              * ============================================================================
              */
-        /*    $scope.state_namesJson = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
+            $scope.state_namesJson = {"success":true,"total":1,"data":[{"name":"Alabama","code":"AL"},{"name":"Alaska","code":"AK"},{"name":"Arizona","code":"AZ"},{"name":"Arkansas","code":"AR"},{"name":"California","code":"CA"},{"name":"Colorado","code":"CO"},{"name":"Connecticut","code":"CT"},{"name":"Delaware","code":"DE"},{"name":"District of Columbia","code":"DC"},{"name":"Florida","code":"FL"},{"name":"Georgia","code":"GA"},{"name":"Hawaii","code":"HI"},{"name":"Idaho","code":"ID"},{"name":"Illinois","code":"IL"},{"name":"Indiana","code":"IN"},{"name":"Iowa","code":"IA"},{"name":"Kansa","code":"KS"},{"name":"Kentucky","code":"KY"},{"name":"Lousiana","code":"LA"},{"name":"Maine","code":"ME"},{"name":"Maryland","code":"MD"},{"name":"Massachusetts","code":"MA"},{"name":"Michigan","code":"MI"},{"name":"Minnesota","code":"MN"},{"name":"Mississippi","code":"MS"},{"name":"Missouri","code":"MO"},{"name":"Montana","code":"MT"},{"name":"Nebraska","code":"NE"},{"name":"Nevada","code":"NV"},{"name":"New Hampshire","code":"NH"},{"name":"New Jersey","code":"NJ"},{"name":"New Mexico","code":"NM"},{"name":"New York","code":"NY"},{"name":"North Carolina","code":"NC"},{"name":"North Dakota","code":"ND"},{"name":"Ohio","code":"OH"},{"name":"Oklahoma","code":"OK"},{"name":"Oregon","code":"OR"},{"name":"Pennsylvania","code":"PA"},{"name":"Rhode Island","code":"RI"},{"name":"South Carolina","code":"SC"},{"name":"South Dakota","code":"SD"},{"name":"Tennessee","code":"TN"},{"name":"Texas","code":"TX"},{"name":"Utah","code":"UT"},{"name":"Vermont","code":"VT"},{"name":"Virginia","code":"VA"},{"name":"Washington","code":"WA"},{"name":"West Virginia","code":"WV"},{"name":"Wisconsin","code":"WI"},{"name":"Wyoming","code":"WY"}]};		
 				$scope.states = $scope.state_namesJson.data;
 				$rootScope.localCache.states = $scope.states;
-				$scope.formatInputData();*/
+				$scope.formatInputData();
         });
     } else {
         $scope.states = $rootScope.localCache.states;
@@ -336,14 +354,14 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
               * Codes used for local testing and it should be removed finally.
               * ============================================================================
               */
-           /*$scope.countriesJson = {
+           $scope.countriesJson = {
                 "success": true,
                 "total": 1,
                 "data": [{"name":"Ascension Island","code":"AC"},{"name":"Andorra","code":"AD"},{"name":"United Arab Emirates","code":"AE"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Afghanistan","code":"AF"},{"name":"Antigua And Barbuda","code":"AG"},{"name":"Anguilla","code":"AI"},{"name":"Albania","code":"AL"},{"name":"Armenia","code":"AM"},{"name":"Angola","code":"AO"},{"name":"Antarctica","code":"AQ"},{"name":"Argentina","code":"AR"},{"name":"American Samoa","code":"AS"},{"name":"Austria","code":"AT"},{"name":"Australia","code":"AU"},{"name":"Aruba","code":"AW"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bosnia & Herzegovina","code":"BA"},{"name":"Barbados","code":"BB"},{"name":"Bangladesh","code":"BD"},{"name":"Belgium","code":"BE"},{"name":"Burkina Faso","code":"BF"},{"name":"Bulgaria","code":"BG"},{"name":"Bahrain","code":"BH"},{"name":"Burundi","code":"BI"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bolivia, Plurinational State Of","code":"BO"},{"name":"Bonaire, Saint Eustatius And Saba","code":"BQ"},{"name":"Brazil","code":"BR"},{"name":"Bahamas","code":"BS"},{"name":"Bhutan","code":"BT"},{"name":"Bouvet Island","code":"BV"},{"name":"Botswana","code":"BW"},{"name":"Belarus","code":"BY"},{"name":"Belize","code":"BZ"},{"name":"Canada","code":"CA"},{"name":"Cocos (Keeling) Islands","code":"CC"},{"name":"Democratic Republic Of Congo","code":"CD"},{"name":"Central African Republic","code":"CF"},{"name":"Republic Of Congo","code":"CG"},{"name":"Switzerland","code":"CH"},{"name":"Cote d'Ivoire","code":"CI"},{"name":"Cook Islands","code":"CK"},{"name":"Chile","code":"CL"},{"name":"Cameroon","code":"CM"},{"name":"China","code":"CN"},{"name":"Colombia","code":"CO"},{"name":"Clipperton Island","code":"CP"},{"name":"Costa Rica","code":"CR"},{"name":"Cuba","code":"CU"},{"name":"Cape Verde","code":"CV"},{"name":"Curacao","code":"CW"},{"name":"Christmas Island","code":"CX"},{"name":"Cyprus","code":"CY"},{"name":"Czech Republic","code":"CZ"},{"name":"Germany","code":"DE"},{"name":"Diego Garcia","code":"DG"},{"name":"Djibouti","code":"DJ"},{"name":"Denmark","code":"DK"},{"name":"Dominica","code":"DM"},{"name":"Dominican Republic","code":"DO"},{"name":"Algeria","code":"DZ"},{"name":"Ceuta, Mulilla","code":"EA"},{"name":"Ecuador","code":"EC"},{"name":"Estonia","code":"EE"},{"name":"Egypt","code":"EG"},{"name":"Western Sahara","code":"EH"},{"name":"Eritrea","code":"ER"},{"name":"Spain","code":"ES"},{"name":"Ethiopia","code":"ET"},{"name":"European Union","code":"EU"},{"name":"Finland","code":"FI"},{"name":"Fiji","code":"FJ"},{"name":"Falkland Islands","code":"FK"},{"name":"Micronesia, Federated States Of","code":"FM"},{"name":"Faroe Islands","code":"FO"},{"name":"France","code":"FR"},{"name":"France, Metropolitan","code":"FX"},{"name":"Gabon","code":"GA"},{"name":"United Kingdom","code":"GB"},{"name":"Grenada","code":"GD"},{"name":"Georgia","code":"GE"},{"name":"French Guiana","code":"GF"},{"name":"Guernsey","code":"GG"},{"name":"Ghana","code":"GH"},{"name":"Gibraltar","code":"GI"},{"name":"Greenland","code":"GL"},{"name":"Gambia","code":"GM"},{"name":"Great Britain","code":"GB"},{"name":"Guinea","code":"GN"},{"name":"Guadeloupe","code":"GP"},{"name":"Equatorial Guinea","code":"GQ"},{"name":"Greece","code":"GR"},{"name":"South Georgia And The South Sandwich Islands","code":"GS"},{"name":"Guatemala","code":"GT"},{"name":"Guam","code":"GU"},{"name":"Guinea-bissau","code":"GW"},{"name":"Guyana","code":"GY"},{"name":"Hong Kong","code":"HK"},{"name":"Heard Island And McDonald Islands","code":"HM"},{"name":"Honduras","code":"HN"},{"name":"Croatia","code":"HR"},{"name":"Haiti","code":"HT"},{"name":"Hungary","code":"HU"},{"name":"Canary Islands","code":"IC"},{"name":"Indonesia","code":"ID"},{"name":"Ireland","code":"IE"},{"name":"Israel","code":"IL"},{"name":"Isle Of Man","code":"IM"},{"name":"India","code":"IN"},{"name":"British Indian Ocean Territory","code":"IO"},{"name":"Iraq","code":"IQ"},{"name":"Iran, Islamic Republic Of","code":"IR"},{"name":"Iceland","code":"IS"},{"name":"Italy","code":"IT"},{"name":"Jersey","code":"JE"},{"name":"Jamaica","code":"JM"},{"name":"Jordan","code":"JO"},{"name":"Japan","code":"JP"},{"name":"Kenya","code":"KE"},{"name":"Kyrgyzstan","code":"KG"},{"name":"Cambodia","code":"KH"},{"name":"Kiribati","code":"KI"},{"name":"Comoros","code":"KM"},{"name":"Saint Kitts And Nevis","code":"KN"},{"name":"Korea, Democratic People's Republic Of","code":"KP"},{"name":"Korea, Republic Of","code":"KR"},{"name":"Kuwait","code":"KW"},{"name":"Cayman Islands","code":"KY"},{"name":"Kazakhstan","code":"KZ"},{"name":"Lao People's Democratic Republic","code":"LA"},{"name":"Lebanon","code":"LB"},{"name":"Saint Lucia","code":"LC"},{"name":"Liechtenstein","code":"LI"},{"name":"Sri Lanka","code":"LK"},{"name":"Liberia","code":"LR"},{"name":"Lesotho","code":"LS"},{"name":"Lithuania","code":"LT"},{"name":"Luxembourg","code":"LU"},{"name":"Latvia","code":"LV"},{"name":"Libya","code":"LY"},{"name":"Morocco","code":"MA"},{"name":"Monaco","code":"MC"},{"name":"Moldova","code":"MD"},{"name":"Montenegro","code":"ME"},{"name":"Saint Martin","code":"MF"},{"name":"Madagascar","code":"MG"},{"name":"Marshall Islands","code":"MH"},{"name":"Macedonia, The Former Yugoslav Republic Of","code":"MK"},{"name":"Mali","code":"ML"},{"name":"Myanmar","code":"MM"},{"name":"Mongolia","code":"MN"},{"name":"Macao","code":"MO"},{"name":"Northern Mariana Islands","code":"MP"},{"name":"Martinique","code":"MQ"},{"name":"Mauritania","code":"MR"},{"name":"Montserrat","code":"MS"},{"name":"Malta","code":"MT"},{"name":"Mauritius","code":"MU"},{"name":"Maldives","code":"MV"},{"name":"Malawi","code":"MW"},{"name":"Mexico","code":"MX"},{"name":"Malaysia","code":"MY"},{"name":"Mozambique","code":"MZ"},{"name":"Namibia","code":"NA"},{"name":"New Caledonia","code":"NC"},{"name":"Niger","code":"NE"},{"name":"Norfolk Island","code":"NF"},{"name":"Nigeria","code":"NG"},{"name":"Nicaragua","code":"NI"},{"name":"Netherlands","code":"NL"},{"name":"Norway","code":"NO"},{"name":"Nepal","code":"NP"},{"name":"Nauru","code":"NR"},{"name":"Niue","code":"NU"},{"name":"New Zealand","code":"NZ"},{"name":"Oman","code":"OM"},{"name":"Panama","code":"PA"},{"name":"Peru","code":"PE"},{"name":"French Polynesia","code":"PF"},{"name":"Papua New Guinea","code":"PG"},{"name":"Philippines","code":"PH"},{"name":"Pakistan","code":"PK"},{"name":"Poland","code":"PL"},{"name":"Saint Pierre And Miquelon","code":"PM"},{"name":"Pitcairn","code":"PN"},{"name":"Puerto Rico","code":"PR"},{"name":"Palestinian Territory, Occupied","code":"PS"},{"name":"Portugal","code":"PT"},{"name":"Palau","code":"PW"},{"name":"Paraguay","code":"PY"},{"name":"Qatar","code":"QA"},{"name":"Reunion","code":"RE"},{"name":"Romania","code":"RO"},{"name":"Serbia","code":"RS"},{"name":"Russian Federation","code":"RU"},{"name":"Rwanda","code":"RW"},{"name":"Saudi Arabia","code":"SA"},{"name":"Solomon Islands","code":"SB"},{"name":"Seychelles","code":"SC"},{"name":"Sudan","code":"SD"},{"name":"Sweden","code":"SE"},{"name":"Singapore","code":"SG"},{"name":"Saint Helena, Ascension And Tristan Da Cunha","code":"SH"},{"name":"Slovenia","code":"SI"},{"name":"Svalbard And Jan Mayen","code":"SJ"},{"name":"Slovakia","code":"SK"},{"name":"Sierra Leone","code":"SL"},{"name":"San Marino","code":"SM"},{"name":"Senegal","code":"SN"},{"name":"Somalia","code":"SO"},{"name":"Suriname","code":"SR"},{"name":"South Sudan","code":"SS"},{"name":"SÃŒÂ£o TomÃŒÂ© and PrÃŒ_ncipe","code":"ST"},{"name":"USSR","code":"SU"},{"name":"El Salvador","code":"SV"},{"name":"Sint Maarten","code":"SX"},{"name":"Syrian Arab Republic","code":"SY"},{"name":"Swaziland","code":"SZ"},{"name":"Tristan de Cunha","code":"TA"},{"name":"Turks And Caicos Islands","code":"TC"},{"name":"Chad","code":"TD"},{"name":"French Southern Territories","code":"TF"},{"name":"Togo","code":"TG"},{"name":"Thailand","code":"TH"},{"name":"Tajikistan","code":"TJ"},{"name":"Tokelau","code":"TK"},{"name":"East Timor","code":"TL"},{"name":"Turkmenistan","code":"TM"},{"name":"Tunisia","code":"TN"},{"name":"Tonga","code":"TO"},{"name":"Turkey","code":"TR"},{"name":"Trinidad And Tobago","code":"TT"},{"name":"Tuvalu","code":"TV"},{"name":"Taiwan, Province Of China","code":"TW"},{"name":"Tanzania, United Republic Of","code":"TZ"},{"name":"Ukraine","code":"UA"},{"name":"Uganda","code":"UG"},{"name":"United Kingdom","code":"GB"},{"name":"United States Minor Outlying Islands","code":"UM"},{"name":"United States","code":"US"},{"name":"Uruguay","code":"UY"},{"name":"Uzbekistan","code":"UZ"},{"name":"Vatican City State","code":"VA"},{"name":"Saint Vincent And The Grenadines","code":"VC"},{"name":"Venezuela, Bolivarian Republic Of","code":"VE"},{"name":"Virgin Islands (British)","code":"VG"},{"name":"Virgin Islands (US)","code":"VI"},{"name":"Viet Nam","code":"VN"},{"name":"Vanuatu","code":"VU"},{"name":"Wallis And Futuna","code":"WF"},{"name":"Samoa","code":"WS"},{"name":"Yemen","code":"YE"},{"name":"Mayotte","code":"YT"},{"name":"South Africa","code":"ZA"},{"name":"Zambia","code":"ZM"},{"name":"Zimbabwe","code":"ZW"}]
             };
             $scope.countries = $scope.countriesJson.data;
             $rootScope.localCache.countries = $scope.countries;
-            $scope.formatInputData();*/
+            $scope.formatInputData();
         });
     } else {
         $scope.countries = $rootScope.localCache.countries;
@@ -365,19 +383,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         if ($scope.EmployeeDetail.data.contactNumbers == null || $scope.EmployeeDetail.data.contactNumbers.length === 0) {
             $scope.EmployeeDetail.data.contactNumbers = [];                  
         }
-        if ($scope.EmployeeDetail.data.comments == null || $scope.EmployeeDetail.data.comments.length === 0) {
-			$scope.EmployeeDetail.data.comments = [];
-		}else{
-				angular.forEach($scope.EmployeeDetail.data.comments, function(data, key) {
-					if (data.postedOn != null)
-					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
-				    if (data.postedBy != null){
-				    	if (data.postedBy['thumbUrl'] == null || data.postedBy['thumbUrl'] == "")
-				    		data.postedBy['thumbUrl'] = $rootScope.defaultUserImage;
-				    }
-				});
-				console.log($scope.EmployeeDetail.data.comments )
-		}
+        
 
         if ($scope.EmployeeDetail.data.timeOff == null || $scope.EmployeeDetail.data.timeOff.length == 0) {
             $scope.EmployeeDetail.data.timeOff = [{
@@ -406,7 +412,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	    $scope.EmployeeDetail.data.stdCostCur = 'USD';
         //if($scope.EmployeeDetail.data.otCostCur == null)
 		$scope.EmployeeDetail.data.otCostCur = 'USD';
-        
+        $scope.EmployeeDetail.data.comments = UserComments.formatInputData($scope.EmployeeDetail.data.comments);
+        $scope.detailComments = $scope.EmployeeDetail.data
         //Clone the object before pre-processing the input data.
         $scope.formatMapData();
         angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
@@ -418,46 +425,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         }
         $scope.isError = false;
     }
-    
-    /**
-     * For saving live comments
-     */
-     $scope.saveCommentMessage = function() {
-     	$scope.isFilterEnabled = true;
-     	$scope.clonedComments = ''
-		 if ($scope.commentText === "")
-			return;
-		var currentdate = new Date();
-		var currentISO = currentdate.toISOString();
-		//var commnetsTime = CommentDate.convertCommentDate(currentISO)
-		var text = $scope.commentText;
-		angular.copy($scope.commentText, $scope.clonedComments)
-		console.log( $scope.clonedComments)
-		$scope.commentText = "";
-		var seq = 0, len = $scope.EmployeeDetail.data.comments.length;
-		if (len === 0) {
-			seq = 0;
-		}
-		else {
-			seq = len; 
-		}
-		 $scope.EmployeeDetail.data.comments.push({
-				"seqNo": seq,
-				"postedBy": {
-					"thumbUrl": $rootScope.defaultUserImage,
-					"name":     $rootScope.currentUserName,
-					"id"  :     $rootScope.currentUserId
-				},
-				"postedOn":currentISO,
-				"replyTo": 0,
-				"docRef": 0,
-				"text": text
-		});
-		angular.forEach($scope.EmployeeDetail.data.comments, function(data, key) {
-					if (data.postedOn != null)
-					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
-				});
-	 }
+       
     
     /**
      * =====================================================================================================
@@ -512,6 +480,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         $scope.mapOptions = $scope.EmployeeDetail;
         angular.copy($scope.EmployeeDetail, $scope.ClonedEmployeeDetail, true);
         $scope.inCreateMode = true;
+        $scope.detailComments = $scope.EmployeeDetail.data;
+        $scope.EnableDetailButtons();
     } else {
     	if($rootScope.empDetailCache.id != $cookieStore.get("detailId"))
     	{
@@ -527,10 +497,12 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	                
 	                $rootScope.empgetTime = CurrentTimeStamp.postTimeStamp();
 	                $scope.successCalls();
+                    $scope.EnableDetailButtons();
 	            }).error(function(data, status) {
 	
 	                $scope.addAlert("Employee Detail not available.", "danger");
 	                $scope.isError = true;
+                    $scope.EnableDetailButtons();
 	
 	                /**
 	                 * ===========================================================
@@ -538,7 +510,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	                 * ============================================================
 	                 */
 					
-	                 $scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
+	                 /*$scope.EmployeeDetail = $rootScope.EmployeeDetailObject[$cookieStore.get("detailId")];
 		             $rootScope.empDetailCache[$cookieStore.get("detailId")] = $scope.EmployeeDetail;
 					 $scope.truncateurl();
 	                 $scope.mapOptions = $scope.EmployeeDetail;
@@ -568,7 +540,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	                    $scope.contactTypeDetails[0] = "";
 	                }
 					$scope.formatMapData();
-					$scope.successCalls();
+					$scope.successCalls();*/
 		           
 	            });
 	    	}
@@ -584,6 +556,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
     		    		angular.copy($scope.EmployeeDetail,$scope.rootscopeobj,true);
     		    		$rootScope.empDetailCache.data = $scope.rootscopeobj;
     	                $scope.successCalls();
+                        $scope.EnableDetailButtons();
 	            }).error(function(data, status) {
 	            	if(status == 304)
 	            	{
@@ -594,6 +567,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
 	            		$scope.EmployeeDetail = $scope.localcacheValuefordetail;
 	            		$scope.successCalls();
 	            	}
+                    $scope.EnableDetailButtons();
 	            });
     		}
     	}
@@ -1051,21 +1025,8 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
         	if(data.id == $scope.EmployeeDetail.data.managerId)
         		$scope.EmployeeDetail.data.managerName = data.name;
         });
-        if ($scope.EmployeeDetail.data.comments.length>0){
-        	angular.forEach($scope.EmployeeDetail.data.comments,function(data,key){
-				if (data.tempTime != null)
-						delete data.tempTime;
-				if(data.postedBy != null)
-				{
-					if (data.postedBy.thumbUrl)
-						delete data.postedBy.thumbUrl;
-					if (data.postedBy.name)
-						delete data.postedBy.name;
-				}
-        });
-        }
-        
-
+        $scope.EmployeeDetail.data.comments = UserComments.filterPostData($scope.EmployeeDetail.data.comments)        
+        console.log("Format Comments",$scope.EmployeeDetail.data.comments);
     }
 
 
@@ -1223,10 +1184,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
             }
         }*/
        
-        if ($scope.needToSave) {
-        	
-        	
-            
+        if ($scope.needToSave) {      	
         	//For Alerting the mandatory field Nickname
             if ($scope.EmployeeDetail.data.nickName == "") {
                 $scope.addAlert("Enter Employee Name.", "danger");
@@ -1259,6 +1217,7 @@ angular.module('redPandaApp').controller('employeeDetailController', ['$scope','
                     $scope.isUpdateError = true; // set error flag true
                     return;
                 }
+                       
 
             $scope.needMapCall.callMap = true;
             $scope.checkDateisChanged();

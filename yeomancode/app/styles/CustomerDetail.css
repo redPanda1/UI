@@ -199,3 +199,8 @@ ul[id^="typeahead"] {
 	margin-top: 10px;
 	margin-left: 16px;
 }
+.comments-image-style
+{
+	display: inline-block;
+	height: 50px;
+}

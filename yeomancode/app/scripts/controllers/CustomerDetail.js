@@ -15,9 +15,10 @@
  * @param $interval
  * @param FilterDeleted
  */
- angular.module('redPandaApp').controller('customerDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter','$anchorScroll', 'CurrentTimeStamp','$timeout','FilterDeleted','USDateFormat','CommentDate',
- 	function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter,$anchorScroll,  CurrentTimeStamp,$timeout,FilterDeleted,USDateFormat,CommentDate){ 
-
+ angular.module('redPandaApp').controller('customerDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','$filter','$anchorScroll', 'CurrentTimeStamp','$timeout','FilterDeleted','USDateFormat','UserComments','$window',
+ 	function($scope,$rootScope,$modal,$http,$location,$cookieStore,$filter,$anchorScroll,  CurrentTimeStamp,$timeout,FilterDeleted,USDateFormat,UserComments,$window){ 
+ 	
+    $window.scrollTo(0,0);
     $rootScope.manage = true;
     $rootScope.selectedMenu = 'Customer'; //Rootscope variables used to select the Accordion menus.	
     $scope.companycollapseTable = false;
@@ -33,6 +34,7 @@
     $scope.disableDelete = false;
     $scope.newCustomer = true;
     $scope.noDataAvailable = false;
+    $scope.enableCustDetButtons = true;
     $scope.needMapCall = {
         "callMap": false
     };
@@ -48,6 +50,7 @@
     $scope.commentText = "";
     $rootScope.calledFromCustomerDetail = true;
     $rootScope.currentCustomerId = "";
+    $scope.detailComments ={};
 
     $('select[name="colorpicker"]').simplecolorpicker({
         picker: true
@@ -105,6 +108,19 @@
         }
 
     }
+    /**
+     * =============================================================
+     *
+     * =============================================================
+     */
+
+     $scope.enableCustDetailButtons = function()
+     {
+        
+        $timeout(function(){
+            $scope.enableCustDetButtons = false;
+        },500);
+     }
 
     /**
      * ======================================================
@@ -260,45 +276,7 @@
             headerCellTemplate: myHeaderCellTemplate
         }, ]
     };
-	/**
-     * For saving live comments
-     */
-     $scope.saveCommentMessage = function() {
-		 if ($scope.commentText === "")
-			return;
-		var currentdate = new Date();
-		var currentISO = currentdate.toISOString();
-		var text = $scope.commentText;
-		$scope.commentText = "";
-		console.log($scope.CustomerDetail)
-		if ($scope.CustomerDetail.data.comments == null)
-			$scope.CustomerDetail.data.comments =[]
-		var seq = 0, len = $scope.CustomerDetail.data.comments.length;
-		if (len === 0) {
-			seq = 0;
-		}
-		else {
-			seq = len; 
-		}
-		 $scope.CustomerDetail.data.comments.push({
-				"seqNo": seq,
-				"postedBy": {
-					"thumbUrl": $rootScope.defaultUserImage,
-					"name": $rootScope.currentUserName,
-					"id"  :     $rootScope.currentUserId
-				},
-				"postedOn":currentISO,
-				"replyTo": 0,
-				"docRef": 0,
-				"text": text
-		});
-		//console.log($scope.CustomerDetail.data.comments);
-		angular.forEach($scope.CustomerDetail.data.comments, function(data, key) {
-				if (data.postedOn != null)
-					data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
-			});
-
-	 }
+	
     /**
      * ===================================================================================
      * Function used the delete the contract list from the table.
@@ -388,13 +366,15 @@
         $rootScope.cutomerContractCopy = {}; //Cloned copy of detail object
         angular.copy($scope.CustomerDetail, $rootScope.cutomerContractCopy, true);
         $rootScope.fromCustomer = true;
+        $rootScope.customerName = $scope.CustomerDetail.data.customerName;
         if (row != null) {
              $rootScope.currentCustomerId = $scope.CustomerDetail.data.id;
             $cookieStore.put("contractId", row.entity.id);
             $rootScope.rowIndex = rowIndex;
         } else {
-            //Cloning the current customer object 	
-            $rootScope.customerName = $scope.CustomerDetail.data.customerName;
+			if ($cookieStore.get("detailId") != 'create') {
+				$rootScope.currentCustomerId = $scope.CustomerDetail.data.id;
+	        }
             $cookieStore.put("contractId", "create");
         }
         $location.path('/ContractDetail');
@@ -425,7 +405,7 @@
     	                "color": "#009999"
     	            }
     	        }
-
+                $scope.detailComments = $scope.CustomerDetail.data;
     	        if ($rootScope.fromCustomer) {
     	            angular.copy($rootScope.cutomerContractCopy, $scope.CustomerDetail, true);
     	            $rootScope.fromCustomer = false;
@@ -456,8 +436,8 @@
     	        $scope.disableDelete = true;
     	        $scope.showEmptyContactDetail = true;
     	        $scope.mapOptions = $scope.CustomerDetail;
-    	        $scope.CustomerDetail.data.comments = []
-    	       
+                $scope.detailComments = $scope.CustomerDetail.data;   
+                $scope.enableCustDetailButtons();                 	       
 
     	    } else {
     	        $scope.newCustomer = false;
@@ -490,11 +470,13 @@
     	                	if(!data.deleted)
     	                		tempContractList.push(data);
     	                }); 
+                        $scope.detailComments = $scope.CustomerDetail.data;
     	                $scope.CustomerDetail.data.contractList = tempContractList;
     	                $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
     	                
     	                $rootScope.fromCustomer = false;
     	                $scope.disabledSave = false;
+                        $scope.enableCustDetailButtons();
 
     	            } else {
     	                $http.get('/api/customerDetail/' + $cookieStore.get("detailId")).success(function(data) {
@@ -521,19 +503,8 @@
     	                    });
     	                    $scope.CustomerDetail.data.contactList = FilterDeleted.filter($scope.CustomerDetail.data.contactList);
     	                    $scope.contactTableData = $scope.CustomerDetail.data.contactList;
-    	                    if ($scope.CustomerDetail.data.comments == null || $scope.CustomerDetail.data.comments.length === 0) {
-								$scope.CustomerDetail.data.comments = [];
-							}
-							else{
-						  		angular.forEach($scope.CustomerDetail.data.comments, function(data, key) {
-						  			if (data.postedOn != null)
-										data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
-									if (data.postedBy != null){
-										if (data.postedBy['thumbUrl'] == null || data.postedBy['thumbUrl'] == "")
-											data.postedBy['thumbUrl'] = $rootScope.defaultUserImage;
-										}
-								});
-						  	}
+    	                    //Passing to comment components
+                            
 							
     	                   //In get we need to filter the deleted datas of the contractList
     	                    var tempContractList = [];
@@ -545,17 +516,21 @@
     	                    $scope.contractTableData =  $scope.CustomerDetail.data.contractList;
     	                    $scope.tableRebuild($scope.contactTableoptions);
     	                    $scope.formatInputData();
+                            $scope.CustomerDetail.data.comments = UserComments.formatInputData($scope.CustomerDetail.data.comments);
+                            $scope.detailComments = $scope.CustomerDetail.data;
     	                   //Clone the object before pre formatting of data.
-    	                    angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);                    
+    	                    angular.copy($scope.CustomerDetail, $scope.ClonedCustomerDetail, true);                            
     	                    console.log($scope.CustomerDetail);console.log($scope.ClonedCustomerDetail);
     	                    $scope.newCustomer = false;
     	                    $rootScope.customerName = $scope.CustomerDetail.data.customerName;                  
     	                    $rootScope.fromCustomer = false;
+                            $scope.enableCustDetailButtons();
 
 
     	                }).error(function(data, status) {
     	                    $scope.isError = true;
     	                    $scope.addAlert("No customer details available.", "danger");
+                            $scope.enableCustDetailButtons();
     	                    //Code used for local testing and it should be removed finally
     	                 /**
     					$scope.CustomerDetail = $rootScope.customerDetail;
@@ -739,14 +714,13 @@
      *
      */
     $scope.saveCustomerData = function() {
-
         if ($scope.CustomerDetail.data.customerName == "") {
             $scope.addAlert("Enter Customer Name.", "danger");
             $scope.isUpdateError = true; // set error flag true
             return;
         }
 
-        $scope.disabledSave = true;
+
         $scope.inSave = true;
         console.log(angular.equals($scope.ClonedCustomerDetail, $scope.CustomerDetail));
         console.log("Customer cloned data",$scope.ClonedCustomerDetail);
@@ -784,24 +758,13 @@
                 $scope.CustomerDetail.data.addressStateCode = $scope.CustomerDetail.data.addressStateCode.code;
             if ($scope.CustomerDetail.data.addressISOCountry != null)
                 $scope.CustomerDetail.data.addressISOCountry = $scope.CustomerDetail.data.addressISOCountry.code;
-                
-            if ($scope.CustomerDetail.data.comments.length>0){
-				angular.forEach($scope.CustomerDetail.data.comments,function(data,key){
-					if (data.tempTime != null)
-						delete data.tempTime;
-					if(data.postedBy != null)
-					{
-						if (data.postedBy.thumbUrl)
-							delete data.postedBy.thumbUrl;
-						if (data.postedBy.name)
-							delete data.postedBy.name;
-					}
-
-				});
-    	    }
+            console.log($scope.CustomerDetail.data)
+            if ($scope.CustomerDetail.data.comments != null)
+                $scope.CustomerDetail.data.comments = UserComments.filterPostData($scope.CustomerDetail.data.comments)            
 
             var postData = $scope.CustomerDetail.data;
-            var postTime = CurrentTimeStamp.postTimeStamp()
+            var postTime = CurrentTimeStamp.postTimeStamp();
+            $scope.disabledSave = true;
             $http({
                 "method": "post",
                 "url": '/api/customerDetail/update?timestamp=' + postTime,
@@ -897,18 +860,6 @@
 
     }, true);
 
-    /**
-     * ======================================================================================================
-     * Function for changing the color in the color picker and assign it to the respective input element
-     * ======================================================================================================
-     */
-    $scope.changeColor = function() {
-        var colorBox = angular.element(document.querySelector('#colorBox'));
-        colorBox.css({
-            "background-color": $scope.pickedColor,
-            "color": $scope.pickedColor
-        });
-    }
 
     /**
      * ======================================================================================================

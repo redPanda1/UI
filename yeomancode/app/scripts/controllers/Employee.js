@@ -26,6 +26,9 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 	 $scope.previousSortIndex = '';	
 	 $scope.formattedEmpList = [];
 	 $scope.selectedData = [];
+	 $rootScope.calledFromCustomerDetail = false;
+	 $rootScope.calledFromContractDetail = false;
+	 $scope.enableEmpButtons = true;
 	 
 	 //Used to maintain the same filter when navigating from different page  and corresponding detail page
 	 if(!$rootScope.calledFromEmployeeDetail)
@@ -119,13 +122,18 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 		 if($scope.tableOptions.selectedItems.length > 0)
 		 {
 			 $rootScope.closeAlert();
+			 if($scope.tableOptions.selectedItems[0].firstName == null)
+			 	$scope.tableOptions.selectedItems[0].firstName = "";
+			 if($scope.tableOptions.selectedItems[0].lastName == null)
+			 	$scope.tableOptions.selectedItems[0].lastName = "";
+
 			 $rootScope.showModal('/api/delete/contact/'+$scope.tableOptions.selectedItems[0].id,'Confirm Delete','Are you sure you would like to delete '+$scope.tableOptions.selectedItems[0].firstName+' '+$scope.tableOptions.selectedItems[0].lastName+' ? This action can not be undone.','Cancel', 'Confirm');
 			 $scope.$watch('isPostSuccess',function(nValue,oValue){
 				if(nValue == null || (nValue == oValue))
 					return;
 				if($rootScope.isPostSuccess)
 				{
-					$rootScope.localCache.empList = null
+					$rootScope.localCache.isEmpAPINeeded = true;
 					callEmployeeListAPI();
 					$scope.tableOptions.selectedItems.length =0;
 				}
@@ -243,7 +251,19 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 	    	$scope.isDowloadClicked = true;
 	    }
 	    
-	    
+	  /**
+	   * Enable Buttons
+	   * @description Function used to enable the new,delete and download buttons after the responses arrived from the server
+	   */
+	   $scope.enableButtons = function()
+	   {
+	   		$timeout(function(){
+	   			$scope.enableEmpButtons = false;
+	   		},500)
+	   		
+	   }
+
+
 	 /**
 	  * ================================================================================================
 	  * Getting the JSON data for the employee list
@@ -263,10 +283,12 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 				 $scope.storeManagerNames(); 							//storing all the employee names for the manager list to use it in detail page.
 				 $scope.tableOptions.listData = $scope.employeeList;    //Input for the ngGrid
 				 $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
+				 $scope.enableButtons();
 				  
 			 }).error(function(data, status){
 				 
 				 console.log("No data found for employee list");
+				 $scope.enableButtons();
 				 /**
 				  * ==========================================================================
 				  * Codes used for local testing. Finally it should be removed
@@ -281,7 +303,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 				   if(status == 304)
 				   {
 					   //.
-				   }*/   
+				   }   */
 			 });
 		 }
 		 else
@@ -291,6 +313,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 			 if($rootScope.localCache.empList != null && $rootScope.localCache.isEmpAPINeeded == true)
 			 {
 				 console.log('In timestamp');
+
 				
 				  /**
 				   *==========================================================================================
@@ -345,6 +368,7 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 					 $scope.truncateurl();  								 		//Function call used to truncate the photo-url path. 	
 					 $scope.storeManagerNames(); 									//storing all the employee names for the manager list to use it in detail page.
 					 $scope.tableOptions.listData = $rootScope.localCache.empList;  //Input for the ngGrid
+					 $scope.enableButtons();
 					  
 				 }).error(function(data, status){
 					   if(status == 304)
@@ -355,12 +379,14 @@ angular.module('redPandaApp').controller('employeeController', ['$scope','$rootS
 					   
 				 });				 
 				 $rootScope.localCache.isEmpAPINeeded = false;
+				 $scope.enableButtons();
 			 }
 			 else
 			 {
 				 
 				 $scope.employeeList = $rootScope.localCache.empList;
 				 $scope.tableOptions.listData = $scope.employeeList;
+				 $scope.enableButtons();
 			 }
 			 
 		 }

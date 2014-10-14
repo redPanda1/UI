@@ -242,3 +242,16 @@ body
 	font-size: 20px;
 	font-weight: bold;
 }
+@media (max-width: 767px)
+{
+	.comments span.avatar,
+	.add-comments .avatar
+	{
+		width: 11% !important;
+	}
+	.comments span.name-and-message,
+	.add-comments input
+	{
+		width: 85% !important;
+	}
+}

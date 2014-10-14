@@ -1,0 +1,30 @@
+<div ng-controller = "commentsController" collapse ="CommentscollapseTable">
+<!-- TABLE CONTAINER BODY STARS -->
+<!-- <div class="row collapse-container">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 comments-container"> -->
+            <span class="comments" ng-repeat="comment in detailComments.comments" ng-show="detailComments.comments.length > 0">
+                <span class="avatar">
+                    <span ng-style="{'background-image':'url('+comment.postedBy.thumbUrl+')'}" class="img-circle comments-image-style"></span>
+                </span>
+
+                <span class="name-and-message">
+                    <span ng-bind="comment.postedBy.name" class="name"></span>:
+                    <span class="message" ng-bind="comment.text"></span>
+                </span>
+                <span class="time pull-right" ng-bind="comment.tempTime">
+                </span>
+            </span>
+
+            <p class="add-comments">
+                <span class="avatar">
+                    <span ng-style="{'background-image':'url('+defaultUserImage+')'}"  class="img-circle comments-image-style"></span>
+                </span>
+                <input type="text" placeholder="Write Message" ng-model="commentText" class="form-control">
+                <span class="add-comments-submit">
+                    <button class="btn pull-right" ng-click="saveCommentMessage();">Save</button>
+                </span>
+            </p>
+       <!--  </div> -->
+    <!-- TABLE CONTAINER BODY ENDS -->
+<!-- </div> -->
+</div>

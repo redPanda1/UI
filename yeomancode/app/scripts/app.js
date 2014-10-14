@@ -9,7 +9,7 @@
 
 angular
   .module('redPandaApp', ['ngRoute','ui.bootstrap','ngGrid','ngCookies','google-maps'])
-  .config(function ($routeProvider,$locationProvider) {
+  .config(function ($routeProvider,$locationProvider,$httpProvider) {
     $routeProvider
         .when('/login',{
          templateUrl:'views/Login.html'})
@@ -35,6 +35,16 @@ angular
         redirectTo: '/login'
       });
       $locationProvider.html5Mode(true);
+
+
+    console.log("HTTPHEADERS");  
+    console.log($httpProvider);
+    //initialize get if not there
+    if (!$httpProvider.defaults.headers.get) {
+        $httpProvider.defaults.headers.get = {};    
+    }
+    //disable IE ajax request caching
+    $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
   });
 
 /**
@@ -1454,9 +1464,9 @@ angular.module('redPandaApp').service('USDateFormat', function() {
         return USDate;
     }
 });
-angular.module('redPandaApp').service('CommentDate', function() {
+angular.module('redPandaApp').service('UserComments', function() {
 
-	this.ordinal_suffix_of = function(i) {
+	var ordinal_suffix_of = function(i) {
 			var j = i % 10,
 				k = i % 100;
 			if (j == 1 && k != 11) {
@@ -1471,7 +1481,6 @@ angular.module('redPandaApp').service('CommentDate', function() {
 			return i + "th";
 		}
 	this.convertCommentDate = function(date){	
-		
 		if (date == '')
 			return;
 		var SecondsPerMinute = 60;
@@ -1489,7 +1498,7 @@ angular.module('redPandaApp').service('CommentDate', function() {
 		hours = hours < 10 ? '0'+ hours : hours;
 		minutes = minutes < 10 ? '0'+ minutes : minutes;
 		var day_date = comment_date.getDate();
-		day_date = this.ordinal_suffix_of(day_date);
+		day_date = ordinal_suffix_of(day_date);
 		var comment_time = comment_date.getTime();
 		var current_date = new Date();
 		var current_time = current_date.getTime();
@@ -1523,6 +1532,41 @@ angular.module('redPandaApp').service('CommentDate', function() {
 		  return days[comment_date.getDay()]+" "+months[comment_date.getMonth()]+" "+day_date+" at "+hours+":"+minutes+""+meridiem;
 		}
 	}
+
+    this.formatInputData = function(comments) {
+        var formatdata = this.convertCommentDate;
+        if (comments == null || comments.length === 0) {
+            comments = [];
+        } else {
+           
+            angular.forEach(comments, function(data, key) {
+                
+                if (data.postedOn != null)
+                   data['tempTime'] = formatdata(data.postedOn);
+                if (data.postedBy != null) {
+                    if (data.postedBy['thumbUrl'] == null || data.postedBy['thumbUrl'] == "")
+                        data.postedBy['thumbUrl'] = $rootScope.defaultUserImage;
+                }
+            });
+        }
+        return comments;
+    }
+
+    this.filterPostData = function(obj) {
+        if (obj.length > 0) {
+            angular.forEach(obj, function(data, key) {
+                if (data.tempTime != null)
+                    delete data.tempTime;
+                if (data.postedBy != null) {
+                    if (data.postedBy.thumbUrl)
+                        delete data.postedBy.thumbUrl;
+                    if (data.postedBy.name)
+                        delete data.postedBy.name;
+                }
+            });
+        }
+        return obj;
+    }
 	});
 
 

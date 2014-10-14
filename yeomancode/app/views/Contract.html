@@ -12,9 +12,9 @@
 			</div>
 			<div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
 				<div class="but-container">
-					<button class="btn btn-default btn-sm" ng-click ="navigateToDetail()" title="New">New</button>	
-					<button class="btn btn-default btn-sm" ng-click ="confirmDelete()" title="Delete" >Delete</button>
-					<button class="btn btn-default btn-sm" ng-click="downloadTable()" download-report is-download-creator = 'isDowloadClicked' title="Download" saveas="'ContractListReport.xls'">Download</button>
+					<button class="btn btn-default btn-sm" ng-disabled="enableContButtons" ng-click ="navigateToDetail()" title="New">New</button>	
+					<button class="btn btn-default btn-sm" ng-disabled="enableContButtons" ng-click ="confirmDelete()" title="Delete" >Delete</button>
+					<button class="btn btn-default btn-sm" ng-disabled="enableContButtons" ng-click="downloadTable()" download-report is-download-creator = 'isDowloadClicked' title="Download" saveas="'ContractListReport.xls'">Download</button>
 				</div>
 			</div>
 		</div>				

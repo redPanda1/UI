@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>redPanda - simply better software</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">    
+    <meta name="viewport" content="width=device-width"> 
     <link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
 	<link rel="apple-touch-icon" sizes="60x60" href="images/favicon-iphone-60x60.png" />
 	<link rel="apple-touch-icon" sizes="76x76" href="images/favicon-ipad/favicon-76x76.png" />
@@ -240,7 +240,7 @@
 									</li></ul>	
 								</li>
 								<li>
-									<a  href="/Home"  ng-click="admin = !admin"><i class="fa fa-pencil-square-o"></i><span class="hidden-sm"> Admin</span> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': (admin && !shiftNav) || shiftNav ,'glyphicon-chevron-left': !admin && !shiftNav}"></i></a>
+									<a ng-click="admin = !admin"><i class="fa fa-pencil-square-o"></i><span class="hidden-sm"> Admin</span> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': (admin && !shiftNav) || shiftNav ,'glyphicon-chevron-left': !admin && !shiftNav}"></i></a>
 									<ul collapse="!admin && !shiftNav" class="nav">
 										<li><a  href="/Home" ng-class="{'selected':(selectedMenu == 'SetUp')}" ng-click="selectedMenu = 'SetUp';xscollapse = false"><i class="fa fa-edit"></i><span class="hidden-sm"> Set Up</span></a></li>
 										<li><a  href="/Home" ng-class="{'selected':(selectedMenu == 'UserAdmin')}" ng-click="selectedMenu = 'UserAdmin';xscollapse = false"><i class="fa fa-users"></i><span class="hidden-sm"> User Admin</span></a></li>
@@ -324,6 +324,7 @@
         <script src="scripts/controllers/CustomerDetail.js" type="text/javascript"></script>
         <script src="scripts/controllers/CustomerContactPopUp.js" type="text/javascript"></script>
         <script src="scripts/controllers/ConfirmDialog.js" type="text/javascript"></script>
+        <script src="scripts/controllers/Comments.js" type="text/javascript"></script>
 	<!-- adding login js -->
 	<script src="scripts/controllers/Login.js" type="text/javascript"></script>
 	<script src="scripts/controllers/Registration.js" type="text/javascript"></script>

@@ -12,10 +12,10 @@
  * @param USDateFormat
  * @param $window
  * @param $interval
- * @param CommentDate
+ * @param UserComments
  */
-angular.module('redPandaApp').controller('contractDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','CurrentTimeStamp','IsoDateFormat','USDateFormat','$window','$timeout','CommentDate',
-	function($scope,$rootScope,$modal,$http,$location,$cookieStore,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$timeout,CommentDate){
+angular.module('redPandaApp').controller('contractDetailController', ['$scope','$rootScope','$modal','$http','$location','$cookieStore','CurrentTimeStamp','IsoDateFormat','USDateFormat','$window','$timeout','UserComments',
+	function($scope,$rootScope,$modal,$http,$location,$cookieStore,CurrentTimeStamp,IsoDateFormat,USDateFormat,$window,$timeout,UserComments){
 
 	$window.scrollTo(0,0);
 	$rootScope.manage             = true;
@@ -60,6 +60,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	$scope.commentText = "";
 	$rootScope.deleteCustomerContract = false;
 	$scope.disabledSave = false;
+	$scope.detailComments ={};
 	
 	//Create mode from customer
 	if ($cookieStore.get("contractId") == "create"){
@@ -267,6 +268,19 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	 {
 		 Array.splice(index,1);
 	 }
+
+	 /**
+	  *===================================================================
+	  * Function used to enable the contract detail buttons
+	  *====================================================================
+	  */
+	  $scope.enableContDetailButtons = function()
+	  {
+	  	$timeout(function(){
+               $scope.enableContDetailButtons = false;
+        },500)
+	  }
+
 	  /**
 	  * ==================================================================
 	  * Function used to delete the selected row from the activity table
@@ -401,61 +415,27 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			   $scope.contractDetail.data.endDate = IsoDateFormat.convert(endDate);
 	       });
 	 }
-	 /**
-     * For saving live comments
-     */
-     $scope.saveCommentMessage = function() {
-		 if ($scope.commentText === "")
-			return;
-		var currentdate = new Date();
-		var currentISO = currentdate.toISOString();
-		var commnetsTime = CommentDate.convertCommentDate(currentISO)
-
-		var text = $scope.commentText;
-		$scope.commentText = "";
-		var seq = 0, len = $scope.contractDetail.data.comments.length;
-		if (len === 0) {
-			seq = 0;
-		}
-		else {
-			seq = len; 
-		}
-		 $scope.contractDetail.data.comments.push({
-				"seqNo": seq,
-				"postedBy": {
-					"thumbUrl": $rootScope.defaultUserImage,
-					"name"	  : $rootScope.currentUserName,
-					"id"  	  : $rootScope.currentUserId
-				},
-				"postedOn":currentISO,
-				"replyTo": 0,
-				"docRef": 0,
-				"text": text
-		});
-		console.log($scope.contractDetail.data.comments);
-				angular.forEach($scope.contractDetail.data.comments, function(data, key) {
-					if (data.postedOn != null)
-					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
-				});
-
-	 }
+	 
 	 
 	  $scope.getCurrencySymbol = function()
 	 {
-	 	angular.forEach($scope.currencies,function(data,key){
-			 if($scope.contractDetail.data.currency == data.code)
-			 {
-				 $scope.contractDetail.data.currency = data.code;
-				 if(data.symbol != null && data.symbol != ''){
-				 	$scope.currencySymbol =data.symbol;
+	 	if($scope.currencies != null)
+		{
+		 	angular.forEach($scope.currencies,function(data,key){
+				 if($scope.contractDetail.data.currency == data.code)
+				 {
+					 $scope.contractDetail.data.currency = data.code;
+					 if(data.symbol != null && data.symbol != ''){
+					 	$scope.currencySymbol =data.symbol;
+					 }
+						 
+					 else
+						 $scope.currencySymbol =data.code;
+						 
+					$scope.currencyCode = data.code; 
 				 }
-					 
-				 else
-					 $scope.currencySymbol =data.code;
-					 
-				$scope.currencyCode = data.code; 
-			 }
-		});
+			});
+		}
 	 }
 
 	 
@@ -465,37 +445,72 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	  * ==========================================================
 	  */
 	 $scope.initializeCurrencies = function()
-	 {
-		 if($scope.contractDetail != null && $scope.contractDetail.data != null)
+	 {	
+
+
+	 	if($scope.contractDetail != null && $scope.contractDetail.data != null)
 		 {
 			 if($scope.contractDetail.data.currency == null)
 			 {
-			 	 console.log($scope.contractDetail.data.type);
-			 	 console.log($scope.contractDetail.data.activityData);
-			 	 console.log($scope.contractDetail.data.assignedData);
-			 	 $scope.contractDetail.data.currency = 'USD';
-				 $scope.currencySymbol ='$';
-				 $scope.currencyCode = 'USD';
+			 $scope.contractDetail.data.currency = 'USD';
+			 $scope.currencySymbol ='$';
+			 $scope.currencyCode = 'USD';
+			// $scope.contractDetail.data.currency = currencyObj.code;
+			 }
+			 else
+			 {
+				 if($scope.currencies != null)
+				 {
+					 angular.forEach($scope.currencies,function(data,key){
+						 if($scope.contractDetail.data.currency == data.code)
+						 {
+							 $scope.contractDetail.data.currency = data.code;
+							 if(data.symbol != null && data.symbol != ''){
+							 	$scope.currencySymbol =data.symbol;
+							 }
+								 
+							 else
+								 $scope.currencySymbol =data.code;
+								 
+							$scope.currencyCode = data.code; 
+						 }
+					 });
+				 }
+			 }
+		 }
+
+		 //This code is for mapping the currencies in the activity data and people data currencies
+
+		 /*if($scope.contractDetail != null && $scope.contractDetail.data != null)
+		 {
+
 			 	 if($scope.contractDetail.data.type == 'fixed' || $scope.contractDetail.data.type == 'activity')
 			 	 {
+
 			 	 	if($scope.contractDetail.data.activityData != null)
 			 	 	{
 			 	 		if($scope.contractDetail.data.activityData.length != 0)
 			 	 		{
 				 	 		for(var i=0;i<$scope.contractDetail.data.activityData.length;i++)
 				 	 		{
-				 	 			if($scope.contractDetail.data.activityData[i].feeCur != null)
-				 	 			{
+				 	 			if($scope.contractDetail.data.activityData[i].feeCur != null)				 	 			
 				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.activityData[i].feeCur;								
-									$scope.getCurrencySymbol();		
-				 	 			}
+										 	 			
 				 	 			if($scope.contractDetail.data.activityData[i].rateCur != null)
-				 	 			{
-				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.activityData[i].rateCur;								
-									$scope.getCurrencySymbol();
-				 	 			}
-				 	 		}
+				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.activityData[i].rateCur;			 	 			
+				 	 		}				 	 		
 			 	 		}
+			 	 		if($scope.contractDetail.data.currency == null)
+				 	 			$scope.contractDetail.data.currency = 'USD';	
+				 	 	$scope.getCurrencySymbol();
+			 	 	}
+			 	 	else
+			 	 	{
+			 	 		
+			 			if($scope.contractDetail.data.currency == null)				 			
+			 				$scope.contractDetail.data.currency = 'USD';				 			
+				 		$scope.getCurrencySymbol();
+				 		
 			 	 	}
 			 	 }			 	 
 			 	 else
@@ -508,27 +523,22 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 	 		{
 				 	 			
 				 	 			if($scope.contractDetail.data.assignedData[i].rateCur != null)
-				 	 			{
-				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.assignedData[i].rateCur;								
-									$scope.getCurrencySymbol();
-				 	 			}
-				 	 		}
+				 	 				$scope.contractDetail.data.currency = $scope.contractDetail.data.assignedData[i].rateCur;																
+				 	 		}				 	 		
 			 	 		}
+			 	 		if($scope.contractDetail.data.currency == null)
+				 	 		$scope.contractDetail.data.currency = 'USD';	
+				 	 	$scope.getCurrencySymbol();
+			 	 	}
+			 	 	else
+			 	 	{
+			 	 		if($scope.contractDetail.data.currency == null)				 			
+			 				$scope.contractDetail.data.currency = 'USD';				 			
+				 		$scope.getCurrencySymbol();
 			 	 	}
 			 	 	
-			 	 }
-			 	 
-				 
-				 // $scope.contractDetail.data.currency = currencyObj.code;
-			 }
-			 else
-			 {
-				 if($scope.currencies != null)
-				 {
-					 $scope.getCurrencySymbol();
-				 }
-			 }
-		 }
+			 	 }			 
+		 }*/
 	 }
 	 
 	
@@ -672,10 +682,19 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 $scope.contractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":"0.00","employeeName":""});
 		 $scope.ClonedcontractDetail.data.assignedData.push({"rateCur":$scope.currencySymbol,"rateAmt":"0.00","employeeName":""});
 		 $scope.currencyCode = "USD";
-		 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
+		 $scope.activitiesTableData = $scope.contractDetail.data.activityData;
 		 $scope.peopleMangers       = $scope.contractDetail.data.assignedData;
+		 $scope.detailComments      = $scope.contractDetail.data;
 		 $scope.contractDetail.data.type = $scope.invoicemethods[2].value;
 		 getManagerList();
+		 
+		if($rootScope.fromCustomer)
+		{
+			$scope.contractDetail.data.customerName = $rootScope.customerName;
+			$scope.contractDetail.data.customerId   =  $rootScope.currentCustomerId;
+			$rootScope.calledFromContractDetail = false;
+		}
+		$scope.enableContDetailButtons();
 	 }
 	 else
 	 {
@@ -691,21 +710,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 				 if($scope.contractDetail.data.value != null)
 					 $scope.contractDetail.data.value = $scope.contractDetail.data.value.toFixed(2);
 				 if($scope.contractDetail.data.budgetedHours != null)
-					 $scope.contractDetail.data.budgetedHours = $scope.contractDetail.data.budgetedHours.toFixed(2);
-				 //Condition used for initialising the comments
-				 if ($scope.contractDetail.data.comments == null)
-			  		$scope.contractDetail.data.comments = [];
-			  	else{
-			  		angular.forEach($scope.contractDetail.data.comments, function(data, key) {
-			  		if (data.postedOn != null)
-					    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
-					if (data.postedBy != null){
-						if (data.postedBy['thumbUrl'] == null || data.postedBy['thumbUrl'] == "")
-								data.postedBy['thumbUrl'] = $rootScope.defaultUserImage;
-					}
-
-				});
-			  	}
+					 $scope.contractDetail.data.budgetedHours = $scope.contractDetail.data.budgetedHours.toFixed(2);				 
+				
+			  	
 				 //Condition used for initialising the assigned and activity data
 				 if ($scope.contractDetail.data.assignedData == null)
 			  			$scope.contractDetail.data.assignedData = [];
@@ -713,7 +720,9 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			  			$scope.contractDetail.data.activityData = [];
 			  	 
 			  	 getManagerList();
-			  	 
+
+                $scope.contractDetail.data.comments = UserComments.formatInputData($scope.contractDetail.data.comments);
+                $scope.detailComments      = $scope.contractDetail.data;
 			  	 //Clone the object before formatting the data
 				 angular.copy($scope.contractDetail,$scope.ClonedcontractDetail,true);
 				 if($scope.ClonedcontractDetail.data.assignedData != null){
@@ -721,7 +730,6 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 						 $scope.ClonedcontractDetail.data.assignedData.push({"employeeName":""});
 				 }
 				 $scope.convertToUSDateFormat();
-				 
 				 if ($scope.contractDetail.data.activityData != null)
 					 $scope.convertDateActivities();
 				 if($scope.contractDetail.data.managerName != null)
@@ -739,6 +747,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		  		{
 		  			$scope.contractDetail.data.customerName = $rootScope.customerName;
 		  			$scope.contractDetail.data.customerId = $rootScope.currentCustomerId;
+		  			$rootScope.calledFromContractDetail = false;
 		  		}
 
 		  		if ($scope.contractDetail.data.type != null)
@@ -800,6 +809,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
                   }
 				 $scope.activitiesTableData =  $scope.contractDetail.data.activityData;
                  $scope.peopleMangers       = $scope.contractDetail.data.assignedData;
+                 $scope.enableContDetailButtons();
 
 			 }).error(function(data, status){
 			 	 $scope.isError = true;
@@ -807,6 +817,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 
 			 	  if($location.path() == '/ContractDetail')
 			 		  $rootScope.addAlert("No contract details available.","danger");
+			 		$scope.enableContDetailButtons();
 			 	  
 			 	//Code used for local testing and it should be removed finally
 			 	 
@@ -816,7 +827,7 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 			  		$scope.contractDetail.data.comments = [];
 			  	else{
 			  		angular.forEach($scope.contractDetail.data.comments, function(data, key) {
-				    data['tempTime'] = CommentDate.convertCommentDate(data.postedOn)
+				    data['tempTime'] = UserComments.convertUserComments(data.postedOn)
 				});
 			  	}
 				
@@ -973,7 +984,16 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 	$scope.fixedFeeCurrency[i] = $scope.contractDetail.data.currency;
 		 }
 	 }
-	 
+
+	 /**
+	  *====================================================================
+	  *Function used to hide the dropdown when selection box is closed
+	  *====================================================================
+	  */
+	  $scope.hidecurrencyDropdown = function()
+	  {
+	  	$('.currencyDropdown').removeClass('open');
+	  }
 	 
 	 
 	 /**
@@ -1004,27 +1024,14 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 }
 		 if($scope.contractDetail.data.budgetedHours != null)
 			 $scope.contractDetail.data.budgetedHours = parseFloat($scope.contractDetail.data.budgetedHours);
-		
-		if ($scope.contractDetail.data.comments.length>0){
-        	angular.forEach($scope.contractDetail.data.comments,function(data,key){
-					if (data.tempTime != null)
-						delete data.tempTime;
-					if(data.postedBy != null)
-					{
-						if (data.postedBy.thumbUrl)
-							delete data.postedBy.thumbUrl;
-						if (data.postedBy.name)
-							delete data.postedBy.name;
-					}
-			});
-        }
 
+		$scope.contractDetail.data.comments = UserComments.filterPostData($scope.contractDetail.data.comments)//($rootScope.detailCommentsList);
+		console.log("Format comments data",$scope.contractDetail.data.comments);
+	 } 
 	/*
 	*Formating the post object for activity and people
 	*
 	*/
-
-	 } 
 	 var formatActivityPeopleData = function(){
 	 	 	$scope.filterPeopleList   = [];
 	 	 	$scope.filterActivityList = [];
@@ -1312,9 +1319,6 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		 }
 		 $scope.inSave = true;
 
-		 //console.log("cloned",$scope.ClonedcontractDetail)
-		 //console.log("contractDetail",$scope.contractDetail)
-		 
 		 if($scope.contractDetail.data.value != null && $scope.contractDetail.data.value == 0)
 		 {
 			 if($scope.contractDetail.data.currency != null)
@@ -1343,8 +1347,11 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 		    	 			if($scope.contractDetail.data.assignedData[i].employeeName != null)
 		    	 				delete $scope.contractDetail.data.assignedData[i].employeeName;
 		    	 			if($scope.ClonedcontractDetail.data.assignedData != null){
-		    	 				if ($scope.ClonedcontractDetail.data.assignedData[i].employeeName != null)
+		    	 				if(typeof $scope.ClonedcontractDetail.data.assignedData[i] == 'object')
+		    	 				{
+		    	 					if ($scope.ClonedcontractDetail.data.assignedData[i].employeeName != null)
 			        	 			delete $scope.ClonedcontractDetail.data.assignedData[i].employeeName
+			        	 		}
 		    	 			}
 		    	 		}
 		    	 	}
@@ -1352,14 +1359,10 @@ angular.module('redPandaApp').controller('contractDetailController', ['$scope','
 	    	 	console.log(key);
 				console.log(data, $scope.ClonedcontractDetail.data[key]);
 	        	if(!angular.equals(data,$scope.ClonedcontractDetail.data[key]))
-	        		$scope.needToSave = true;
-				
+	        		$scope.needToSave = true;				
          	 }
-	         	
-        	 
          });
 
-        
 		 if($scope.needToSave)
 		 {
 			 $rootScope.closeAlert();

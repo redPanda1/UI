@@ -859,3 +859,11 @@ background-image: url('../images/noPhoto_Icon120.png');
 	display:inline-block;
 	
 }
+
+.comments .comments-image-style{
+	background-repeat:no-repeat;
+	height:50px;
+	width:50px;
+	background-size:100% 100%;
+	display:inline-block
+}

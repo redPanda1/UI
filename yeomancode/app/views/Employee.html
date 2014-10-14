@@ -11,9 +11,9 @@
 			</div>
 			<div class="col-sm-5 col-md-5 col-lg-5">
 				<div class="but-container">
-					<button class="btn btn-default btn-sm" ng-click="navigateToDetail(null)" title="New">New</button>
-					<button class="btn btn-default btn-sm" ng-click ="DeleteEmployee()" title="Delete" >Delete</button>					
-					<button class="btn btn-default btn-sm" ng-click="downloadTable()" download-report is-download-creator = 'isDowloadClicked' saveas="'EmployeeListReport.xls'" title="Download">Download</button>
+					<button class="btn btn-default btn-sm" ng-disabled="enableEmpButtons" ng-click="navigateToDetail(null)" title="New">New</button>
+					<button class="btn btn-default btn-sm" ng-disabled="enableEmpButtons" ng-click ="DeleteEmployee()" title="Delete" >Delete</button>					
+					<button class="btn btn-default btn-sm" ng-disabled="enableEmpButtons" ng-click="downloadTable()" download-report is-download-creator = 'isDowloadClicked' saveas="'EmployeeListReport.xls'" title="Download">Download</button>
 				</div>
 			</div>
 		</div>				

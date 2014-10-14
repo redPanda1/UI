@@ -32,6 +32,10 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
     $scope.formattedCustomerList = [];
     $scope.isJsonFormattingNeeded = true;
     $rootScope.closeAlert();
+    $rootScope.calledFromEmployeeDetail = false;
+    $rootScope.calledFromContractDetail = false;
+    $scope.enableCustButtons = true;
+
 
     //Used to maintain the same filter when navigating from different page  and corresponding detail page
     if (!$rootScope.calledFromCustomerDetail)
@@ -61,7 +65,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
 
     /**
      * =====================================================================
-     * Function used to navigate to the Employee Detail page
+     * Function used to navigate to the Customer Detail page
      * when row in the customer list table is double clicked.
      * @param row
      * =====================================================================
@@ -73,6 +77,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
         } else
             $cookieStore.put("detailId", "create");
 
+        $rootScope.selectedEmpType = $cookieStore.get("detailId");
         $location.path('/CustomerDetail');
     }
 
@@ -86,6 +91,18 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
             return;
         $scope.formattedCustomerList = angular.copy($scope.customerList);
     }
+
+    /**
+     * ====================================================================
+     * Function used to enable the customer Buttons
+     * ====================================================================
+     */
+     $scope.enableCustomerButtons = function()
+     {
+        $timeout(function(){
+                $scope.enableCustButtons = false;
+        },500);      
+     }
 
     /**
      * ==============================================================================================================
@@ -134,15 +151,17 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
      * ================================================================================================
      */
     var customerListApiCall = function() {
-        if ($rootScope.localCache.customerList == null || $rootScope.localCache.isCustomerAPINeeded == true) {
+        if ($rootScope.localCache.customerList == null ) {
             $http.get('/api/customerList').success(function(data) {
+                $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
                 $scope.customerList = data.data;
                 $rootScope.localCache.customerList = $scope.customerList; //customer List is stored in local cache.For avoiding unwanted API calls		 
                 $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid	
-                //$scope.tableOptions.sortBy('customerId');
+                $scope.enableCustomerButtons();
 
             }).error(function(data, status) {
                 console.log("No data found for customer list");
+                $scope.enableCustomerButtons();
             	//Local stub data for local testing
                 /*$scope.customerList = $rootScope.customerData.data;
                 $scope.tableOptions.listData = $scope.customerList; //Input for the ngGrid
@@ -150,11 +169,84 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
                 //$scope.tableOptions.sortBy('customerId');
                 if (status == 304) {}*/
             });
-        } else {
-            $scope.customerList = $rootScope.localCache.customerList;
-            $scope.tableOptions.listData = $scope.customerList;
-           // $scope.tableOptions.sortBy('customerId');
-        }
+        } 
+        else
+         {
+             console.log('In else part');
+             //For getting the employee list after some particular time 
+             if($rootScope.localCache.isCustomerAPINeeded == true)
+             {
+                console.log('In timestamp');                
+                /**
+                *==========================================================================================
+                *  API call for getting newly created and edited employees list
+                *==========================================================================================
+                */
+                 $http.get('/api/customerList?timestamp='+ $rootScope.getTime+'&deleted=true').success(function (data) {    
+                     $rootScope.getTime = CurrentTimeStamp.postTimeStamp();
+                    
+                     if($rootScope.selectedEmpType == 'create')
+                     {
+                         console.log('In create');
+                        //For Create
+                         for(var i=0; i<data.data.length;i++)
+                         {
+                             $rootScope.localCache.customerList.push(data.data[i]);
+                             $scope.customerList = $rootScope.localCache.customerList;
+                             
+                         }
+                     }
+                     else
+                     {
+                         //For Looping through the data coming from the server.If more than one data is coming from the 
+                         //timestamp api.
+                         
+                         for(var j=0; j< data.data.length; j++)
+                         {
+                             //For looping through the local cache value
+                             for(var i=0; i<$rootScope.localCache.customerList.length; i++)
+                             {
+                                 if($rootScope.localCache.customerList[i].id == data.data[j].id)
+                                 {
+                                     if(data.data[j].deleted)
+                                     {
+                                         $rootScope.localCache.customerList.splice(i,1);
+                                         $scope.customerList = $rootScope.localCache.customerList;
+                                     }
+                                     else
+                                     {
+                                         $rootScope.localCache.customerList[i] = data.data[j];
+                                         $scope.customerList = $rootScope.localCache.customerList;
+                                     }
+                                     
+                                 }
+                             }
+                         }
+                        
+                     }
+                     $rootScope.selectedEmpType = null;                   
+                     $scope.tableOptions.listData = $rootScope.localCache.customerList;  //Input for the ngGrid
+                     $scope.enableCustomerButtons();
+                      
+                 }).error(function(data, status){
+                       if(status == 304)
+                       {
+                           $scope.customerList = $rootScope.localCache.customerList;
+                           $scope.tableOptions.listData = $scope.customerList;
+                       }  
+                       
+                 });                 
+                 $rootScope.localCache.isEmpAPINeeded = false;
+             }
+             else
+             {
+                
+                $scope.customerList = $rootScope.localCache.customerList;
+                $scope.tableOptions.listData = $scope.customerList;
+                $scope.enableCustomerButtons();
+             }
+             
+         }
     }
 
     customerListApiCall();
@@ -170,7 +262,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
     }
 
     /**	  
-     * Function used to Delete the Employee Record
+     * Function used to Delete the Customer Record
      * @param size - size of the pop up window
      */
     $scope.confirmDelete = function(size) {
@@ -185,7 +277,7 @@ angular.module('redPandaApp').controller('customerController', ['$scope','$rootS
                 if (nValue == null || (nValue == oValue))
                     return;
                 if ($rootScope.isPostSuccess) {
-                    $rootScope.localCache.customerList = null
+                    $rootScope.localCache.isCustomerAPINeeded = true;
                     customerListApiCall();
                     $rootScope.localCache.isFindCustomerAPINeeded = true;
                     $scope.selectedData.length = 0;
